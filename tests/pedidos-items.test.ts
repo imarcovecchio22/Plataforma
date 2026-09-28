@@ -43,7 +43,7 @@ beforeEach(() => {
   db.stock = new Map([["miel", 50], ["propoleo", 10]]);
   db.pedido = {
     id: "ord-9", numero: 9, estado: "pendiente", total: 36000, nombre: "Ana", apellido: "Pérez",
-    localidad: "Palermo", provincia: "CABA", origen: null, items: ITEMS,
+    localidad: "Palermo", provincia: "CABA", origen: null, costoEnvio: 0, items: ITEMS,
   };
 });
 
@@ -64,6 +64,16 @@ describe("pago de un pedido con varios productos", () => {
     expect(texto[4]).toMatch(/^Total: \$\s?36\.000$/);
     expect(texto[5]).toBe("Stock restante: Miel 500g: 45, Propóleo: 8 · origen: directo");
   });
+
+  it("con costo de envío, el aviso suma la línea del envío y el total (aunque sea un solo ítem)", async () => {
+    db.pedido = { ...db.pedido, items: [ITEMS[0]], provincia: "Zona sur", costoEnvio: 2500, total: 32500 };
+    await applyPaymentStatusFromPayment({ id: 1, status: "approved", external_reference: "ord-9" } as never);
+    const texto = tg.sendTelegramMessage.mock.calls[0][0].split("\n");
+    expect(texto[1]).toBe("Ana Pérez · Palermo, Zona sur");
+    expect(texto[3]).toMatch(/^Envío \(Zona sur\) — \$\s?2\.500$/);
+    expect(texto[4]).toMatch(/^Total: \$\s?32\.500$/);
+    expect(texto[5]).toBe("Stock restante: 45 · origen: directo");
+  });
 });
 
 describe("detalle del pedido en el admin", () => {
@@ -75,5 +85,16 @@ describe("detalle del pedido en el admin", () => {
     expect(html).toContain("<span>Miel 500g × 5</span>");
     expect(html).toContain("<span>Propóleo × 2</span>");
     expect(html).toMatch(/<span>Total<\/span><span>\$\s?36\.000<\/span>/);
+    expect(html).not.toContain("Envío");
+  });
+
+  it("con costo de envío, una fila para el envío", async () => {
+    db.pedido = { ...db.pedido, items: [ITEMS[0]], provincia: "Zona sur", costoEnvio: 2500, total: 32500 };
+    vi.doMock("@/lib/prisma", () => ({ prisma: { order: { findUnique: async () => ({ ...db.pedido, email: "a@b.c", telefono: "1", calle: "C", numero_dir: "1", pisoDepto: null, codigoPostal: "1", createdAt: new Date(0), updatedAt: new Date(0), mpPaymentId: null, mpPreferenceId: null }) } } }));
+    vi.resetModules();
+    const { default: Detalle } = await import("@/app/admin/(dashboard)/pedidos/[id]/page");
+    const html = renderToStaticMarkup(await Detalle({ params: Promise.resolve({ id: "ord-9" }) }));
+    expect(html).toMatch(/<span>Envío \(Zona sur\)<\/span><span class="[^"]*">\$\s?2\.500<\/span>/);
+    expect(html).toMatch(/<span>Total<\/span><span>\$\s?32\.500<\/span>/);
   });
 });

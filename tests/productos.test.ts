@@ -6,6 +6,7 @@ vi.mock("@/lib/prisma", () => ({ prisma: { product: db } }));
 import { getMainProduct } from "@/lib/product";
 import seedMelera from "../clientes/melera/seed";
 import seedEjemplo from "../clientes/ejemplo/seed";
+import { zonaEnvioSchema } from "@/lib/validation";
 
 describe("producto destacado", () => {
   it("es el primero activo por orden (y a igual orden, el más viejo)", async () => {
@@ -30,5 +31,22 @@ describe("productos de los seeds", () => {
 
   it("el de Melera tiene el slug que le arma la migración al producto existente", () => {
     expect(seedMelera.productos![0].slug).toBe("miel-artesanal-500g");
+  });
+});
+
+describe("zonas de envío de los seeds", () => {
+  it.each([
+    ["melera", seedMelera],
+    ["ejemplo", seedEjemplo],
+  ])("%s: trae zonas válidas para el admin", (_cliente, seed) => {
+    expect(seed.zonas?.length).toBeGreaterThan(0);
+    for (const z of seed.zonas ?? []) {
+      expect(zonaEnvioSchema.safeParse({ costo: null, orden: 10, activa: true, ...z }).success, z.nombre).toBe(true);
+    }
+  });
+
+  it("Melera sigue enviando solo a CABA, a coordinar", () => {
+    expect(seedMelera.zonas).toEqual([expect.objectContaining({ nombre: "CABA" })]);
+    expect(seedMelera.zonas![0].costo).toBeUndefined();
   });
 });

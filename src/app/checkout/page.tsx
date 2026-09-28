@@ -3,6 +3,7 @@ import CheckoutForm from "@/components/CheckoutForm";
 import SinProductos from "@/components/SinProductos";
 import { notFound } from "next/navigation";
 import { getMainProduct, getProductoPorSlug, getProductosActivos } from "@/lib/product";
+import { getZonasActivas } from "@/lib/zonas";
 import { leerEscalones } from "@/lib/precios";
 import { unidadDe } from "@/plataforma/cliente";
 
@@ -15,6 +16,7 @@ export default async function CheckoutPage({
 }) {
   const searchParams = await searchParamsPromise;
   const origenCarrito = Array.isArray(searchParams.origen) ? searchParams.origen[0] : searchParams.origen;
+  const zonas = await getZonasActivas();
 
   // Compra del carrito (/checkout?carrito=1): el formulario arma los ítems con lo que está a la venta
   if (searchParams.carrito) {
@@ -35,6 +37,7 @@ export default async function CheckoutPage({
               stock: p.stock,
               unidad: unidadDe(p),
             }))}
+            zonas={zonas}
             origen={origenCarrito}
           />
         </main>
@@ -70,6 +73,7 @@ export default async function CheckoutPage({
             unidad: unidadDe(product),
           }}
           cantidadInicial={cantidadInicial}
+          zonas={zonas}
           origen={origen}
         />
       </main>

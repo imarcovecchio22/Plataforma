@@ -11,6 +11,7 @@ export default definirSeed({
       escalones: [{ desde: 3, precio: 4500 }],
     },
   ],
+  zonas: [{ nombre: "Retiro en el local" }, { nombre: "Envío a domicilio", costo: 3000 }],
   preguntas: [
     {
       orden: 10,

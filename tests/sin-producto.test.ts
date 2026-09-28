@@ -23,6 +23,7 @@ vi.mock("@google/genai", async (original) => ({
   },
 }));
 
+vi.mock("@/lib/zonas", () => ({ getZonasActivas: async () => [{ id: 1, nombre: "CABA", costo: null, aclaracion: "Por ahora enviamos solo dentro de CABA. Pronto sumamos más zonas.", detalleResumen: "Envío dentro de CABA: después de la compra te escribimos para coordinarlo." }] }));
 import HomePage from "@/app/(publico)/page";
 import ProductoPage from "@/app/(publico)/producto/page";
 import CheckoutPage from "@/app/checkout/page";

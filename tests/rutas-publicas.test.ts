@@ -30,6 +30,7 @@ vi.mock("@/lib/product", () => ({ getMainProduct: async () => producto.actual })
 const mp = vi.hoisted(() => ({ create: vi.fn() }));
 vi.mock("@/lib/mercadopago", () => ({ getPreferenceClient: () => ({ create: mp.create }) }));
 
+vi.mock("@/lib/zonas", () => ({ getZonasActivas: async () => [{ id: 1, nombre: "CABA", costo: null, aclaracion: "Por ahora enviamos solo dentro de CABA. Pronto sumamos más zonas.", detalleResumen: "Envío dentro de CABA: después de la compra te escribimos para coordinarlo." }] }));
 import { POST as login } from "@/app/api/admin/login/route";
 import { POST as consultar } from "@/app/api/consultas/route";
 import { POST as checkout } from "@/app/api/checkout/route";
@@ -204,8 +205,8 @@ describe("/api/checkout", () => {
     expect(mp.create.mock.calls[1][0].body.notification_url).toBe("https://melera.vercel.app/api/mercadopago/webhook");
   });
 
-  it("rechaza envíos fuera de CABA, datos inválidos y cantidades mayores al stock", async () => {
-    expect((await checkout(post("/api/checkout", { ...pedido, provincia: "Córdoba" }))).status).toBe(400);
+  it("rechaza una zona de envío que no existe, datos inválidos y cantidades mayores al stock", async () => {
+    expect((await checkout(post("/api/checkout", { ...pedido, zona: 99 }))).status).toBe(400);
     expect((await checkout(post("/api/checkout", { ...pedido, email: "x" }))).status).toBe(400);
     expect((await checkout(post("/api/checkout", { ...pedido, cantidad: 6 }))).status).toBe(400);
     expect((await checkout(new NextRequest("https://melera.vercel.app/api/checkout", { method: "POST", body: "no es json" }))).status).toBe(400);

@@ -139,11 +139,12 @@ async function notifyOrderPaid(
     localidad: string;
     provincia: string;
     origen: string | null;
+    costoEnvio: number;
   },
   items: { productId: string; nombre: string; cantidad: number; subtotal: number }[],
   stocks: Map<string, number>
 ) {
-  // Con un solo ítem, el mismo texto de siempre; con varios, una línea por ítem y el total
+  // Con un solo ítem y sin costo de envío, el mismo texto de siempre; si no, también el envío y el total
   const stock =
     items.length === 1
       ? `${stocks.get(items[0].productId)}`
@@ -153,7 +154,8 @@ async function notifyOrderPaid(
       `🛒 Pedido #${order.numero} pagado`,
       `${order.nombre} ${order.apellido} · ${order.localidad}, ${order.provincia}`,
       ...items.map((i) => `${i.nombre} × ${i.cantidad} — ${formatPrecio(i.subtotal)}`),
-      ...(items.length > 1 ? [`Total: ${formatPrecio(order.total)}`] : []),
+      ...(order.costoEnvio > 0 ? [`Envío (${order.provincia}) — ${formatPrecio(order.costoEnvio)}`] : []),
+      ...(items.length > 1 || order.costoEnvio > 0 ? [`Total: ${formatPrecio(order.total)}`] : []),
       `Stock restante: ${stock} · origen: ${order.origen ?? "directo"}`,
       `Admin: ${siteUrl()}/admin/pedidos/${order.id}`,
     ].join("\n")

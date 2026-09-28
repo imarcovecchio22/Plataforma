@@ -165,6 +165,6 @@ describe("en la tienda", () => {
 
 describe("checkout del carrito", () => {
   it("del lado del servidor no se muestra (el carrito está en el navegador: nada de un vacío por un instante)", () => {
-    expect(renderToStaticMarkup(createElement(CheckoutForm, { carrito: [] }))).toBe("");
+    expect(renderToStaticMarkup(createElement(CheckoutForm, { carrito: [], zonas: [] }))).toBe("");
   });
 });

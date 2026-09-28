@@ -141,6 +141,18 @@ coordinar). El checkout muestra las zonas activas; la validación deja de exigir
 contra la base; el pedido guarda zona y costo; el costo va a MP según la pregunta 2. Sin zonas
 activas, el checkout lo avisa y no deja comprar.
 
+**✅ (2026-09-28):** tabla `ZonaEnvio` (nombre, costo opcional: vacío = a coordinar, aclaración,
+texto para el resumen, activa, orden) y `Order.zonaEnvioId` + `Order.costoEnvio` (migración
+`20260928223333_zonas_de_envio`); `Order.provincia` guarda el nombre de la zona. Admin `/admin/envios`
+(crear, editar con vista previa, activar/desactivar, borrar; avisa si no hay ninguna activa). El
+checkout: con una zona, se muestra fija (Melera se ve igual que antes: el snapshot solo cambia el
+campo oculto `provincia=CABA` → `zona=1`); con varias, un selector con el costo; sin ninguna, un
+aviso y el botón de pagar deshabilitado. La API valida la zona contra las activas, suma el costo al
+total y lo manda a MP como un ítem "Envío (zona)". El detalle del pedido y el aviso de Telegram
+muestran el envío cuando tiene costo. `SeedCliente.zonas`: Melera trae CABA a coordinar (con sus
+textos de siempre); el cliente de ejemplo, retiro en el local y envío a domicilio con costo. El
+código ya no nombra a CABA (el test de "sin rastros" no tiene pendientes).
+
 ### Paso 7: textos que dependen del catálogo y las zonas
 - Chat: el prompt lista los productos activos con sus precios y promos, y las zonas de envío (sale
   de `ia.chat.producto` y del texto de envíos de `ia.chat.datos`).

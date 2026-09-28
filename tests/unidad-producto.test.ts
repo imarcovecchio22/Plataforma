@@ -61,6 +61,7 @@ describe("unidad de cada producto", () => {
       createElement(CheckoutForm, {
         producto: { slug: PIEZA.slug, nombre: PIEZA.nombre, precio: 3000, escalones: PIEZA.escalones, unidad: unidadDe(PIEZA) },
         cantidadInicial: 1,
+        zonas: [],
       })
     );
     expect(html).toContain("Llevando 3 piezas pagás");

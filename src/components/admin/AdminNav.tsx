@@ -9,6 +9,7 @@ import { moduloActivo, type Modulo } from "@/plataforma/cliente/modulos";
 const todos: { href: string; label: string; modulo?: Modulo }[] = [
   { href: "/admin/pedidos", label: "Pedidos" },
   { href: "/admin/productos", label: "Productos" },
+  { href: "/admin/envios", label: "Envíos" },
   { href: "/admin/consultas", label: "Consultas" },
   { href: "/admin/preguntas", label: "Preguntas frecuentes" },
   { href: "/admin/instagram", label: "Instagram", modulo: "instagram" },

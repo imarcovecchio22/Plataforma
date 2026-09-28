@@ -16,6 +16,18 @@ export type SeedCliente = {
     /** Promos por cantidad: precio por unidad desde cierta cantidad. */
     escalones?: { desde: number; precio: number }[];
   }[];
+  /**
+   * Zonas de envío del checkout, en el orden en que se muestran. Sin costo = a coordinar después de
+   * la compra; con costo, se suma al total. Sin ninguna, el checkout no deja pagar.
+   */
+  zonas?: {
+    nombre: string;
+    costo?: number;
+    /** Debajo de la zona en el checkout */
+    aclaracion?: string;
+    /** En el resumen de la compra (si no, uno según el costo) */
+    detalleResumen?: string;
+  }[];
   /** Preguntas frecuentes de /consultas (formato de la respuesta: src/lib/preguntas.ts). */
   preguntas: { pregunta: string; respuesta: string; orden: number }[];
   /** Reglas de respuesta automática de Instagram ($PRECIO y $PROMOS se reemplazan al responder). */

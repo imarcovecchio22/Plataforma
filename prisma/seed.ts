@@ -35,6 +35,19 @@ async function main() {
     console.log("El seed del cliente no trae productos: la tienda va a mostrar que todavía no hay.");
   }
 
+  // Zonas de envío: solo si no hay ninguna (en el orden del seed)
+  const zonas = await prisma.zonaEnvio.count();
+  if (zonas > 0) {
+    console.log(`Ya hay ${zonas} zonas de envío, no se cargan las del seed.`);
+  } else if (seed.zonas?.length) {
+    const { count } = await prisma.zonaEnvio.createMany({
+      data: seed.zonas.map((z, i) => ({ ...z, orden: (i + 1) * 10 })),
+    });
+    console.log(`Zonas de envío cargadas: ${count}`);
+  } else {
+    console.log("El seed del cliente no trae zonas de envío: el checkout no va a dejar pagar hasta cargar una.");
+  }
+
   // Preguntas frecuentes: solo si la tabla está vacía (no pisa lo que se editó en el admin)
   const preguntas = await prisma.preguntaFrecuente.count();
   if (preguntas > 0) {

@@ -11,6 +11,14 @@ export default definirSeed({
       stock: 50,
     },
   ],
+  // Lo mismo que decía el checkout antes de las zonas: solo CABA, a coordinar
+  zonas: [
+    {
+      nombre: "CABA",
+      aclaracion: "Por ahora enviamos solo dentro de CABA. Pronto sumamos más zonas.",
+      detalleResumen: "Envío dentro de CABA: después de la compra te escribimos para coordinarlo.",
+    },
+  ],
   preguntas: [
     {
       orden: 10,

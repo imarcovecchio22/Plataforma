@@ -5,6 +5,7 @@ import { useState, useSyncExternalStore } from "react";
 import { formatPrecio } from "@/lib/utils";
 import { totalPedido, type Escalon } from "@/lib/precios";
 import { lineasDelCarrito } from "@/lib/carrito";
+import { etiquetaZona, textoResumenEnvio, type ZonaParaCheckout } from "@/lib/envios";
 import { useCarrito } from "@/components/useCarrito";
 import type { ProductoCarrito } from "@/components/CarritoVista";
 import { cadaUnoDe, cantidadConUnidad, type Unidad } from "@/plataforma/cliente";
@@ -15,16 +16,19 @@ type Props = {
   cantidadInicial?: number;
   /** Compra del carrito: los productos a la venta, con los datos actuales (el carrito guarda slug y cantidad). */
   carrito?: ProductoCarrito[];
+  /** Zonas de envío activas: con una sola, se elige sola; con varias, el comprador elige. */
+  zonas: ZonaParaCheckout[];
   origen?: string;
 };
 
 const sinSuscripcion = () => () => {};
 
-// Por ahora solo se envía dentro de CABA (el envío se coordina después de la compra).
-const ZONA_DE_ENVIO = "CABA";
-
-export default function CheckoutForm({ producto, cantidadInicial = 1, carrito, origen }: Props) {
+export default function CheckoutForm({ producto, cantidadInicial = 1, carrito, zonas, origen }: Props) {
   const [cantidad, setCantidad] = useState(cantidadInicial);
+  const [zonaId, setZonaId] = useState<number | null>(zonas.length === 1 ? zonas[0].id : null);
+  const zona = zonas.find((z) => z.id === zonaId);
+  // Solo para mostrar: el servidor vuelve a calcular todo (y el envío) con los datos de la base
+  const costoEnvio = zona?.costo ?? 0;
   const itemsCarrito = useCarrito();
   // El carrito vive en el navegador: hasta leerlo no se muestra el formulario
   const listo = useSyncExternalStore(sinSuscripcion, () => true, () => false);
@@ -137,12 +141,55 @@ export default function CheckoutForm({ producto, cantidadInicial = 1, carrito, o
             </div>
           </div>
           <div>
-            <label className="etiqueta" htmlFor="provincia">Zona de envío</label>
-            <input className="campo opacity-80" id="provincia" value={ZONA_DE_ENVIO} readOnly aria-describedby="zona-ayuda" />
-            <input type="hidden" name="provincia" value={ZONA_DE_ENVIO} />
-            <p id="zona-ayuda" className="mt-1 text-xs texto-suave">
-              Por ahora enviamos solo dentro de CABA. Pronto sumamos más zonas.
-            </p>
+            {zonas.length === 0 ? (
+              <p className="text-sm texto-suave">
+                Todavía no hay zonas de envío. Escribinos desde{" "}
+                <Link href="/consultas" className="font-semibold text-[var(--destacado)] underline underline-offset-4">
+                  consultas
+                </Link>{" "}
+                y lo coordinamos.
+              </p>
+            ) : zonas.length === 1 ? (
+              // Una sola zona: se muestra fija (se elige sola)
+              <>
+                <label className="etiqueta" htmlFor="provincia">Zona de envío</label>
+                <input
+                  className="campo opacity-80"
+                  id="provincia"
+                  value={zonas[0].nombre}
+                  readOnly
+                  {...(zonas[0].aclaracion ? { "aria-describedby": "zona-ayuda" } : {})}
+                />
+                <input type="hidden" name="zona" value={zonas[0].id} />
+              </>
+            ) : (
+              <>
+                <label className="etiqueta" htmlFor="zona">Zona de envío</label>
+                <select
+                  className="campo"
+                  id="zona"
+                  name="zona"
+                  required
+                  value={zonaId ?? ""}
+                  onChange={(e) => setZonaId(Number(e.target.value))}
+                  {...(zona?.aclaracion ? { "aria-describedby": "zona-ayuda" } : {})}
+                >
+                  <option value="" disabled>
+                    Elegí la zona
+                  </option>
+                  {zonas.map((z) => (
+                    <option key={z.id} value={z.id}>
+                      {etiquetaZona(z)}
+                    </option>
+                  ))}
+                </select>
+              </>
+            )}
+            {zona?.aclaracion && (
+              <p id="zona-ayuda" className="mt-1 text-xs texto-suave">
+                {zona.aclaracion}
+              </p>
+            )}
           </div>
         </fieldset>
       </div>
@@ -150,19 +197,17 @@ export default function CheckoutForm({ producto, cantidadInicial = 1, carrito, o
       <div className="h-fit tarjeta p-6">
         <h2 className="font-serif text-xl font-semibold text-[var(--texto)]">Resumen</h2>
         {lineas ? (
-          <ResumenCarrito lineas={lineas.lineas} total={lineas.total} />
+          <ResumenCarrito lineas={lineas.lineas} total={lineas.total} envio={costoEnvio} />
         ) : (
-          producto && <ResumenProducto producto={producto} cantidad={cantidad} setCantidad={setCantidad} />
+          producto && <ResumenProducto producto={producto} cantidad={cantidad} setCantidad={setCantidad} envio={costoEnvio} />
         )}
-        <p className="mt-2 text-xs texto-suave">
-          Envío dentro de CABA: después de la compra te escribimos para coordinarlo.
-        </p>
+        {zona && <p className="mt-2 text-xs texto-suave">{textoResumenEnvio(zona)}</p>}
 
         {error && (
           <p className="mt-4 rounded-lg border border-red-400/40 bg-red-950/60 px-3 py-2 text-sm text-red-200">{error}</p>
         )}
 
-        <button type="submit" className="btn mt-6 w-full" disabled={loading}>
+        <button type="submit" className="btn mt-6 w-full" disabled={loading || zonas.length === 0}>
           {loading ? "Redirigiendo a MercadoPago..." : "Ir a pagar"}
         </button>
       </div>
@@ -175,10 +220,12 @@ function ResumenProducto({
   producto,
   cantidad,
   setCantidad,
+  envio,
 }: {
   producto: NonNullable<Props["producto"]>;
   cantidad: number;
   setCantidad: (f: (c: number) => number) => void;
+  envio: number;
 }) {
   // Solo para mostrar: el total que se cobra lo calcula el servidor con los mismos escalones
   const { unitario, total, ahorro } = totalPedido(producto.precio, producto.escalones, cantidad);
@@ -211,9 +258,10 @@ function ResumenProducto({
     <p className="mt-2 text-right text-xs texto-suave">
       {cantidad} × {formatPrecio(unitario)}
     </p>
+    <LineaEnvio envio={envio} />
     <div className="mt-3 flex items-center justify-between border-t border-[rgb(var(--acento-rgb)/0.22)] pt-4 font-semibold text-[var(--texto)]">
       <span>Total</span>
-      <span>{formatPrecio(total)}</span>
+      <span>{formatPrecio(total + envio)}</span>
     </div>
     {ahorro > 0 && (
       <p className="mt-2 text-sm font-semibold text-[var(--destacado)]">Ahorrás {formatPrecio(ahorro)} con la promo</p>
@@ -232,7 +280,15 @@ function ResumenProducto({
 }
 
 /** Resumen de la compra del carrito: una línea por producto y el total. */
-function ResumenCarrito({ lineas, total }: { lineas: ReturnType<typeof lineasDelCarrito<ProductoCarrito>>["lineas"]; total: number }) {
+function ResumenCarrito({
+  lineas,
+  total,
+  envio,
+}: {
+  lineas: ReturnType<typeof lineasDelCarrito<ProductoCarrito>>["lineas"];
+  total: number;
+  envio: number;
+}) {
   const ahorro = lineas.reduce((suma, l) => suma + l.ahorro, 0);
   return (
     <>
@@ -252,13 +308,25 @@ function ResumenCarrito({ lineas, total }: { lineas: ReturnType<typeof lineasDel
       <Link href="/carrito" className="mt-2 inline-block text-xs text-[var(--destacado)] underline underline-offset-2">
         Editar carrito
       </Link>
+      <LineaEnvio envio={envio} />
       <div className="mt-3 flex items-center justify-between border-t border-[rgb(var(--acento-rgb)/0.22)] pt-4 font-semibold text-[var(--texto)]">
         <span>Total</span>
-        <span>{formatPrecio(total)}</span>
+        <span>{formatPrecio(total + envio)}</span>
       </div>
       {ahorro > 0 && (
         <p className="mt-2 text-sm font-semibold text-[var(--destacado)]">Ahorrás {formatPrecio(ahorro)} con las promos</p>
       )}
     </>
+  );
+}
+
+/** El envío en el resumen, cuando la zona tiene costo (a coordinar no suma nada). */
+function LineaEnvio({ envio }: { envio: number }) {
+  if (envio <= 0) return null;
+  return (
+    <div className="mt-2 flex items-center justify-between text-sm texto-suave">
+      <span>Envío</span>
+      <span>{formatPrecio(envio)}</span>
+    </div>
   );
 }

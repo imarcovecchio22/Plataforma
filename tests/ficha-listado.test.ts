@@ -32,6 +32,7 @@ vi.mock("@/lib/mercadopago", () => ({
   getPreferenceClient: () => ({ create: async () => ({ id: "pref", init_point: "https://mp/pagar" }) }),
 }));
 
+vi.mock("@/lib/zonas", () => ({ getZonasActivas: async () => [{ id: 1, nombre: "CABA", costo: null, aclaracion: "Por ahora enviamos solo dentro de CABA. Pronto sumamos más zonas.", detalleResumen: "Envío dentro de CABA: después de la compra te escribimos para coordinarlo." }] }));
 import ProductoPage from "@/app/(publico)/producto/page";
 import ProductoPorSlugPage from "@/app/(publico)/producto/[slug]/page";
 import ProductosPage from "@/app/(publico)/productos/page";

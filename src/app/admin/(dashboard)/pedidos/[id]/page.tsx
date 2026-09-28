@@ -76,7 +76,13 @@ export default async function AdminPedidoDetallePage({
               <span className="font-semibold text-oscuro">{formatPrecio(item.subtotal)}</span>
             </div>
           ))}
-          {pedido.items.length > 1 && (
+          {pedido.costoEnvio > 0 && (
+            <div className="mt-3 flex items-center justify-between text-sm text-stone-600">
+              <span>Envío ({pedido.provincia})</span>
+              <span className="font-semibold text-oscuro">{formatPrecio(pedido.costoEnvio)}</span>
+            </div>
+          )}
+          {(pedido.items.length > 1 || pedido.costoEnvio > 0) && (
             <div className="mt-3 flex items-center justify-between border-t border-marca-100 pt-3 text-sm font-semibold text-oscuro">
               <span>Total</span>
               <span>{formatPrecio(pedido.total)}</span>

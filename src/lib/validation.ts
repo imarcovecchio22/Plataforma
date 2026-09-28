@@ -14,8 +14,8 @@ export const checkoutSchema = z.object({
   numero_dir: z.string().trim().min(1, "Ingresá el número"),
   pisoDepto: z.string().trim().optional().default(""),
   localidad: z.string().trim().min(1, "Ingresá el barrio"),
-  // Por ahora solo se envía dentro de CABA.
-  provincia: z.string().trim().refine((p) => p === "CABA", "Por ahora enviamos solo dentro de CABA"),
+  // Zona de envío elegida (id de ZonaEnvio); sin ella, si hay una sola zona activa, esa
+  zona: z.coerce.number().int().positive().optional(),
   codigoPostal: z.string().trim().min(1, "Ingresá el código postal"),
   // Un solo producto (el formulario de siempre): su slug (sin él, el destacado) y la cantidad
   cantidad: z.coerce.number().int().min(1, "La cantidad mínima es 1").max(1000).default(1),
@@ -198,6 +198,32 @@ export const preguntaFrecuenteSchema = z.object({
 });
 
 export type PreguntaFrecuenteInput = z.infer<typeof preguntaFrecuenteSchema>;
+
+// ── Zonas de envío (/admin/envios) ──
+
+export const zonaEnvioSchema = z.object({
+  nombre: z
+    .string()
+    .trim()
+    .min(2, "Escribí el nombre de la zona (mínimo 2 caracteres)")
+    .max(60, "El nombre puede tener hasta 60 caracteres"),
+  // null (o vacío en el formulario) = a coordinar después de la compra
+  costo: z.preprocess(
+    (v) => (v === "" || v === undefined ? null : v),
+    z.coerce
+      .number()
+      .int("El costo tiene que ser un número entero")
+      .min(1, "El costo tiene que ser mayor a 0 (vacío = a coordinar)")
+      .max(10_000_000)
+      .nullable()
+  ),
+  aclaracion: z.string().trim().max(200, "La aclaración puede tener hasta 200 caracteres").default(""),
+  detalleResumen: z.string().trim().max(200, "El texto del resumen puede tener hasta 200 caracteres").default(""),
+  orden: z.coerce.number().int("El orden tiene que ser un número entero").min(-1000).max(10000),
+  activa: z.boolean(),
+});
+
+export type ZonaEnvioInput = z.infer<typeof zonaEnvioSchema>;
 
 // ── Productos (/admin/productos) ──
 
