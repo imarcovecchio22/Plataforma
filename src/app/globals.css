@@ -5,6 +5,12 @@
 @import "tailwindcss/utilities";
 
 @layer base {
+  /* Fuentes por defecto; las del tema (next/font en el <body>) las pisan */
+  :root {
+    --fuente-texto: system-ui, sans-serif;
+    --fuente-titulos: Georgia, serif;
+  }
+
   html {
     scroll-behavior: smooth;
   }

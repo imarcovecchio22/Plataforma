@@ -1,22 +1,8 @@
 import type { Metadata } from "next";
-import { Poppins, Fraunces } from "next/font/google";
 import "./globals.css";
+import tema from "@cliente/tema";
 import { cliente } from "@/plataforma/cliente";
 import { variablesDeColor } from "@/plataforma/cliente/colores";
-
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-poppins",
-  display: "swap",
-});
-
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-fraunces",
-  display: "swap",
-});
 
 const SITE_URL = process.env.NEXT_PUBLIC_BASE_URL || cliente.dominio;
 const SITE_TITLE = cliente.seo.titulo;
@@ -31,7 +17,7 @@ export const metadata: Metadata = {
     description: SITE_DESCRIPTION,
     url: "/",
     siteName: cliente.nombre,
-    locale: "es_AR",
+    locale: cliente.region.locale.replace("-", "_"),
     type: "website",
     images: [
       {
@@ -56,12 +42,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" data-scroll-behavior="smooth">
+    <html lang={cliente.region.locale.split("-")[0]} data-scroll-behavior="smooth">
       <head>
         <style dangerouslySetInnerHTML={{ __html: variablesDeColor(cliente.colores) }} />
       </head>
       <body
-        className={`${poppins.variable} ${fraunces.variable} flex min-h-screen flex-col font-sans`}
+        className={[...(tema.fuentes ?? []), "flex min-h-screen flex-col font-sans"].join(" ")}
       >
         {children}
       </body>

@@ -15,6 +15,11 @@ export type TemaPublico = {
    * tiene que tapar llevan el atributo data-fondo-evita.
    */
   Fondo?: ComponentType;
+  /**
+   * Fuentes de todo el sitio (también el admin): las clases `.variable` de next/font que definen
+   * --fuente-texto y --fuente-titulos. Sin ellas se usan las del sistema.
+   */
+  fuentes?: string[];
   /** Logo al lado del nombre en el Header y el Footer. Sin él, va solo el nombre. */
   Logo?: ComponentType<{ tamano: number }>;
 };

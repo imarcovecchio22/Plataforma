@@ -210,7 +210,13 @@ En tres pasos chicos:
   abeja y el logo sin errores en la consola.
   Plan original: mover `src/components/panal/*`, `LogoCelda` y el velo de entrada a `clientes/melera/tema/`.
   La config del cliente declara el fondo animado y la entrada; el layout público los usa si existen.
-- **8c.** Fuentes: la config del cliente exporta sus fuentes (`next/font` necesita llamadas con
+- **8c.** ✅ (2026-09-28) Hecho: Poppins y Fraunces → `clientes/melera/tema/fuentes.ts`, con las
+  variables genéricas `--fuente-texto` y `--fuente-titulos`; el tema las expone en `fuentes` y el
+  layout raíz las pone en el `<body>`. Sin fuentes del tema, `globals.css` usa las del sistema.
+  `lang` y el locale de Open Graph salen de `region.locale`. Verificado: snapshot igual salvo los
+  nombres de las variables; CSS compilado igual salvo el `:root` con las fuentes por defecto; en
+  Chrome, tienda y admin con Poppins y Fraunces.
+  Plan original: fuentes: la config del cliente exporta sus fuentes (`next/font` necesita llamadas con
   valores fijos, así que van en un archivo del cliente, no en la config zod).
 
 ## Paso 9: Tema neutro por defecto

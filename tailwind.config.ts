@@ -15,8 +15,9 @@ const config: Config = {
         oscuro: color("oscuro"),
       },
       fontFamily: {
-        sans: ["var(--font-poppins)", "system-ui", "sans-serif"],
-        serif: ["var(--font-fraunces)", "Georgia", "serif"],
+        // Las definen las fuentes del tema (o globals.css, con las del sistema)
+        sans: ["var(--fuente-texto)", "system-ui", "sans-serif"],
+        serif: ["var(--fuente-titulos)", "Georgia", "serif"],
       },
       boxShadow: {
         soft: "0 10px 40px -12px rgb(var(--sombra) / 0.25)",

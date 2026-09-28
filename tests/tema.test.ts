@@ -7,6 +7,7 @@ vi.mock("@cliente/tema", () => ({ default: {} }));
 vi.mock("next/navigation", () => ({ usePathname: () => "/" }));
 
 import PublicoLayout from "@/app/(publico)/layout";
+import RootLayout from "@/app/layout";
 
 describe("layout público con un tema sin componentes", () => {
   const html = renderToStaticMarkup(createElement(PublicoLayout, null, createElement("main", null, "contenido")));
@@ -22,5 +23,13 @@ describe("layout público con un tema sin componentes", () => {
     expect(html).toContain('aria-label="Melera, inicio"');
     expect(html).toContain("<main>contenido</main>");
     expect(html).toContain("</footer></div>");
+  });
+});
+
+describe("layout raíz con un tema sin fuentes", () => {
+  it("el body queda sin clases de next/font (se usan las fuentes del sistema de globals.css)", () => {
+    const html = renderToStaticMarkup(createElement(RootLayout, null, "x"));
+    expect(html).toContain('<body class="flex min-h-screen flex-col font-sans">');
+    expect(html).toContain('<html lang="es"');
   });
 });

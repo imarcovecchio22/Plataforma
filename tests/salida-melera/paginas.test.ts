@@ -9,8 +9,8 @@ import { createElement, type FC, type ReactElement, type ReactNode } from "react
 import { renderToStaticMarkup } from "react-dom/server";
 
 vi.mock("next/font/google", () => ({
-  Poppins: () => ({ variable: "--font-poppins" }),
-  Fraunces: () => ({ variable: "--font-fraunces" }),
+  Poppins: (o: { variable: string }) => ({ variable: o.variable }),
+  Fraunces: (o: { variable: string }) => ({ variable: o.variable }),
 }));
 
 vi.mock("next/navigation", () => ({
