@@ -63,7 +63,18 @@ Plan original:
 
 Nada del código de la app la usa todavía.
 
-## Paso 2: Nombre, dominio y cuentas
+## Paso 2: Nombre, dominio y cuentas ✅ (2026-09-28)
+
+Hecho: la config suma `instagram` y `seo` (título, descripción, alt de la imagen), más
+`hostCliente` para los textos. Salen de la config: metadata del layout, títulos de `/consultas` y
+`/privacidad`, fallback de `siteUrl()`, usuario de Instagram (footer, privacidad, admin),
+"Panel …", "… · Admin", Header y Footer, asunto del mail, mensaje de prueba de Telegram, nombre
+del archivo de las fotos, saludo del chat, mensajes de error del chat, placeholders del admin y la
+cookie (`<slug>_admin_session`, igual que antes para Melera). Paquete renombrado a `plataforma`.
+Sin ids reales en `.env.example` ni en el README. Quedan para sus pasos: el prompt del chat (5),
+el título "Melera 🍯" del chat (3), logos e imágenes (6), `.container-melera` (7) y las plantillas (10).
+
+Plan original:
 
 Reemplazar con la config lo de la sección 1 del inventario: título y metadata SEO, fallback de
 `siteUrl()`, `@melera.miel`, "Panel Melera", asunto del mail, textos de Telegram, `melera.jpg`,
