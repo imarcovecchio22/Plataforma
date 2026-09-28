@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { cliente } from "@/plataforma/cliente";
 
 export const metadata: Metadata = {
-  title: "Política de privacidad | Melera",
-  description: "Qué datos recibe Melera cuando nos escribís por Instagram o compras en la web, para qué los usamos y cómo pedir que los borremos.",
+  title: `Política de privacidad | ${cliente.nombre}`,
+  description: `Qué datos recibe ${cliente.nombre} cuando nos escribís por Instagram o compras en la web, para qué los usamos y cómo pedir que los borremos.`,
 };
 
-// TODO: agregar un email de contacto de Melera (por ahora se piden las bajas por /consultas o por DM).
+// TODO: agregar un email de contacto del cliente (por ahora se piden las bajas por /consultas o por DM).
 const ACTUALIZADA = "25 de septiembre de 2026";
 
 export default function PrivacidadPage() {
@@ -20,14 +21,14 @@ export default function PrivacidadPage() {
           </div>
 
           <p>
-            Melera (miel artesanal de Tomás Jofré, Buenos Aires) cuida los datos de las personas que nos escriben y nos
+            {cliente.nombre} (miel artesanal de Tomás Jofré, Buenos Aires) cuida los datos de las personas que nos escriben y nos
             compran. Esta página explica qué datos recibimos, para qué los usamos y cómo pedir que los borremos.
           </p>
 
           <section className="space-y-2">
             <h2 className="font-serif text-xl font-semibold text-[var(--ink)]">Qué datos recibimos de Instagram</h2>
             <p>
-              Cuando le mandás un mensaje directo a <strong>@melera.miel</strong> o comentás una de nuestras
+              Cuando le mandás un mensaje directo a <strong>@{cliente.instagram}</strong> o comentás una de nuestras
               publicaciones, Instagram (Meta) nos envía el texto del mensaje o del comentario y un identificador de tu
               cuenta que asigna Instagram. No recibimos tu contraseña, tus contactos ni otros datos de tu cuenta.
             </p>
@@ -68,8 +69,8 @@ export default function PrivacidadPage() {
             <h2 className="font-serif text-xl font-semibold text-[var(--ink)]">Cómo pedir que borremos tus datos</h2>
             <p>
               Podés pedir que borremos tus datos cuando quieras, sin costo: mandanos un mensaje directo a{" "}
-              <a href="https://instagram.com/melera.miel" className="font-semibold text-[var(--glow)] underline underline-offset-4" target="_blank" rel="noopener noreferrer">
-                @melera.miel
+              <a href={`https://instagram.com/${cliente.instagram}`} className="font-semibold text-[var(--glow)] underline underline-offset-4" target="_blank" rel="noopener noreferrer">
+                @{cliente.instagram}
               </a>{" "}
               o escribinos desde{" "}
               <Link href="/consultas" className="font-semibold text-[var(--glow)] underline underline-offset-4">

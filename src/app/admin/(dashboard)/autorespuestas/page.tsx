@@ -12,6 +12,7 @@ import AutoRespuestaActions from "@/components/admin/AutoRespuestaActions";
 import ProbadorRespuestas from "@/components/admin/ProbadorRespuestas";
 import TokenIGRenovar from "@/components/admin/TokenIGRenovar";
 import ReiniciarLimiteIG from "@/components/admin/ReiniciarLimiteIG";
+import { cliente } from "@/plataforma/cliente";
 
 export const dynamic = "force-dynamic";
 
@@ -96,7 +97,7 @@ export default async function AdminAutoRespuestasPage() {
       <div>
         <h1 className="font-serif text-2xl font-semibold text-marron">Respuestas automáticas de Instagram</h1>
         <p className="mt-1 text-sm text-stone-500">
-          Contestan solas los DMs y comentarios de @melera.miel que tengan alguna palabra clave. A una misma persona
+          Contestan solas los DMs y comentarios de @{cliente.instagram} que tengan alguna palabra clave. A una misma persona
           no se le repite la misma regla por {HORAS_ENTRE_RESPUESTAS} h.
         </p>
       </div>

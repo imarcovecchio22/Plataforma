@@ -57,17 +57,17 @@ npm run dev                  # http://localhost:3000
 | `NEXTAUTH_URL` | URL base del sitio (usada en la sesión) |
 | `NEXT_PUBLIC_BASE_URL` | URL pública del sitio, usada en los redirects de MercadoPago |
 | `TELEGRAM_BOT_TOKEN` | Token del bot de Telegram que avisa pedidos pagados y consultas nuevas (opcional; sin él no se avisa) |
-| `TELEGRAM_CHAT_ID` | Chat donde llegan esos avisos (`6219737981`, el mismo de la automatización de Instagram) |
+| `TELEGRAM_CHAT_ID` | Id del chat de Telegram donde llegan esos avisos (el mismo de la automatización de Instagram) |
 | `GEMINI_API_KEY` | API key de Gemini para el chat de atención (widget flotante) |
 | `GENERATE_WEBHOOK_SECRET` | Secreto que Make manda en `x-webhook-secret` a `/api/generate`; también firma las URLs de `/api/img` |
 | `IMAGE_SIGNING_SECRET` | Opcional: secreto propio para firmar las URLs de `/api/img` (si no está, usa `GENERATE_WEBHOOK_SECRET`) |
 | `META_PAGE_TOKEN` | Token de la página de Facebook vinculada a Instagram (publica feed e historias). Vence cada ~60 días |
-| `META_IG_USER_ID` | Id de la cuenta de Instagram (`17841431194977725`) |
+| `META_IG_USER_ID` | Id numérico de la cuenta de Instagram del cliente |
 | `TELEGRAM_WEBHOOK_SECRET` | Clave que Telegram manda en cada toque de botón (16+ caracteres: letras, números, `_` o `-`) |
 | `CRON_SECRET` | Clave con la que Vercel Cron llama a `/api/cron/instagram` y `/api/cron/instagram-token` |
 | `IG_APP_ID` / `IG_APP_SECRET` | App de Instagram (Instagram Login) de las respuestas automáticas. El secreto valida la firma del webhook |
 | `IG_WEBHOOK_VERIFY_TOKEN` | Texto al azar que se carga también en Meta al configurar el webhook |
-| `IG_ACCESS_TOKEN` / `IG_USER_ID` | Token de larga duración e id de @melera.miel para responder. Después se renueva solo y vive en la tabla `InstagramToken` |
+| `IG_ACCESS_TOKEN` / `IG_USER_ID` | Token de larga duración e id de la cuenta de Instagram del cliente para responder. Después se renueva solo y vive en la tabla `InstagramToken` |
 | `IG_DRY_RUN` | `true` = hace todo menos publicar en Instagram (para probar) |
 | `GEMINI_COPY_MODEL` | Opcional: modelo de Gemini para los textos (por defecto `gemini-flash-lite-latest`) |
 

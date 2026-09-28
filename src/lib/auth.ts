@@ -1,7 +1,9 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { cliente } from "@/plataforma/cliente";
 
-const COOKIE_NAME = "melera_admin_session";
+// Una por cliente: dos paneles abiertos en el mismo navegador no se pisan la sesión.
+const COOKIE_NAME = `${cliente.slug}_admin_session`;
 const SESSION_DURATION_SECONDS = 60 * 60 * 24 * 7; // 7 días
 
 function getSecretKey() {

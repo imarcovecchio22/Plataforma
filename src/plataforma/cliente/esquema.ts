@@ -46,6 +46,19 @@ export const esquemaCliente = z
       .url("El dominio tiene que ser una URL completa")
       .refine((u) => u.startsWith("https://"), "El dominio tiene que empezar con https://")
       .refine((u) => !u.endsWith("/"), "El dominio va sin barra al final"),
+    /** Usuario de Instagram de la marca, sin @ (ej. melera.miel). */
+    instagram: z
+      .string()
+      .regex(/^[a-zA-Z0-9._]{1,30}$/, "Usuario de Instagram inválido (sin @, solo letras, números, puntos y guiones bajos)"),
+    /** Título, descripción e imagen para buscadores y links compartidos (layout raíz). */
+    seo: z
+      .object({
+        titulo: z.string().trim().min(1),
+        descripcion: z.string().trim().min(1),
+        /** Texto alternativo de la imagen para links compartidos. */
+        altImagen: z.string().trim().min(1),
+      })
+      .strict(),
     region: z
       .object({
         /** Código ISO 4217 (ej. ARS). También es la moneda que se le pasa a Mercado Pago. */

@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
+import { cliente } from "@/plataforma/cliente";
 
-const COOKIE_NAME = "melera_admin_session";
+// Una por cliente: dos paneles abiertos en el mismo navegador no se pisan la sesión.
+const COOKIE_NAME = `${cliente.slug}_admin_session`;
 
 async function isValidSession(token: string | undefined) {
   if (!token) return false;

@@ -4,6 +4,7 @@ import { clientIp, demasiadosIntentos } from "@/lib/security";
 import { getMainProduct } from "@/lib/product";
 import { formatPrecio } from "@/lib/utils";
 import { leerEscalones, textoPromos } from "@/lib/precios";
+import { hostCliente } from "@/plataforma/cliente";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -78,7 +79,7 @@ export async function POST(req: Request) {
     })
   ) {
     return new Response(
-      "Recibimos muchos mensajes seguidos. Esperá unos minutos o escribinos desde melera.vercel.app/consultas.",
+      `Recibimos muchos mensajes seguidos. Esperá unos minutos o escribinos desde ${hostCliente}/consultas.`,
       { status: 429 }
     );
   }
@@ -113,7 +114,7 @@ export async function POST(req: Request) {
         console.error("Error en /api/chat:", err);
         try {
           controller.enqueue(
-            encoder.encode("Uy, tuvimos un problema para responder. Probá de nuevo en un rato o escribinos desde melera.vercel.app/consultas.")
+            encoder.encode(`Uy, tuvimos un problema para responder. Probá de nuevo en un rato o escribinos desde ${hostCliente}/consultas.`)
           );
           controller.close();
         } catch {

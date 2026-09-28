@@ -56,7 +56,7 @@ export function extraerEventos(payload: unknown): EventoEntrante[] {
 
   const eventos: EventoEntrante[] = [];
   for (const entry of p.entry) {
-    const cuentaId = entry?.id; // la cuenta de Melera: lo que venga de ella es propio
+    const cuentaId = entry?.id; // la cuenta del cliente: lo que venga de ella es propio
     for (const m of entry?.messaging ?? []) {
       const ev = desdeMessaging(m, cuentaId);
       if (ev) eventos.push(ev);

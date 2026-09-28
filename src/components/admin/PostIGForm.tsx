@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { cliente } from "@/plataforma/cliente";
 
 export type PostIGValores = {
   fecha: string;
@@ -24,7 +25,7 @@ const VACIO = (fecha: string): PostIGValores => ({
   categoria: "",
   precio: "",
   presentacion: "",
-  imagenUrl: "https://melera.vercel.app/producto-miel-500g.png",
+  imagenUrl: `${cliente.dominio}/producto-miel-500g.png`,
 });
 
 /** Formulario para cargar (o editar, si recibe postId) un post del cronograma. */

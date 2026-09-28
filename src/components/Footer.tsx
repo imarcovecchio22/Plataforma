@@ -1,5 +1,6 @@
 import LogoCelda from "@/components/LogoCelda";
 import Link from "next/link";
+import { cliente } from "@/plataforma/cliente";
 
 export default function Footer() {
   return (
@@ -8,7 +9,7 @@ export default function Footer() {
         <div className="flex items-center gap-2.5">
           <LogoCelda tamano={40} />
           <div>
-            <p className="font-serif text-lg font-semibold text-[var(--ink)]">Melera</p>
+            <p className="font-serif text-lg font-semibold text-[var(--ink)]">{cliente.nombre}</p>
             <p className="text-sm">Miel artesanal de Tomás Jofré, Buenos Aires.</p>
           </div>
         </div>
@@ -18,7 +19,7 @@ export default function Footer() {
             Consultas
           </Link>
           <a
-            href="https://www.instagram.com/melera.miel/"
+            href={`https://www.instagram.com/${cliente.instagram}/`}
             target="_blank"
             rel="noopener noreferrer"
             className="btn-ghost gap-2"
@@ -33,7 +34,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="border-t border-white/10 py-3 text-center text-xs">
-        © {new Date().getFullYear()} Melera. Todos los derechos reservados. ·{" "}
+        © {new Date().getFullYear()} {cliente.nombre}. Todos los derechos reservados. ·{" "}
         <Link href="/privacidad" className="underline underline-offset-2 hover:text-[var(--ink-soft)]">
           Privacidad
         </Link>

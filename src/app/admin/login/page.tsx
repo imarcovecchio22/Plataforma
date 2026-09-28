@@ -3,6 +3,7 @@
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
+import { cliente } from "@/plataforma/cliente";
 
 function LoginForm() {
   const router = useRouter();
@@ -50,7 +51,7 @@ function LoginForm() {
         <div className="flex items-center gap-2">
           <Image src="/brand/melera-logo.png" alt="" width={40} height={40} />
           <h1 className="font-serif text-2xl font-semibold text-marron">
-            Panel Melera
+            Panel {cliente.nombre}
           </h1>
         </div>
         <p className="mt-1 text-sm text-stone-500">Ingresá para gestionar la tienda.</p>

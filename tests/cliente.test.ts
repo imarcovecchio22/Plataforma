@@ -25,6 +25,8 @@ describe("config del cliente", () => {
     ["locale inválido", (c: ReturnType<typeof valida>) => (c.region.locale = "no_es_un_locale!"), /^region\.locale:/],
     ["zona horaria inválida", (c: ReturnType<typeof valida>) => (c.region.zonaHoraria = "America/Marte"), /^region\.zonaHoraria:/],
     ["campo desconocido", (c: ReturnType<typeof valida>) => (c.colorFavorito = "rojo"), /colorFavorito/],
+    ["Instagram con @", (c: ReturnType<typeof valida>) => (c.instagram = "@melera.miel"), /^instagram:/],
+    ["SEO sin título", (c: ReturnType<typeof valida>) => ((c.seo as Record<string, string>).titulo = ""), /^seo\.titulo:/],
     ["sin región", (c: ReturnType<typeof valida>) => delete (c as Partial<ReturnType<typeof valida>>).region, /^region:/],
   ])("rechaza: %s", (_nombre, romper, esperado) => {
     const config = valida();

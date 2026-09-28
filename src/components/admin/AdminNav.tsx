@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
+import { cliente } from "@/plataforma/cliente";
 
 const links = [
   { href: "/admin/pedidos", label: "Pedidos" },
@@ -28,7 +29,7 @@ export default function AdminNav() {
       <div className="container-melera flex min-h-16 flex-wrap items-center justify-between gap-x-6 gap-y-2 py-3">
         <Link href="/admin/pedidos" className="flex items-center gap-2 font-serif text-xl font-semibold text-miel-700">
           <Image src="/brand/melera-logo.png" alt="" width={32} height={32} />
-          Melera · Admin
+          {cliente.nombre} · Admin
         </Link>
         <nav className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-medium text-stone-600">
           {links.map((link) => (

@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { cliente, hostCliente } from "@/plataforma/cliente";
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
 
 const WELCOME: ChatMessage = {
   role: "assistant",
-  content: "¡Hola! 🐝 Soy el asistente de Melera. ¿En qué te puedo ayudar?",
+  content: `¡Hola! 🐝 Soy el asistente de ${cliente.nombre}. ¿En qué te puedo ayudar?`,
 };
 
 export default function ChatWidget() {
@@ -64,7 +65,7 @@ export default function ChatWidget() {
         {
           role: "assistant",
           content:
-            "Uy, no pudimos conectar con el asistente. Probá de nuevo en un rato o escribinos desde melera.vercel.app/consultas.",
+            `Uy, no pudimos conectar con el asistente. Probá de nuevo en un rato o escribinos desde ${hostCliente}/consultas.`,
         },
       ]);
     }

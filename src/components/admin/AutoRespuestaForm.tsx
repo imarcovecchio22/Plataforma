@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { cliente } from "@/plataforma/cliente";
 
 export type AutoRespuestaValores = {
   nombre: string;
@@ -133,7 +134,7 @@ export default function AutoRespuestaForm({
         {valores.botones.map((b, i) => (
           <div key={i} className="grid gap-2 sm:grid-cols-[1fr_2fr_auto]">
             <input aria-label={`Título del botón ${i + 1}`} className="input-field" value={b.titulo} onChange={(e) => setBoton(i, "titulo", e.target.value)} placeholder="🍯 Quiero comprar (hasta 20)" />
-            <input aria-label={`Link del botón ${i + 1}`} className="input-field" value={b.url} onChange={(e) => setBoton(i, "url", e.target.value)} placeholder="https://melera.vercel.app/producto?origen=instagram" />
+            <input aria-label={`Link del botón ${i + 1}`} className="input-field" value={b.url} onChange={(e) => setBoton(i, "url", e.target.value)} placeholder={`${cliente.dominio}/producto?origen=instagram`} />
             <button type="button" onClick={() => set("botones", valores.botones.filter((_, j) => j !== i))} className="rounded-full border border-stone-300 px-3 py-1.5 text-sm text-stone-600 hover:bg-stone-50">
               Quitar
             </button>

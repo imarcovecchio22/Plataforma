@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins, Fraunces } from "next/font/google";
 import "./globals.css";
+import { cliente } from "@/plataforma/cliente";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -16,10 +17,9 @@ const fraunces = Fraunces({
   display: "swap",
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://melera.vercel.app";
-const SITE_TITLE = "Melera | Miel Artesanal";
-const SITE_DESCRIPTION =
-  "Miel pura de abejas, producida por Apícola Mercedes en Tomás Jofré, Buenos Aires. Directo del campo a tu mesa.";
+const SITE_URL = process.env.NEXT_PUBLIC_BASE_URL || cliente.dominio;
+const SITE_TITLE = cliente.seo.titulo;
+const SITE_DESCRIPTION = cliente.seo.descripcion;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
     url: "/",
-    siteName: "Melera",
+    siteName: cliente.nombre,
     locale: "es_AR",
     type: "website",
     images: [
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
         url: "/melera-og-clara.png",
         width: 1200,
         height: 630,
-        alt: "Melera — Miel Artesanal",
+        alt: cliente.seo.altImagen,
       },
     ],
   },

@@ -4,11 +4,12 @@ import ConsultaForm from "@/components/ConsultaForm";
 import { getMainProduct } from "@/lib/product";
 import { formatPrecio } from "@/lib/utils";
 import { leerEscalones, textoPromos } from "@/lib/precios";
+import { cliente } from "@/plataforma/cliente";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Consultas | Melera",
+  title: `Consultas | ${cliente.nombre}`,
   description:
     "¿Tenés alguna duda sobre nuestra miel artesanal? Mirá las preguntas frecuentes o escribinos y te respondemos por Instagram o por email.",
 };
