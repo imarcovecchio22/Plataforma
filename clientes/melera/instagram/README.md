@@ -67,7 +67,7 @@ Obligatorios por tipo: presentación `tagline`, `titulo`, `texto` · dato `numer
 | `{{cta}}` | `Pedila en la web` |
 | `{{imagen_url}}` | la foto del frasco (la pone la web) |
 
-`{{promos}}` **no se escribe a mano**: `src/lib/instagram/generar.ts` lo arma con `promosParaPlantilla` (`src/lib/precios.ts`) a partir de las promos de "Precio y stock" al momento de generar, así la imagen nunca muestra un precio viejo. Gemini escribe solo `tagline`, `titulo`, `cta` y el caption (recibe las promos reales y no puede inventar otras). En orgánico y geo, si la foto queda de menos de 200 px (feed o textos largos), se oculta. Obligatorios: `titulo`, `promos`.
+`{{promos}}` **no se escribe a mano**: `src/lib/instagram/generar.ts` lo arma con `promosParaPlantilla` (`src/lib/precios.ts`) a partir de las promos del producto del post (el elegido en el admin o, si no, el destacado) al momento de generar, así la imagen nunca muestra un precio viejo. Gemini escribe solo `tagline`, `titulo`, `cta` y el caption (recibe las promos reales y no puede inventar otras). En orgánico y geo, si la foto queda de menos de 200 px (feed o textos largos), se oculta. Obligatorios: `titulo`, `promos`.
 
 ### Estilo panal
 

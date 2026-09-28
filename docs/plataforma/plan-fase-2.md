@@ -104,7 +104,7 @@ Plan original:
 creados antes de migrar). El checkout sigue siendo de un producto pero ya escribe ítems; el pago
 descuenta stock por ítem; admin de pedidos y aviso de Telegram muestran los ítems.
 
-### Paso 5: carrito y checkout con varios productos
+### Paso 5: carrito y checkout con varios productos ✅ (2026-09-28)
 Se hace en cuatro partes: **5a** unidad por producto, **5b** API de checkout con varios ítems,
 **5c** carrito (guardado, "Agregar al carrito", ícono y `/carrito`), **5d** página de checkout
 con varios ítems.
@@ -135,7 +135,7 @@ Carrito (pregunta 3). La API de checkout recibe ítems, valida stock de cada uno
 servidor (promos por producto) y arma la preferencia de MP con un ítem por producto. El descuento
 de stock al pagarse sigue siendo atómico para todos los ítems.
 
-### Paso 6: zonas de envío
+### Paso 6: zonas de envío ✅ (2026-09-28)
 `ZonaEnvio` + migración; admin `/admin/envios`; el seed de Melera trae su zona (CABA, envío a
 coordinar). El checkout muestra las zonas activas; la validación deja de exigir "CABA" y valida
 contra la base; el pedido guarda zona y costo; el costo va a MP según la pregunta 2. Sin zonas
@@ -153,7 +153,7 @@ muestran el envío cuando tiene costo. `SeedCliente.zonas`: Melera trae CABA a c
 textos de siempre); el cliente de ejemplo, retiro en el local y envío a domicilio con costo. El
 código ya no nombra a CABA (el test de "sin rastros" no tiene pendientes).
 
-### Paso 7: textos que dependen del catálogo y las zonas
+### Paso 7: textos que dependen del catálogo y las zonas ✅ (2026-09-28)
 - Chat: el prompt lista los productos activos con sus precios y promos, y las zonas de envío (sale
   de `ia.chat.producto` y del texto de envíos de `ia.chat.datos`).
 - Variables nuevas para autorespuestas y preguntas frecuentes: `$CATALOGO` (productos con precio)
@@ -171,7 +171,7 @@ con las zonas activas (costo y aclaración de cada una) y salió de `ia.chat.dat
 cliente de ejemplo. La pregunta de envíos de Melera ahora dice "Por ahora enviamos a $ZONAS…" (en la
 base de desarrollo se actualizó porque seguía con el texto del seed).
 
-### Paso 8: Instagram con catálogo
+### Paso 8: Instagram con catálogo ✅ (2026-09-28)
 Posts de producto y de promo: se elige el producto del catálogo (nombre, precio y foto se
 completan solos; hoy se cargan a mano). `PostIG` suma el producto elegido (migración).
 
@@ -185,10 +185,26 @@ del producto elegido, y a Gemini le dice de qué producto son (sin producto eleg
 la config). Errores claros si el producto ya no existe o no tiene promos. Los posts de Melera cargados
 a mano generan exactamente lo mismo (el snapshot solo suma `productoId: null`).
 
-### Paso 9: cierre
+### Paso 9: cierre ✅ (2026-09-28)
 Comparación visual de Melera contra el final de la fase 1, test de que no quede nada de
 "solo CABA" en el código, pruebas de punta a punta del checkout con varios ítems y zona (sin pagar:
 hasta la preferencia de MP de prueba), documentación.
+
+**✅ (2026-09-28):** comparación con el final de la fase 1 (`fase-1` en un worktree aparte, las dos
+contra la base de desarrollo, capturas a 1280 px comparadas píxel por píxel):
+- **Públicas idénticas:** `/`, `/consultas`, `/privacidad`, `/checkout?cantidad=2`, `/checkout/success`,
+  `/failure`, `/pending` y `/admin/login`. En `/producto`, 62 píxeles del botón "Comprar · $ …": el
+  texto es el mismo, pero ahora "Comprar" sale de una variable (en modo carrito dice "Agregar al
+  carrito") y el navegador redondea el ancho distinto (0,016 px).
+- **Admin, cambios buscados:** el menú suma "Productos" (en lugar de "Precio y stock") y "Envíos" (a
+  1280 px ya no entra al lado del logo y baja a una segunda línea), los textos de ayuda nombran
+  `$CATALOGO` y `$ZONAS`, y la opción "Promo" de Instagram ya no nombra "Precio y stock".
+- **Compra de punta a punta** (Chrome contra `next start`): dos productos en el carrito (uno con
+  promo), zona con costo, total con envío; el pedido queda con sus ítems, la zona y el costo, y el
+  detalle del admin lo muestra. Mercado Pago responde 502 porque las credenciales de `.env.local` son
+  de ejemplo (el pedido queda cancelado, como antes).
+- `CABA` ya no aparece en el código fuera de comentarios de ejemplo (lo controla
+  `tests/sin-rastros-de-melera.test.ts`).
 
 ---
 

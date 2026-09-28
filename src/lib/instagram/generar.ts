@@ -34,7 +34,7 @@ export function datosPlantilla(post: PostIG, copy: CopyIG, promo?: { promos: str
     nombre_producto: post.nombreProducto ?? "",
     precio: post.precio ?? "",
     imagen_url: post.imagenUrl || promo?.imagenUrl || "",
-    // tipo promo: las promos de "Precio y stock" al momento de generar
+    // tipo promo: las promos del producto (el elegido o el destacado) al momento de generar
     ...(promo ? { promos: promo.promos } : {}),
   };
 }

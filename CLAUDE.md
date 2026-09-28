@@ -43,13 +43,15 @@ de la plataforma".
 1. **Convertir Melera en el cliente `melera` de la plantilla SIN cambiar comportamiento.** Melera
    tiene que quedar idéntica y todos los tests tienen que seguir pasando.
    **✅ Terminada el 2026-09-28 (rama `fase-1`).**
-2. **Multiproducto y zonas de envío configurables** (hoy: un solo producto y envío fijo "solo CABA").
+2. **Multiproducto y zonas de envío configurables** (antes: un solo producto y envío fijo "solo CABA").
+   **✅ Terminada el 2026-09-28 (rama `fase-2`).**
 3. **Crear `clientes/rino/` y levantar 3DRinoMaker** (impresiones 3D, catálogo de productos fijos:
    listado, ficha por slug, pedido con ítems, checkout de MP con varios ítems, stock por producto,
    zonas de envío, identidad propia; el cotizador queda previsto como módulo).
 
 Inventario de lo específico de Melera: [`docs/plataforma/inventario-melera.md`](docs/plataforma/inventario-melera.md).
 Plan de la fase 1: [`docs/plataforma/plan-fase-1.md`](docs/plataforma/plan-fase-1.md).
+Plan de la fase 2 (con las decisiones tomadas): [`docs/plataforma/plan-fase-2.md`](docs/plataforma/plan-fase-2.md).
 
 ## Reglas de trabajo
 
@@ -87,4 +89,14 @@ Plan de la fase 1: [`docs/plataforma/plan-fase-1.md`](docs/plataforma/plan-fase-
 - Un cliente sin `tema.css` o sin `tema/index.tsx` usa el **tema neutro** (`src/plataforma/tema/`).
   `clientes/ejemplo/` es un cliente completo sin tema: sirve para probar sin Melera
   (`CLIENTE=ejemplo npm run dev`) y como base para uno nuevo.
+- **Catálogo y pedidos**: el producto destacado es el primero activo por orden (`getMainProduct`);
+  con más de un producto activo la tienda usa el carrito (`localStorage`, `<slug>-carrito`). Un pedido
+  tiene ítems (`OrderItem`, con nombre y precio del momento) y una zona de envío (`Order.provincia`
+  guarda su nombre y `Order.costoEnvio` su costo). Los precios y las promos siempre se recalculan en
+  el servidor.
+- **Variables de textos** (`$PRODUCTO`, `$PRECIO`, `$PROMOS`, `$CATALOGO`, `$ZONAS`):
+  `src/lib/variables.ts` (reemplazo, sin servidor) y `datosParaTextos()` (valores de la base). El chat
+  arma productos y envíos con la base; `ia.chat.datos` de la config no tiene que hablar de envíos.
+- En los tests, `tests/zonas-de-prueba.ts` arma mocks de `@/lib/zonas` con las zonas del seed de cada
+  cliente.
 - Más detalle (Instagram, autorespuestas, seguridad, base) en el `README.md`.
