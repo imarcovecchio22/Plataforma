@@ -1,0 +1,184 @@
+# Fase 1: Melera como cliente `melera` de la plataforma
+
+**Objetivo:** que todo lo específico de Melera (ver [`inventario-melera.md`](inventario-melera.md))
+salga del código genérico y quede en `clientes/melera/`, **sin cambiar lo que se ve ni lo que hace**
+con `CLIENTE=melera`.
+
+**Criterio de "idéntica":** con `CLIENTE=melera`, el HTML de las páginas, los textos que recibe
+Gemini, los mensajes de Telegram, las imágenes de Instagram y las respuestas de la API son los
+mismos que hoy. Lo único que cambia es de dónde salen.
+
+**Fuera de la fase 1:** multiproducto, zonas de envío, preguntas frecuentes en la base (fase 2),
+Rino (fase 3), sacar la dependencia de Vercel.
+
+**Línea de base (2026-09-28):** `npm test` → 17 archivos, 231 tests, todos pasan.
+
+Cada paso termina con `npm test`, `npm run lint` y `npm run build` en verde, y se revisa antes de
+pasar al siguiente.
+
+---
+
+## Paso 0: Red de seguridad ✅ (2026-09-28)
+
+Tests en `tests/salida-melera/` que fijan la salida actual de Melera con snapshots:
+
+- `paginas.test.ts`: metadata y HTML de `/`, `/producto`, `/consultas`, `/privacidad`, el checkout
+  (formulario, éxito, falla, pendiente) y el admin (login, pedidos con menú, detalle, stock,
+  consultas, Instagram, autorespuestas, logs), con la base mockeada y la fecha fija.
+- `textos.test.ts`: instrucciones del chat y sus mensajes de error, prompt del copy de Instagram
+  (los 4 tipos), avisos de Telegram (consulta, pedido pagado, prueba), links para responder y nombre
+  de la cookie del admin.
+- `instagram.test.ts`: HTML de las 12 plantillas (`__snapshots__/plantillas/*.html`, el logo va
+  aparte como hash) y, al generar posts, los datos firmados en las URLs, lo que recibe Gemini y lo
+  que llega a Telegram.
+
+Regla para los pasos siguientes: si un snapshot cambia, el diff tiene que ser **solo** lo buscado
+(por ejemplo, clases renombradas en los pasos 7 y 8) y se actualiza a conciencia con
+`npx vitest run -u`, revisando el diff antes de seguir.
+
+Resultado: 20 archivos, 277 tests (231 anteriores + 46 nuevos); lint, tipos y build en verde.
+
+## Paso 1: Esqueleto de la config del cliente
+
+- `src/plataforma/cliente/esquema.ts`: esquema zod de la config (se arranca solo con `slug`,
+  `nombre` y `dominio`, y se va ampliando en los pasos siguientes).
+- `clientes/melera/config.ts` con esos valores.
+- El cliente elegido por `CLIENTE` se carga con un alias de build (`@cliente` → `clientes/$CLIENTE`):
+  cada despliegue incluye solo el código y los assets de su cliente. Si `CLIENTE` está vacía, el
+  build falla.
+- Config `region` (moneda, locale, zona horaria) con los valores actuales (ARS, `es-AR`,
+  `America/Argentina/Buenos_Aires`) y que la usen `utils.ts`, el checkout y `hoyArgentina`.
+- Script `validar-cliente` que corre antes del build: falla si `CLIENTE` no existe o si la config no
+  valida. Se agrega a `npm run build`.
+- Tests: config válida pasa, config inválida falla con un mensaje claro, `CLIENTE` desconocido falla.
+
+Nada del código de la app la usa todavía.
+
+## Paso 2: Nombre, dominio y cuentas
+
+Reemplazar con la config lo de la sección 1 del inventario: título y metadata SEO, fallback de
+`siteUrl()`, `@melera.miel`, "Panel Melera", asunto del mail, textos de Telegram, `melera.jpg`,
+cookie del admin (`<slug>_admin_session`, igual para Melera), `package.json`. Sacar los ids reales de
+Telegram y Meta de `.env.example` y del README.
+
+## Paso 3: Textos de la tienda
+
+Config `textos` para Hero, Quiénes somos, Header, Footer, privacidad, metadata de `/consultas`,
+saludo y título del chat, placeholders del admin. Los componentes quedan genéricos y leen la config.
+
+Las preguntas frecuentes de `/consultas` van a la base en el paso 3b.
+
+## Paso 3b: Preguntas frecuentes en la base
+
+- Modelo `PreguntaFrecuente` (pregunta, respuesta, orden, activa) con su migración.
+- La respuesta admite `$PRECIO` y `$PROMOS` (como las autorespuestas), así la del precio sigue
+  saliendo de la base.
+- Pantalla `/admin/preguntas` para crear, editar, ordenar y desactivar, con sus rutas de API
+  (misma protección que el resto del admin).
+- Las preguntas actuales de Melera van al seed de Melera (paso 13), con el mismo texto. La de envíos
+  queda como texto hasta que existan las zonas (fase 2). El link "escribinos acá abajo" de la
+  respuesta de envíos se resuelve con un formato mínimo de links en la respuesta.
+- Tests: rutas de API, reemplazo de `$PRECIO`/`$PROMOS` y que `/consultas` muestre lo de la base.
+
+## Paso 4: Unidad de venta ("frasco / frascos")
+
+Config `unidad: { singular, plural }` y que la usen `precios.ts`, `QuantitySelector`,
+`CheckoutForm`, `StockEditor` y el form de autorespuestas. Los tests de `precios` quedan iguales
+porque Melera dice "frasco".
+
+## Paso 5: Prompts de Gemini
+
+- Config `marca`: descripción corta, tono, temática de los datos curiosos y ejemplos para el copy.
+- Config `chat`: los datos que hoy están escritos en el prompt (elaboración, pago, consultas,
+  Instagram). El texto de envíos queda en la config hasta que existan las zonas (fase 2).
+- `armarPrompt` y `buildSystemPrompt` arman el mismo texto a partir de la config. El test del paso 0
+  confirma que es idéntico carácter por carácter.
+
+## Paso 6: Assets
+
+Mover logos, íconos, OG, favicons y la foto del frasco a `clientes/melera/public/` (y `images/` a
+`clientes/melera/`). Un paso previo al build copia `clientes/<slug>/public/` a `public/` (que pasa a
+ser generado e ignorado por git). `FotoFrasco` pasa a `FotoProducto`, con la
+foto y el alt que diga la config (en fase 2 van a salir del producto).
+
+## Paso 7: Colores del admin y del chat (Tailwind)
+
+Renombrar la paleta `miel-*`, `crema`, `marron`… a nombres semánticos (`marca-*`, `fondo`, `texto`…)
+que toman sus valores de variables CSS, y definir esas variables con los valores actuales en el tema
+de Melera. Mismos colores, otros nombres. `.container-melera` → `.contenedor`.
+
+El admin lleva los colores de cada cliente: las variables salen de la config/tema del cliente.
+
+## Paso 8: Tema del panal → `clientes/melera/`
+
+En tres pasos chicos:
+
+- **8a.** Separar `globals.css`: base genérica (variables semánticas, clases de botones, campos,
+  tarjetas) y `clientes/melera/tema/tema.css` con la paleta del panal. Las clases públicas pasan a
+  nombres genéricos (`.btn-panal` → `.btn`, etc.) sin cambiar su CSS.
+- **8b.** Mover `src/components/panal/*`, `LogoCelda` y el velo de entrada a `clientes/melera/tema/`.
+  La config del cliente declara el fondo animado y la entrada; el layout público los usa si existen.
+- **8c.** Fuentes: la config del cliente exporta sus fuentes (`next/font` necesita llamadas con
+  valores fijos, así que van en un archivo del cliente, no en la config zod).
+
+## Paso 9: Tema neutro por defecto
+
+Un tema de la plataforma (fondo liso, paleta sobria, fuentes del sistema o una sans libre, sin
+animación) que se usa cuando el cliente no trae tema. Se prueba con un cliente de prueba
+(`clientes/ejemplo/`) que solo tiene la config mínima: la tienda tiene que levantar y verse bien.
+Ese cliente sirve después como base para crear `clientes/rino/`.
+
+## Paso 10: Plantillas de Instagram
+
+- Mover las 12 plantillas, `panal-fondo.js` y `logo.png` a `clientes/melera/instagram/`.
+- El motor (`generate.js`, `render.js`, `server.js`) queda en la plataforma (`src/plataforma/imagenes/`
+  o similar) y recibe la carpeta de plantillas y los estilos del cliente.
+- La config declara los estilos (`[{ id: "organico", nombre: "Orgánico" }, …]`) y, por estilo, si
+  usa semilla (hoy solo `panal`). El build valida que exista cada `<estilo>-<tipo>.html` declarado.
+- `outputFileTracingIncludes` arma la ruta según `CLIENTE`.
+- Los tests de plantillas apuntan a la nueva carpeta; los casos no cambian.
+
+## Paso 11: `EstiloPostIG` de enum a string
+
+- Migración de Prisma: `ALTER TABLE "PostIG" ALTER COLUMN "estilo" TYPE TEXT USING "estilo"::text;
+  DROP TYPE "EstiloPostIG";` (se crea con `migrate dev` contra la base de desarrollo).
+- `postIGSchema` valida `estilo` contra los estilos del cliente; `PostIGForm` los lista desde la config.
+- Test: un estilo que el cliente no declara se rechaza con un mensaje claro.
+
+## Paso 12: Módulos
+
+Config `modulos: { instagram, autorespuestas, chatIA, cotizador }`. Melera: los tres primeros
+prendidos, cotizador apagado. Si un módulo está apagado: no aparece en el menú del admin, sus
+páginas y rutas de API responden 404 y sus crons no hacen nada. `cotizador` queda solo declarado
+(sin código). Tests del apagado con el cliente de ejemplo.
+
+## Paso 13: Datos de Melera fuera del código
+
+- `getMainProduct()` deja de crear "Miel Artesanal 500g" si no hay producto (ver decisiones).
+- `prisma/seed.ts` toma los datos iniciales de `clientes/<slug>/seed.ts` (el de Melera queda con su
+  producto de ejemplo).
+- La migración con la regla de ManyChat: ver decisiones.
+
+## Paso 14: Cierre
+
+- Revisar que no quede "melera", "miel", "frasco", "panal" ni "abeja" fuera de `clientes/melera/`
+  (con un test que lo verifique en `src/`).
+- Levantar la app en local con `CLIENTE=melera` contra la base de desarrollo y comparar capturas de
+  las páginas públicas y del admin con las de antes del paso 1 (las de antes se sacan al empezar).
+- Actualizar el README (estructura de `clientes/`, cómo crear un cliente nuevo) y `CLAUDE.md`.
+
+---
+
+## Decisiones (2026-09-28)
+
+- Cliente cargado con alias de build `@cliente` → `clientes/$CLIENTE` (paso 1).
+- `CLIENTE` vacía → el build falla (paso 1).
+- Assets: copia de `clientes/<slug>/public/` a `public/` antes del build (paso 6).
+- El admin lleva los colores de cada cliente (paso 7).
+- Preguntas frecuentes: tabla y pantalla del admin ya en la fase 1 (paso 3b).
+- Región (moneda, locale, zona horaria) en la config, con los valores de Argentina (paso 1).
+- Producto por defecto: se saca. Cada cliente tiene `clientes/<slug>/seed.ts` con sus datos
+  iniciales (productos, preguntas frecuentes, reglas) que se cargan una vez con `npm run db:seed`;
+  con la base vacía la tienda muestra "todavía no hay productos" (paso 13).
+- Regla de bienvenida de la migración `20260925000100`: una migración nueva la borra solo si sigue
+  desactivada y con el texto original; la regla pasa al seed de Melera (paso 13).

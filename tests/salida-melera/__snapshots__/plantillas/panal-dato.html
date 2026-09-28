@@ -1,0 +1,225 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=1080"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet"><style>
+/* Estilo "panal": el lenguaje visual de la web (panal, luz, abeja con jarrón). */
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%}
+body{font-family:Poppins,sans-serif;overflow:hidden;background:#120702;color:#F7EBD3}
+.post{position:relative;width:100%;height:100%;overflow:hidden}
+.fondo,.abeja{position:absolute;inset:0;pointer-events:none}
+.fondo svg{display:block}
+.contenido{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:72px 80px 76px}
+/* ---------- marca: el logo sobre una celda crema con luz (como el círculo del estilo orgánico) ---------- */
+.marca{display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.sello{position:relative;width:150px;height:173px;flex-shrink:0;filter:drop-shadow(0 0 18px rgba(255,186,84,.55)) drop-shadow(0 0 4px rgba(255,214,140,.5))}
+.sello span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:radial-gradient(circle at 38% 32%,#FBECC8 0,#F4E4C1 45%,#E0BC7A 100%)}
+.sello img{width:74%;height:auto;display:block}
+.usuario{font-size:30px;font-weight:500;color:#DCC7A0;letter-spacing:.01em}
+/* ---------- texto ---------- */
+.velo{position:relative;isolation:isolate}
+.velo-chico{position:relative;isolation:isolate}
+.velo-chico::before{content:"";position:absolute;inset:-90% -26% -90% -26%;z-index:-1;background:radial-gradient(closest-side,rgba(14,6,1,.94),rgba(14,6,1,.72) 55%,rgba(14,6,1,0))}
+.velo::before{content:"";position:absolute;inset:-30% -32% -32% -32%;z-index:-1;background:radial-gradient(closest-side,rgba(14,6,1,.93),rgba(14,6,1,.74) 58%,rgba(14,6,1,0))}
+h1{font-family:Fraunces,Georgia,serif;font-weight:500;letter-spacing:-.022em;line-height:1.02;text-wrap:balance}
+h1 em,h1 i{font-style:italic;font-weight:400;color:#FFD27A;padding-right:.06em}
+.suave{color:#DCC7A0}
+.eyebrow{font-size:28px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:#FFD27A}
+.hexbtn{display:inline-flex;align-items:center;justify-content:center;min-height:84px;padding:0 58px;background:#EAA21C;color:#2A1405;font-weight:600;font-size:32px;--cut:24px;clip-path:polygon(var(--cut) 0,calc(100% - var(--cut)) 0,100% 50%,calc(100% - var(--cut)) 100%,var(--cut) 100%,0 50%)}
+/* ---------- historia (9:16): libres los 250 px de arriba y los 330 px de abajo ---------- */
+@media (max-aspect-ratio:10/16){
+ .contenido{padding:250px 84px 330px}
+ .sello{width:164px;height:189px}
+}
+
+.contenido{padding:88px 90px 80px}
+.arriba{display:flex;align-items:center;gap:18px;font-size:30px;font-weight:500;color:#FFD27A}
+.arriba b{width:34px;height:39px;background:#EAA21C;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);flex-shrink:0}
+.centro{display:flex;flex-direction:column;gap:30px}
+.numero{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:230px;line-height:.9;letter-spacing:-.03em;color:#FFD27A;white-space:nowrap}
+.centro h1{font-size:84px;line-height:1.08}
+.pie{display:flex;align-items:center;justify-content:space-between}
+.pie .sello{width:130px;height:150px}
+@media (max-aspect-ratio:10/16){
+ .contenido{padding:250px 90px 330px}
+ .numero{font-size:260px}
+ .centro h1{font-size:92px}
+ .pie .sello{width:150px;height:173px}
+}
+</style></head>
+<body><div class="post"><div class="fondo"></div><div class="abeja" data-lugares='[[0.80,0.13,-20,46,-1],[0.78,0.66,-12,28,-1],[0.30,0.66,12,28,1],[0.82,0.70,-14,40,-1],[0.20,0.70,14,40,1],[0.84,0.30,-8,48,-1],[0.55,0.80,-16,22,-1]]'></div>
+<div class="contenido">
+<div class="arriba" data-vacio><b class="no-abeja"></b><span class="velo-chico no-abeja">la magia de la colmena</span></div>
+<div class="centro velo">
+<div class="numero fit fit-ancho no-abeja">50.000+</div>
+<h1 class="fit no-abeja">abejas pueden vivir en una sola colmena</h1>
+</div>
+<div class="pie"><div class="sello no-abeja"><span><img src="data:image/png;base64,LOGO" alt="Melera"></span></div><div class="usuario velo-chico no-abeja">@melera.miel</div></div>
+</div></div>
+<script>/*
+ * Fondo de panal y abeja con jarrón para las plantillas del estilo "panal".
+ * generate.js lo inserta en cada plantilla panal-*.html, en el lugar del marcador PANAL_JS.
+ *
+ * Todo es determinístico: el panal sale de una semilla (el id del post), así que el
+ * mismo post da siempre la misma imagen y posts distintos, celdas distintas.
+ * Geometría, degradés y colores copiados de los diseños aprobados (*.dc.html) y del
+ * prototipo de la web (docs/melera-panal-prototipo.html).
+ */
+(function () {
+  var SQ3 = Math.sqrt(3);
+
+  // mulberry32: el mismo generador que usa la web
+  function rng(seed) {
+    return function () {
+      seed |= 0;
+      seed = (seed + 0x6d2b79f5) | 0;
+      var t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function hex(cx, cy, r) {
+    var p = [];
+    for (var k = 0; k < 6; k++) {
+      var a = (Math.PI / 3) * k - Math.PI / 2;
+      p.push((cx + r * Math.cos(a)).toFixed(1) + ',' + (cy + r * Math.sin(a)).toFixed(1));
+    }
+    return p.join(' ');
+  }
+
+  /** SVG del panal (W×H) para una semilla. */
+  function panal(W, H, semilla) {
+    var seed = Math.abs(parseInt(semilla, 10)) || 7;
+    var rnd = rng(seed * 7919 + 13);
+    // desfase de la grilla y del "campo" de miel según la semilla
+    var ox = rnd() * 107.4, oy = rnd() * 93;
+    var fase = seed * 1.618;
+    var r = 62, ir = 53.9, w = SQ3 * r, vs = 1.5 * r;
+    var celdas = [], brillos = [];
+    for (var row = -2; row * vs < H + r * 2; row++) {
+      for (var col = -2; col * w < W + w * 2; col++) {
+        var cx = col * w + (row & 1 ? w / 2 : 0) - ox, cy = row * vs - oy;
+        var n = 0.5 + 0.5 * Math.sin(cx * 0.0055 + fase) * Math.cos(cy * 0.007 - fase * 0.3) + 0.2 * Math.sin((cx - cy) * 0.011 + fase);
+        var v = n + (rnd() - 0.5) * 0.45;
+        var fill = v > 0.92 ? 'fph' : v > 0.84 ? 'fpc' : 'fpe';
+        celdas.push('<polygon points="' + hex(cx, cy, ir) + '" fill="url(#' + fill + ')" stroke="#FFCD82" stroke-opacity="0.12" stroke-width="2.2"/>');
+        if (fill === 'fph') {
+          var ex = cx - ir * 0.32, ey = cy - ir * 0.38;
+          brillos.push('<ellipse cx="' + ex.toFixed(1) + '" cy="' + ey.toFixed(1) + '" rx="11.9" ry="5.4" transform="rotate(-28 ' + ex.toFixed(1) + ' ' + ey.toFixed(1) + ')" fill="#FFFAEB" fill-opacity="0.45"/>');
+        }
+      }
+    }
+    // capa de adelante: hexágonos grandes desenfocados (bordes de celdas muy cercanas)
+    var R = 211, RW = SQ3 * R, frente = [];
+    for (var fr = -1; fr * 1.5 * R < H + R; fr++) {
+      for (var fc = -1; fc * RW < W + RW; fc++) {
+        if (rnd() > 0.3) continue;
+        var fx = fc * RW + (fr & 1 ? RW / 2 : 0) - ox * 2, fy = fr * 1.5 * R - oy * 2;
+        frente.push('<polygon points="' + hex(fx, fy, R - 11) + '" fill="none" stroke="#1C0C03" stroke-opacity="0.9" stroke-width="42" stroke-linejoin="round"/>');
+      }
+    }
+    return (
+      '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" aria-hidden="true"><defs>' +
+      '<radialGradient id="fpe" cx="0.58" cy="0.6" r="0.6"><stop offset="0" stop-color="#0E0602"/><stop offset="0.6" stop-color="#241206"/><stop offset="1" stop-color="#3E220B"/></radialGradient>' +
+      '<radialGradient id="fph" cx="0.35" cy="0.3" r="0.75"><stop offset="0" stop-color="#FFE7A8"/><stop offset="0.22" stop-color="#F4B53A"/><stop offset="0.62" stop-color="#C7760B"/><stop offset="1" stop-color="#6E3605"/></radialGradient>' +
+      '<radialGradient id="fpc" cx="0.4" cy="0.35" r="0.7"><stop offset="0" stop-color="#F8E6BC"/><stop offset="0.55" stop-color="#E0BC7A"/><stop offset="1" stop-color="#A0733A"/></radialGradient>' +
+      '<radialGradient id="fpl" cx="0.72" cy="0.3" r="0.7"><stop offset="0" stop-color="#FFAA3C" stop-opacity="0.42"/><stop offset="0.5" stop-color="#FF8C1E" stop-opacity="0.12"/><stop offset="1" stop-color="#FF8C1E" stop-opacity="0"/></radialGradient>' +
+      '<radialGradient id="fpv" cx="0.5" cy="0.47" r="0.72"><stop offset="0.35" stop-color="#0A0401" stop-opacity="0"/><stop offset="1" stop-color="#0A0401" stop-opacity="0.82"/></radialGradient>' +
+      '<filter id="fpb" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="9"/></filter>' +
+      '</defs><rect width="' + W + '" height="' + H + '" fill="#4E2D10"/>' +
+      celdas.join('') + brillos.join('') +
+      '<g filter="url(#fpb)" opacity="0.7">' + frente.join('') + '</g>' +
+      '<rect width="' + W + '" height="' + H + '" fill="url(#fpl)" style="mix-blend-mode:screen"/>' +
+      '<rect width="' + W + '" height="' + H + '" fill="url(#fpv)"/></svg>'
+    );
+  }
+
+  function gota(x, y, s, opacidad) {
+    var t = (s * 2.4).toFixed(1), c = (s * 1.05).toFixed(1), q = (s * 0.5).toFixed(1), b = (s * 0.1).toFixed(1);
+    return '<path transform="translate(' + x + ' ' + y + ')" d="M0,-' + t + ' Q' + c + ',-' + q + ' ' + s + ',' + b + ' A' + s + ' ' + s + ' 0 0 1 -' + s + ',' + b + ' Q-' + c + ',-' + q + ' 0,-' + t + ' Z" fill="url(#fpbd)" opacity="' + opacidad + '"/>';
+  }
+
+  /**
+   * Abeja con jarrón (ilustración fija) y rastro de gotas.
+   * x, y: posición de la abeja; escala; mirando: 1 = hacia la derecha, -1 = hacia la izquierda;
+   * gotas: [[x, y], ...] de la más cercana al jarrón a la más lejana.
+   */
+  function abeja(o) {
+    var s = o.escala || 3.2, m = o.mirando || -1, rot = o.rot || -8;
+    var gotas = (o.gotas || []).map(function (g, i, arr) {
+      return gota(g[0], g[1], (9 - i * 1).toFixed(1), (0.95 - (i / Math.max(1, arr.length - 1)) * 0.55).toFixed(2));
+    }).join('');
+    return (
+      '<svg width="100%" height="100%" style="position:absolute;left:0;top:0;overflow:visible" aria-hidden="true"><defs>' +
+      '<radialGradient id="fpbd" cx="0.35" cy="0.6" r="0.8"><stop offset="0" stop-color="#FFE0A0"/><stop offset="0.45" stop-color="#E89A16"/><stop offset="1" stop-color="#A95A06"/></radialGradient>' +
+      '<linearGradient id="fpbbd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD066"/><stop offset="0.5" stop-color="#E9A21C"/><stop offset="1" stop-color="#C47A0A"/></linearGradient>' +
+      '<linearGradient id="fpbjr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7C35A"/><stop offset="1" stop-color="#B8650A"/></linearGradient>' +
+      '<clipPath id="fpbcl"><polygon points="-15,0 -9,-8 7,-8 12,0 7,8 -9,8"/></clipPath></defs>' +
+      gotas +
+      '<g transform="translate(' + o.x + ' ' + o.y + ') rotate(' + rot + ') scale(' + (m * s) + ' ' + s + ')" stroke-linejoin="round" stroke-linecap="round">' +
+      '<g transform="translate(-4 -6) scale(1 0.8)"><polygon points="0,0 -7,-11 -1,-19 8,-16 9,-5" fill="#FFF6E2" fill-opacity="0.35" stroke="#FFECC8" stroke-width="1"/></g>' +
+      '<g transform="translate(1 8) rotate(-6)"><path d="M-3,0 L-6,11 M4,0 L6,11" stroke="#2A1405" stroke-width="1.1" fill="none"/>' +
+      '<rect x="-7" y="11" width="14" height="3.5" fill="#6B3A12"/>' +
+      '<rect x="-8" y="14" width="16" height="15" rx="4" fill="url(#fpbjr)" stroke="#FFEECD" stroke-opacity="0.75" stroke-width="1.1"/>' +
+      '<rect x="-8" y="18.5" width="16" height="4.5" fill="#F4E4C1"/><rect x="-6" y="24" width="1.6" height="4" fill="#FFFFFF" fill-opacity="0.4"/>' +
+      '<path d="M6.2,14.5 Q8.4,17 7.6,19.5" stroke="#E9A21C" stroke-width="2" fill="none"/></g>' +
+      '<polygon points="-15,0 -9,-8 7,-8 12,0 7,8 -9,8" fill="url(#fpbbd)"/>' +
+      '<g clip-path="url(#fpbcl)"><rect x="-7" y="-9" width="4" height="18" fill="#2A1405"/><rect x="0" y="-9" width="4" height="18" fill="#2A1405"/></g>' +
+      '<polygon points="-15,0 -9,-8 7,-8 12,0 7,8 -9,8" fill="none" stroke="#2A1405" stroke-width="1.4"/>' +
+      '<polygon points="-15,-1.5 -19.5,0.5 -15,2" fill="#2A1405"/><circle cx="15" cy="-1" r="6" fill="#2A1405"/>' +
+      '<circle cx="17.2" cy="-2.8" r="1.5" fill="#F4E4C1"/>' +
+      '<path d="M16,-6 Q19,-12 23,-13 M14,-6.5 Q15,-13 18,-15.5" stroke="#2A1405" stroke-width="1.2" fill="none"/>' +
+      '<circle cx="23" cy="-13" r="1.3" fill="#2A1405"/><circle cx="18" cy="-15.5" r="1.3" fill="#2A1405"/>' +
+      '<g transform="translate(1 -6)"><polygon points="0,0 -7,-11 -1,-19 8,-16 9,-5" fill="#FFF6E2" fill-opacity="0.55" stroke="#FFECC8" stroke-width="1"/><path d="M0,0 L1,-15" stroke="#FFECC8" stroke-opacity="0.5" fill="none"/></g>' +
+      '</g></svg>'
+    );
+  }
+
+  window.MeleraPanal = { panal: panal, abeja: abeja };
+})();
+</script>
+<script>
+(function(){
+  var W=innerWidth,H=innerHeight,semilla="12";
+  document.querySelector('.fondo').innerHTML=MeleraPanal.panal(W,H,semilla);
+  // "a|b|c" -> "a · b · c"
+  document.querySelectorAll('[data-lista]').forEach(function(el){
+    var partes=el.getAttribute('data-lista').split('|').map(function(s){return s.trim()}).filter(Boolean);
+    el.textContent=partes.join(' · '); if(!partes.length) el.remove();
+  });
+  document.querySelectorAll('[data-vacio]').forEach(function(el){ if(!el.textContent.trim()) el.remove(); });
+  // achica los textos largos hasta que todo entre (la foto cede espacio primero, por CSS)
+  // a lo ancho solo se miran los textos que no cortan línea (número, precio): la cursiva sobresale un poco y no cuenta
+  // (no se usa scrollHeight: el velo detrás del texto se extiende a propósito más allá del bloque)
+  function entra(){
+    var c=document.querySelector('.contenido'),cs=getComputedStyle(c),r=c.getBoundingClientRect();
+    var fondo=r.bottom-parseFloat(cs.paddingBottom),hijos=c.children,prev=r.top+parseFloat(cs.paddingTop)-1;
+    for(var i=0;i<hijos.length;i++){var h=hijos[i].getBoundingClientRect();if(h.top<prev-1||h.bottom>fondo+1)return false;prev=h.bottom;}
+    return !Array.prototype.some.call(document.querySelectorAll('.fit-ancho'),function(el){return el.scrollWidth>el.clientWidth+1});}
+  function achicar(){var g=0;while(!entra()&&g++<60){document.querySelectorAll('.fit').forEach(function(el){var fs=parseFloat(getComputedStyle(el).fontSize);el.style.fontSize=(fs*0.95)+'px'})}}
+  // la abeja va en el primer lugar candidato donde no toca texto, precio ni foto
+  function ubicarAbeja(){
+    // zonas a no tapar: el contorno real de cada texto (no el ancho de su caja) y de la foto
+    var tapar=[];Array.prototype.forEach.call(document.querySelectorAll('.no-abeja'),function(el){
+      var rects;if(el.children.length===0&&el.textContent.trim()){var rg=document.createRange();rg.selectNodeContents(el);rects=rg.getClientRects();}else rects=[el.getBoundingClientRect()];
+      if(el.tagName==='IMG'&&el.naturalWidth){var r0=el.getBoundingClientRect(),k=Math.min(r0.width/el.naturalWidth,r0.height/el.naturalHeight),w=el.naturalWidth*k,h=el.naturalHeight*k;
+        rects=[{left:r0.left+(r0.width-w)/2,top:r0.top+(r0.height-h)/2,right:r0.left+(r0.width+w)/2,bottom:r0.top+(r0.height+h)/2,width:w}];}
+      Array.prototype.forEach.call(rects,function(r){if(r.width)tapar.push({l:r.left-28,t:r.top-28,r:r.right+28,b:r.bottom+28})});});
+    var cand=JSON.parse(document.querySelector('.abeja').getAttribute('data-lugares'));
+    function caja(x,y,dx,dy){var b={l:x-80,t:y-75,r:x+80,b:y+110};
+      for(var k=1;k<=4;k++){var gx=x+dx*k,gy=y+110+dy*k;b.l=Math.min(b.l,gx-14);b.r=Math.max(b.r,gx+14);b.b=Math.max(b.b,gy+14);}
+      return b;}
+    function choca(b){
+      if(b.l<10||b.r>W-10||b.t<10||b.b>H-10) return true;
+      return tapar.some(function(z){return !(b.r<z.l||b.l>z.r||b.b<z.t||b.t>z.b)});}
+    for(var i=0;i<cand.length;i++){var c=cand[i],x=c[0]*W,y=c[1]*H,dx=c[2],dy=c[3];
+      if(!choca(caja(x,y,dx,dy))){var gotas=[];for(var k=1;k<=4;k++)gotas.push([Math.round(x+dx*k),Math.round(y+110+dy*k)]);
+        document.querySelector('.abeja').innerHTML=MeleraPanal.abeja({x:Math.round(x),y:Math.round(y),mirando:c[4]||-1,gotas:gotas});return;}}
+    // si no hay lugar libre, mejor sin abeja que tapando algo
+  }
+  // render.js espera esta promesa antes de sacar la captura
+  var foto=document.querySelector('.foto img');
+  window.__plantillaLista=Promise.all([document.fonts.ready,foto&&foto.decode?foto.decode().catch(function(){}):null]).then(function(){
+    // si la foto no cargó, que no quede el ícono de imagen rota
+    if(foto&&!(foto.complete&&foto.naturalWidth)) foto.style.visibility='hidden';
+    achicar();ubicarAbeja();});
+})();
+</script></body></html>

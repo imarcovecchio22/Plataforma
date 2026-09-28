@@ -1,6 +1,10 @@
-# Melera
+# Plataforma: tienda + Instagram en piloto automático
 
-Tienda online de miel artesanal — landing, ficha de producto, checkout con MercadoPago, sección de consultas, avisos por Telegram y panel de administración de pedidos, stock, consultas y logs. También maneja la publicación en Instagram de punta a punta (cronograma, textos con Gemini, imágenes, aprobación por Telegram y publicación con la API de Meta), sin Make ni Buffer.
+Plataforma para emprendimientos: **tienda propia** (landing, productos, checkout con Mercado Pago, stock y pedidos), **Instagram en piloto automático** (cronograma, textos con Gemini, imágenes generadas con Chromium, aprobación desde Telegram y publicación con la Graph API de Meta) y **respuestas automáticas de DMs** que llevan a la compra, con un panel de administración para gestionar todo (pedidos, stock, consultas, posts, autorespuestas y logs). Todo propio, sin Make, Buffer ni ManyChat.
+
+Cada cliente es **una instancia desplegada** de este mismo repo, con su propia base y sus propias credenciales. La variable de entorno `CLIENTE` elige qué cliente carga el despliegue; su identidad (marca, tema visual, textos, plantillas de Instagram, tono para Gemini) vive en `clientes/<slug>/`, los datos del negocio en su base y los secretos en sus variables de entorno. Las funcionalidades opcionales (autorespuestas, chat con IA, cotizador) se prenden por cliente.
+
+El primer cliente es **Melera** (miel artesanal), de donde salió el código; el segundo va a ser **3DRinoMaker** (impresiones 3D). La conversión está en curso: ver [`CLAUDE.md`](CLAUDE.md) y [`docs/plataforma/`](docs/plataforma/). Mientras tanto, el resto de este README todavía describe a Melera.
 
 ## Stack
 
