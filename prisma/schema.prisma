@@ -135,12 +135,6 @@ enum TipoPostIG {
   promo // las promos por cantidad de "Precio y stock"
 }
 
-enum EstiloPostIG {
-  organico
-  geo
-  panal // el lenguaje visual de la web: panal, luz y abeja con jarrón
-}
-
 enum EstadoPostIG {
   pendiente
   generando
@@ -162,7 +156,7 @@ model PostIG {
   id     Int          @id @default(autoincrement())
   fecha  DateTime     @db.Date // día desde el que se puede generar
   tipo   TipoPostIG
-  estilo EstiloPostIG
+  estilo String // uno de config.estilosInstagram del cliente (se valida en la app)
   tema   String
 
   // Solo para tipo producto (datos reales que carga el admin)

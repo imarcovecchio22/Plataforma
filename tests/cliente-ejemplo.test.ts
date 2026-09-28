@@ -16,6 +16,7 @@ vi.mock("@/lib/prisma", () => ({ prisma: { preguntaFrecuente: { findMany: async 
 
 import ejemplo from "../clientes/ejemplo/config";
 import { problemasDeConfig } from "@/plataforma/cliente/validar";
+import { postIGSchema } from "@/lib/validation";
 import { imagenesFaltantes } from "@/plataforma/cliente/assets";
 import { aliasCliente } from "../scripts/alias-cliente";
 import RootLayout, { metadata } from "@/app/layout";
@@ -69,5 +70,13 @@ describe("tema neutro", () => {
     expect(clases.length).toBeGreaterThan(10);
     for (const v of variables) expect(neutro, v).toMatch(new RegExp(`${v}:`));
     for (const c of clases) expect(neutro, c).toMatch(new RegExp(`\\.${c}[\\s{:,]`));
+  });
+});
+
+describe("estilos de Instagram del cliente de ejemplo", () => {
+  const base = { fecha: "2026-10-01", tipo: "dato", tema: "Un dato" };
+  it("acepta su estilo y rechaza los de Melera", () => {
+    expect(postIGSchema.safeParse({ ...base, estilo: "simple" }).success).toBe(true);
+    expect(postIGSchema.safeParse({ ...base, estilo: "panal" }).success).toBe(false);
   });
 });

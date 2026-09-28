@@ -265,7 +265,20 @@ Plan original:
 - `outputFileTracingIncludes` arma la ruta según `CLIENTE`.
 - Los tests de plantillas apuntan a la nueva carpeta; los casos no cambian.
 
-## Paso 11: `EstiloPostIG` de enum a string
+## Paso 11: `EstiloPostIG` de enum a string ✅ (2026-09-28)
+
+Hecho: migración `20260928173726_estilo_post_texto` escrita a mano (`ALTER COLUMN "estilo" TYPE TEXT
+USING "estilo"::text` + `DROP TYPE`), porque la que generaba Prisma borraba la columna y perdía los
+datos. Probada en la base de desarrollo con un post creado antes de migrar: conservó `panal` como
+texto. `postIGSchema` valida el estilo contra `config.estilosInstagram` y `PostIGForm` lista esos
+estilos con su nombre (HTML igual al de antes). Prueba de punta a punta con la app: crear un post
+con `panal` → 200 y en la base como texto; con `neon` → 400 "Elegí el estilo".
+
+**Ojo al migrar una base con datos (ej. si Melera pasara a esta plataforma):** esta migración
+necesita que todos los posts tengan estilos que el cliente declare; si no, quedan guardados pero
+el admin no los puede editar hasta que se declare el estilo.
+
+Plan original:
 
 - Migración de Prisma: `ALTER TABLE "PostIG" ALTER COLUMN "estilo" TYPE TEXT USING "estilo"::text;
   DROP TYPE "EstiloPostIG";` (se crea con `migrate dev` contra la base de desarrollo).

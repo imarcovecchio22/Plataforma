@@ -7,7 +7,7 @@ import { cliente } from "@/plataforma/cliente";
 export type PostIGValores = {
   fecha: string;
   tipo: "presentacion" | "producto" | "dato" | "promo";
-  estilo: "organico" | "geo" | "panal";
+  estilo: string; // uno de config.estilosInstagram
   tema: string;
   nombreProducto: string;
   categoria: string;
@@ -19,7 +19,7 @@ export type PostIGValores = {
 const VACIO = (fecha: string): PostIGValores => ({
   fecha,
   tipo: "presentacion",
-  estilo: "organico",
+  estilo: cliente.estilosInstagram[0].id,
   tema: "",
   nombreProducto: "",
   categoria: "",
@@ -98,10 +98,12 @@ export default function PostIGForm({
         </div>
         <div>
           <label className="label-field" htmlFor={`${idBase}-estilo`}>Estilo</label>
-          <select id={`${idBase}-estilo`} className="input-field" value={valores.estilo} onChange={(e) => set("estilo", e.target.value as PostIGValores["estilo"])}>
-            <option value="organico">Orgánico (fondo oscuro)</option>
-            <option value="geo">Geo (fondo crema)</option>
-            <option value="panal">Panal (como la web)</option>
+          <select id={`${idBase}-estilo`} className="input-field" value={valores.estilo} onChange={(e) => set("estilo", e.target.value)}>
+            {cliente.estilosInstagram.map((e) => (
+              <option key={e.id} value={e.id}>
+                {e.nombre}
+              </option>
+            ))}
           </select>
         </div>
       </div>

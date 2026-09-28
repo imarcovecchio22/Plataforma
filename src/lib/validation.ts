@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { esUrlPublicaHttps } from "@/lib/urls";
 import { parsearPalabrasClave } from "@/lib/instagram/reglas";
+import { cliente } from "@/plataforma/cliente";
 
 export const checkoutSchema = z.object({
   nombre: z.string().trim().min(1, "Ingresá tu nombre"),
@@ -93,7 +94,10 @@ export const postIGSchema = z
     tipo: z.enum(["presentacion", "producto", "dato", "promo"], {
       errorMap: () => ({ message: "Elegí el tipo de post" }),
     }),
-    estilo: z.enum(["organico", "geo", "panal"], { errorMap: () => ({ message: "Elegí el estilo" }) }),
+    // Uno de los estilos que declara el cliente (config.estilosInstagram)
+    estilo: z
+      .string({ errorMap: () => ({ message: "Elegí el estilo" }) })
+      .refine((e) => cliente.estilosInstagram.some((d) => d.id === e), "Elegí el estilo"),
     tema: z
       .string()
       .trim()

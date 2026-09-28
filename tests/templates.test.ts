@@ -2,6 +2,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import * as g from "@/plataforma/imagenes/plantillas";
 import path from "path";
 import ejemplo from "../clientes/ejemplo/config";
+import { postIGSchema } from "@/lib/validation";
 
 
 // generate.js es CommonJS y lee el secreto de firma del entorno.
@@ -130,5 +131,19 @@ describe("estilos y plantillas del cliente", () => {
     expect(() => g.validateData({ tipo: "dato", estilo: "simple", fecha: "x", numero: "1", texto_dato: "x" })).toThrow(
       /Estilo "simple" inválido. Debe ser uno de: organico, geo, panal/
     );
+  });
+});
+
+describe("estilo de los posts (texto validado contra la config)", () => {
+  const base = { fecha: "2026-10-01", tipo: "dato", tema: "Cuánto vive una abeja" };
+
+  it.each(["organico", "geo", "panal"])("acepta %s (declarado por Melera)", (estilo) => {
+    expect(postIGSchema.safeParse({ ...base, estilo }).success).toBe(true);
+  });
+
+  it.each(["simple", "", "PANAL", "../x"])("rechaza %j", (estilo) => {
+    const r = postIGSchema.safeParse({ ...base, estilo });
+    expect(r.success).toBe(false);
+    expect(r.error?.issues[0].message).toBe("Elegí el estilo");
   });
 });
