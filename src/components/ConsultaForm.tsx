@@ -62,15 +62,15 @@ export default function ConsultaForm({ origen }: { origen?: string }) {
 
   if (enviadoPor) {
     return (
-      <div className="tarjeta-panal p-6 text-center sm:p-8">
+      <div className="tarjeta p-6 text-center sm:p-8">
         <p className="text-4xl" aria-hidden>
           {cliente.textos.emoji}
         </p>
-        <h2 className="mt-3 font-serif text-2xl font-semibold text-[var(--ink)]">¡Gracias por escribirnos!</h2>
+        <h2 className="mt-3 font-serif text-2xl font-semibold text-[var(--texto)]">¡Gracias por escribirnos!</h2>
         <p className="mt-2 texto-suave">
           Recibimos tu consulta y te vamos a responder{" "}
           {enviadoPor.canal === "instagram" ? "por mensaje directo de Instagram a " : "por email a "}
-          <span className="font-semibold text-[var(--ink)]">{enviadoPor.contacto}</span>.
+          <span className="font-semibold text-[var(--texto)]">{enviadoPor.contacto}</span>.
         </p>
       </div>
     );
@@ -79,15 +79,15 @@ export default function ConsultaForm({ origen }: { origen?: string }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-5 tarjeta-panal p-5 sm:p-8"
+      className="space-y-5 tarjeta p-5 sm:p-8"
       noValidate
     >
       <div>
-        <label className="etiqueta-panal" htmlFor="nombre">
+        <label className="etiqueta" htmlFor="nombre">
           Nombre
         </label>
         <input
-          className="campo-panal"
+          className="campo"
           id="nombre"
           name="nombre"
           autoComplete="given-name"
@@ -98,7 +98,7 @@ export default function ConsultaForm({ origen }: { origen?: string }) {
       </div>
 
       <fieldset>
-        <legend className="etiqueta-panal">¿Dónde te respondemos?</legend>
+        <legend className="etiqueta">¿Dónde te respondemos?</legend>
         <div className="grid grid-cols-2 gap-3" role="radiogroup">
           {CANALES.map((c) => (
             <button
@@ -109,8 +109,8 @@ export default function ConsultaForm({ origen }: { origen?: string }) {
               onClick={() => setCanal(c.value)}
               className={`min-h-[48px] rounded-lg border-2 px-4 py-2.5 font-semibold transition ${
                 canal === c.value
-                  ? "border-[var(--honey)] bg-[rgba(234,162,28,0.14)] text-[var(--glow)]"
-                  : "border-[rgba(234,162,28,0.3)] bg-transparent texto-suave"
+                  ? "border-[var(--acento)] bg-[rgb(var(--acento-rgb)/0.14)] text-[var(--destacado)]"
+                  : "border-[rgb(var(--acento-rgb)/0.3)] bg-transparent texto-suave"
               }`}
             >
               {c.label}
@@ -121,11 +121,11 @@ export default function ConsultaForm({ origen }: { origen?: string }) {
 
       {canal === "instagram" ? (
         <div key="instagram">
-          <label className="etiqueta-panal" htmlFor="instagram">
+          <label className="etiqueta" htmlFor="instagram">
             Tu usuario de Instagram
           </label>
           <input
-            className="campo-panal"
+            className="campo"
             id="instagram"
             name="instagram"
             placeholder="@tuusuario"
@@ -137,11 +137,11 @@ export default function ConsultaForm({ origen }: { origen?: string }) {
         </div>
       ) : (
         <div key="email">
-          <label className="etiqueta-panal" htmlFor="email">
+          <label className="etiqueta" htmlFor="email">
             Tu email
           </label>
           <input
-            className="campo-panal"
+            className="campo"
             id="email"
             name="email"
             type="email"
@@ -154,11 +154,11 @@ export default function ConsultaForm({ origen }: { origen?: string }) {
       )}
 
       <div>
-        <label className="etiqueta-panal" htmlFor="mensaje">
+        <label className="etiqueta" htmlFor="mensaje">
           Tu consulta
         </label>
         <textarea
-          className="campo-panal min-h-[140px] resize-y"
+          className="campo min-h-[140px] resize-y"
           id="mensaje"
           name="mensaje"
           minLength={5}
@@ -175,7 +175,7 @@ export default function ConsultaForm({ origen }: { origen?: string }) {
 
       {error && <p className="rounded-lg border border-red-400/40 bg-red-950/60 px-3 py-2 text-sm text-red-200">{error}</p>}
 
-      <button type="submit" className="btn-panal w-full" disabled={loading}>
+      <button type="submit" className="btn w-full" disabled={loading}>
         {loading ? "Enviando..." : "Enviar consulta"}
       </button>
     </form>

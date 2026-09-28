@@ -19,7 +19,7 @@ export default function FotoProducto({
 }) {
   const foto = cliente.imagenes.producto;
   return (
-    <div className={`foto-frasco ${className}`}>
+    <div className={`foto-producto ${className}`}>
       <Image
         src={foto.src}
         alt={foto.alt}

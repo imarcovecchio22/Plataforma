@@ -8,7 +8,7 @@ export default function Hero({ precio, escalones = [] }: { precio: number; escal
   return (
     <section
       aria-labelledby="titulo-hero"
-      className="contenedor-panal grid min-h-[calc(100svh-80px)] content-center gap-5 pb-[clamp(36px,8vh,100px)] pt-1 sm:min-h-[calc(100svh-92px)] lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-center lg:gap-10"
+      className="contenedor-publico grid min-h-[calc(100svh-80px)] content-center gap-5 pb-[clamp(36px,8vh,100px)] pt-1 sm:min-h-[calc(100svh-92px)] lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-center lg:gap-10"
     >
       {/* Mobile: la foto arriba del título (hasta 34svh). Escritorio: a la derecha, grande. */}
       <FotoProducto
@@ -25,15 +25,15 @@ export default function Hero({ precio, escalones = [] }: { precio: number; escal
           {cliente.textos.hero.bajada}
         </p>
         <p className={`flex items-baseline gap-2.5 ${escalones.length ? "mb-1" : "mb-[1.6rem]"}`}>
-          <span className="precio-panal text-[2.3rem]">{formatPrecio(precio)}</span>
+          <span className="precio text-[2.3rem]">{formatPrecio(precio)}</span>
           <span className="texto-suave">{cliente.textos.aclaracionPrecio}</span>
         </p>
         {escalones.length > 0 && (
-          <p className="mb-[1.6rem] text-sm font-semibold text-[var(--glow)]">Promo: {textoPromos(escalones)}</p>
+          <p className="mb-[1.6rem] text-sm font-semibold text-[var(--destacado)]">Promo: {textoPromos(escalones)}</p>
         )}
         <div className="flex flex-wrap items-center gap-x-[1.4rem] gap-y-3">
           <span className="wrap-focus">
-            <Link href="/producto" className="btn-panal" data-bee-avoid>
+            <Link href="/producto" className="btn" data-bee-avoid>
               Comprar ahora
             </Link>
           </span>

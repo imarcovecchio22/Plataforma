@@ -63,16 +63,16 @@ export default function QuantitySelector({
                 aria-pressed={elegido}
                 className={`rounded-xl border px-4 py-2 text-left transition ${
                   elegido
-                    ? "border-[var(--honey)] bg-[rgba(234,162,28,0.16)]"
-                    : "border-[rgba(234,162,28,0.35)] bg-[rgba(14,6,2,0.6)] hover:border-[var(--honey)]"
+                    ? "border-[var(--acento)] bg-[rgb(var(--acento-rgb)/0.16)]"
+                    : "border-[rgb(var(--acento-rgb)/0.35)] bg-[var(--fondo-control)] hover:border-[var(--acento)]"
                 }`}
               >
-                <span className="block text-sm font-semibold text-[var(--ink)]">
+                <span className="block text-sm font-semibold text-[var(--texto)]">
                   {cantidadConUnidad(n)}
                 </span>
                 <span className="block text-xs texto-suave">
                   {formatPrecio(t.total)}
-                  {t.ahorro > 0 && <span className="text-[var(--glow)]"> · ahorrás {formatPrecio(t.ahorro)}</span>}
+                  {t.ahorro > 0 && <span className="text-[var(--destacado)]"> · ahorrás {formatPrecio(t.ahorro)}</span>}
                 </span>
               </button>
             );
@@ -81,21 +81,21 @@ export default function QuantitySelector({
       )}
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-        <div className="flex w-fit items-center gap-3 rounded-full border border-[rgba(234,162,28,0.45)] bg-[rgba(14,6,2,0.6)] px-2 py-1">
+        <div className="flex w-fit items-center gap-3 rounded-full border border-[rgb(var(--acento-rgb)/0.45)] bg-[var(--fondo-control)] px-2 py-1">
           <button
             type="button"
             onClick={decrementar}
-            className="flex h-9 w-9 items-center justify-center rounded-full text-lg font-semibold text-[var(--ink)] transition hover:bg-white/10 disabled:opacity-40"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-lg font-semibold text-[var(--texto)] transition hover:bg-white/10 disabled:opacity-40"
             disabled={cantidad <= 1}
             aria-label="Restar cantidad"
           >
             −
           </button>
-          <span className="w-6 text-center font-semibold text-[var(--ink)]" aria-live="polite">{cantidad}</span>
+          <span className="w-6 text-center font-semibold text-[var(--texto)]" aria-live="polite">{cantidad}</span>
           <button
             type="button"
             onClick={incrementar}
-            className="flex h-9 w-9 items-center justify-center rounded-full text-lg font-semibold text-[var(--ink)] transition hover:bg-white/10 disabled:opacity-40"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-lg font-semibold text-[var(--texto)] transition hover:bg-white/10 disabled:opacity-40"
             disabled={cantidad >= stock}
             aria-label="Sumar cantidad"
           >
@@ -103,7 +103,7 @@ export default function QuantitySelector({
           </button>
         </div>
         <span className="wrap-focus w-fit">
-          <button type="button" onClick={comprar} className="btn-panal" data-bee-avoid>
+          <button type="button" onClick={comprar} className="btn" data-bee-avoid>
             Comprar · {formatPrecio(total)}
           </button>
         </span>

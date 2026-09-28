@@ -188,7 +188,16 @@ El admin lleva los colores de cada cliente: las variables salen de la config/tem
 
 En tres pasos chicos:
 
-- **8a.** Separar `globals.css`: base genérica (variables semánticas, clases de botones, campos,
+- **8a.** ✅ (2026-09-28) Hecho: `clientes/melera/tema.css` con la paleta del panal y las clases
+  públicas; `globals.css` queda con lo genérico e importa el tema (copiado a
+  `src/app/tema-cliente.css` por `preparar-cliente`, vía `postcss-import`). Contrato de tema:
+  variables `--texto`, `--texto-suave`, `--destacado`, `--acento`, `--acento-rgb`,
+  `--fondo-seccion`, `--degrade-seccion`, `--fondo-control`, `--texto-pie` y clases genéricas
+  (`.tema-publico`, `.contenedor-publico`, `.btn`, `.btn-sm`, `.link-nav`, `.titulo`, `.campo`,
+  `.etiqueta`, `.foto-producto`, `.precio`, `.tarjeta`…); los componentes ya no tienen colores fijos
+  del panal. Verificado: snapshots = viejos con el renombrado aplicado; en el CSS compilado las 41
+  reglas del tema resuelven igual y el resto (434) no cambió.
+  Plan original: separar `globals.css`: base genérica (variables semánticas, clases de botones, campos,
   tarjetas) y `clientes/melera/tema/tema.css` con la paleta del panal. Las clases públicas pasan a
   nombres genéricos (`.btn-panal` → `.btn`, etc.) sin cambiar su CSS.
 - **8b.** Mover `src/components/panal/*`, `LogoCelda` y el velo de entrada a `clientes/melera/tema/`.

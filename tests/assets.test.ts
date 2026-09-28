@@ -3,7 +3,7 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import melera from "../clientes/melera/config";
-import { copiarAssets, imagenesFaltantes } from "@/plataforma/cliente/assets";
+import { copiarAssets, copiarTema, imagenesFaltantes } from "@/plataforma/cliente/assets";
 
 // Un repo de mentira en una carpeta temporal, con dos clientes.
 let raiz: string;
@@ -62,5 +62,28 @@ describe("imagenesFaltantes", () => {
 
   it("las de Melera existen todas", () => {
     expect(imagenesFaltantes(path.resolve(__dirname, ".."), "melera", melera)).toEqual([]);
+  });
+});
+
+describe("copiarTema", () => {
+  it("copia clientes/<slug>/tema.css a src/app/tema-cliente.css", () => {
+    escribir("clientes/uno/tema.css", ".btn{color:red}");
+    expect(copiarTema(raiz, "uno")).toBe(true);
+    expect(leer("src/app/tema-cliente.css")).toBe(".btn{color:red}");
+  });
+
+  it("un cliente sin tema devuelve false y no deja el del anterior", () => {
+    escribir("clientes/uno/tema.css", ".btn{color:red}");
+    copiarTema(raiz, "uno");
+    expect(copiarTema(raiz, "dos")).toBe(false);
+    expect(existe("src/app/tema-cliente.css")).toBe(false);
+  });
+
+  it("el tema de Melera define todas las variables y clases del contrato", () => {
+    const css = fs.readFileSync(path.resolve(__dirname, "..", "clientes", "melera", "tema.css"), "utf8");
+    const variables = ["texto", "texto-suave", "destacado", "acento", "acento-rgb", "fondo-seccion", "degrade-seccion", "fondo-control", "texto-pie"];
+    for (const v of variables) expect(css).toMatch(new RegExp(`--${v}:`));
+    const clases = ["tema-publico", "contenedor-publico", "btn", "btn-sm", "wrap-focus", "btn-ghost", "link-nav", "titulo", "titulo-hero", "texto-suave", "campo", "etiqueta", "velo-texto", "foto-producto", "precio", "etiqueta-seccion", "tarjeta"];
+    for (const c of clases) expect(css).toMatch(new RegExp(`\\.${c}[\\s{:,]`));
   });
 });

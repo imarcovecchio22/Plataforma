@@ -4,12 +4,12 @@ import { cliente } from "@/plataforma/cliente";
 
 export default function Footer() {
   return (
-    <footer className="relative z-[1] bg-[rgba(18,7,2,0.93)] text-[#A99270]">
-      <div className="contenedor-panal flex flex-col items-center gap-5 py-8 text-center sm:flex-row sm:justify-between sm:text-left">
+    <footer className="relative z-[1] bg-[var(--fondo-seccion)] text-[var(--texto-pie)]">
+      <div className="contenedor-publico flex flex-col items-center gap-5 py-8 text-center sm:flex-row sm:justify-between sm:text-left">
         <div className="flex items-center gap-2.5">
           <LogoCelda tamano={40} />
           <div>
-            <p className="font-serif text-lg font-semibold text-[var(--ink)]">{cliente.nombre}</p>
+            <p className="font-serif text-lg font-semibold text-[var(--texto)]">{cliente.nombre}</p>
             <p className="text-sm">{cliente.textos.pie}</p>
           </div>
         </div>
@@ -35,7 +35,7 @@ export default function Footer() {
       </div>
       <div className="border-t border-white/10 py-3 text-center text-xs">
         © {new Date().getFullYear()} {cliente.nombre}. Todos los derechos reservados. ·{" "}
-        <Link href="/privacidad" className="underline underline-offset-2 hover:text-[var(--ink-soft)]">
+        <Link href="/privacidad" className="underline underline-offset-2 hover:text-[var(--texto-suave)]">
           Privacidad
         </Link>
       </div>

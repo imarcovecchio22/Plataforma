@@ -23,6 +23,7 @@ yarn-error.log*
 /src/app/icon.png
 /src/app/icon.svg
 /src/app/apple-icon.png
+/src/app/tema-cliente.css
 
 # env files
 .env

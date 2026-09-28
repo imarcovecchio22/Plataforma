@@ -7,7 +7,8 @@ import type { ConfigCliente } from "@/plataforma/cliente/esquema";
  * despliegue sirve solo los de su cliente):
  * - clientes/<slug>/public/  → public/        (lo que se sirve tal cual: logos, fotos, OG)
  * - clientes/<slug>/app/<ícono> → src/app/<ícono> (favicons por convención de Next)
- * public/ y esos íconos de src/app/ son generados: están en .gitignore.
+ * - clientes/<slug>/tema.css  → src/app/tema-cliente.css (lo importa globals.css)
+ * public/, esos íconos y tema-cliente.css son generados: están en .gitignore.
  */
 
 export const ICONOS_APP = ["favicon.ico", "icon.png", "icon.svg", "apple-icon.png"];
@@ -37,4 +38,17 @@ export function copiarAssets(raiz: string, slug: string) {
     }
   }
   return { iconos: copiados };
+}
+
+/**
+ * Copia el tema del cliente (variables y clases de las páginas públicas) a src/app/tema-cliente.css.
+ * Devuelve false si el cliente no tiene tema.
+ */
+export function copiarTema(raiz: string, slug: string) {
+  const origen = path.join(raiz, "clientes", slug, "tema.css");
+  const destino = path.join(raiz, "src", "app", "tema-cliente.css");
+  fs.rmSync(destino, { force: true });
+  if (!fs.existsSync(origen)) return false;
+  fs.copyFileSync(origen, destino);
+  return true;
 }

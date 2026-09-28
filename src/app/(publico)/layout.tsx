@@ -12,7 +12,7 @@ const VELO_HTML = `<svg viewBox="-110 -110 220 220" aria-hidden="true"><polygon 
 // (El checkout y el admin tienen el suyo.)
 export default function PublicoLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="tema-panal flex min-h-screen flex-col">
+    <div className="tema-publico flex min-h-screen flex-col">
       {/* Antes de pintar: ¿hay que mostrar la entrada? (home, primera vez en la sesión) */}
       <script dangerouslySetInnerHTML={{ __html: SCRIPT_VELO }} />
       <div className="velo-entrada" dangerouslySetInnerHTML={{ __html: VELO_HTML }} />

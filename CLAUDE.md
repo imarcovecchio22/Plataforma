@@ -73,4 +73,9 @@ Plan de la fase 1: [`docs/plataforma/plan-fase-1.md`](docs/plataforma/plan-fase-
 - `public/` y los íconos de `src/app/` (`icon.png`, `apple-icon.png`…) son **generados**: los copia
   `scripts/preparar-cliente.ts` desde `clientes/<CLIENTE>/public/` y `clientes/<CLIENTE>/app/` antes de
   `dev` y `build`. Las imágenes nuevas van en la carpeta del cliente, nunca en `public/`.
+- **Contrato de tema**: los componentes públicos usan solo variables (`--texto`, `--acento`,
+  `--fondo-seccion`…) y clases (`.tema-publico`, `.btn`, `.campo`, `.tarjeta`…) genéricas; cada tema
+  las define (lista completa arriba de `clientes/melera/tema.css`). Nada de colores fijos en los
+  componentes públicos. El tema se copia a `src/app/tema-cliente.css` (generado) y lo importa
+  `globals.css` con `postcss-import`, así sus `@layer` funcionan.
 - Más detalle (Instagram, autorespuestas, seguridad, base) en el `README.md`.

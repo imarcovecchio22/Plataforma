@@ -20,8 +20,8 @@ export default async function CheckoutPage({
 
   return (
     <>
-      <main className="contenedor-panal flex-1 py-12 sm:py-16">
-        <h1 className="mb-8 font-serif text-3xl font-semibold text-[var(--ink)] sm:text-4xl">
+      <main className="contenedor-publico flex-1 py-12 sm:py-16">
+        <h1 className="mb-8 font-serif text-3xl font-semibold text-[var(--texto)] sm:text-4xl">
           Finalizar compra
         </h1>
         <CheckoutForm

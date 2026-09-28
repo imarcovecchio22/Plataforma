@@ -35,10 +35,10 @@ export default async function ConsultasPage({
 
   return (
     <>
-      <main className="contenedor-panal flex-1 py-10 sm:py-16">
+      <main className="contenedor-publico flex-1 py-10 sm:py-16">
         <div className="mx-auto max-w-2xl">
           <div className="velo-texto">
-            <h1 className="titulo-panal">¿Tenés alguna consulta?</h1>
+            <h1 className="titulo">¿Tenés alguna consulta?</h1>
             <p className="mt-3 texto-suave">
               Mirá si tu duda ya está respondida acá abajo. Si no, escribinos y te contestamos a la
               brevedad.
@@ -47,16 +47,16 @@ export default async function ConsultasPage({
 
           {preguntas.length > 0 && (
             <section aria-labelledby="faq" className="mt-8">
-              <h2 id="faq" className="font-serif text-xl font-semibold text-[var(--ink)]">
+              <h2 id="faq" className="font-serif text-xl font-semibold text-[var(--texto)]">
                 Preguntas frecuentes
               </h2>
-              <div className="mt-4 divide-y divide-[rgba(234,162,28,0.18)] tarjeta-panal">
+              <div className="mt-4 divide-y divide-[rgb(var(--acento-rgb)/0.18)] tarjeta">
                 {preguntas.map((p) => (
                   <details key={p.id} className="group">
-                    <summary className="flex min-h-[52px] cursor-pointer list-none items-center justify-between gap-4 px-5 py-3 font-medium text-[var(--ink)] [&::-webkit-details-marker]:hidden">
+                    <summary className="flex min-h-[52px] cursor-pointer list-none items-center justify-between gap-4 px-5 py-3 font-medium text-[var(--texto)] [&::-webkit-details-marker]:hidden">
                       {p.pregunta}
                       <span
-                        className="shrink-0 text-xl text-[var(--honey)] transition group-open:rotate-45"
+                        className="shrink-0 text-xl text-[var(--acento)] transition group-open:rotate-45"
                         aria-hidden
                       >
                         +
@@ -65,7 +65,7 @@ export default async function ConsultasPage({
                     <p className="px-5 pb-4 leading-relaxed texto-suave">
                       <RespuestaFrecuente
                         texto={armarRespuesta(p.respuesta, datos)}
-                        claseLink="font-semibold text-[var(--glow)] underline underline-offset-4"
+                        claseLink="font-semibold text-[var(--destacado)] underline underline-offset-4"
                       />
                     </p>
                   </details>
@@ -75,7 +75,7 @@ export default async function ConsultasPage({
           )}
 
           <section id="escribinos" aria-labelledby="escribinos-titulo" className="mt-10 scroll-mt-20">
-            <h2 id="escribinos-titulo" className="mb-4 font-serif text-xl font-semibold text-[var(--ink)]">
+            <h2 id="escribinos-titulo" className="mb-4 font-serif text-xl font-semibold text-[var(--texto)]">
               Escribinos
             </h2>
             <ConsultaForm origen={origen} />
@@ -85,7 +85,7 @@ export default async function ConsultasPage({
             ¿Ya sabés lo que querés?{" "}
             <Link
               href={origen ? `/producto?origen=${encodeURIComponent(origen)}` : "/producto"}
-              className="font-semibold text-[var(--glow)] underline underline-offset-4">
+              className="font-semibold text-[var(--destacado)] underline underline-offset-4">
               Comprá directo acá
             </Link>
           </p>

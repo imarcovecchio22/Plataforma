@@ -59,60 +59,60 @@ export default function CheckoutForm({ producto, cantidadInicial, origen }: Prop
     <form onSubmit={handleSubmit} className="grid gap-8 lg:grid-cols-3 lg:gap-12">
       <div className="space-y-6 lg:col-span-2">
         <fieldset className="space-y-4">
-          <legend className="mb-1 font-serif text-xl font-semibold text-[var(--ink)]">
+          <legend className="mb-1 font-serif text-xl font-semibold text-[var(--texto)]">
             Tus datos
           </legend>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="etiqueta-panal" htmlFor="nombre">Nombre</label>
-              <input className="campo-panal" id="nombre" name="nombre" required />
+              <label className="etiqueta" htmlFor="nombre">Nombre</label>
+              <input className="campo" id="nombre" name="nombre" required />
             </div>
             <div>
-              <label className="etiqueta-panal" htmlFor="apellido">Apellido</label>
-              <input className="campo-panal" id="apellido" name="apellido" required />
+              <label className="etiqueta" htmlFor="apellido">Apellido</label>
+              <input className="campo" id="apellido" name="apellido" required />
             </div>
             <div>
-              <label className="etiqueta-panal" htmlFor="email">Email</label>
-              <input className="campo-panal" id="email" name="email" type="email" required />
+              <label className="etiqueta" htmlFor="email">Email</label>
+              <input className="campo" id="email" name="email" type="email" required />
             </div>
             <div>
-              <label className="etiqueta-panal" htmlFor="telefono">Teléfono</label>
-              <input className="campo-panal" id="telefono" name="telefono" type="tel" required />
+              <label className="etiqueta" htmlFor="telefono">Teléfono</label>
+              <input className="campo" id="telefono" name="telefono" type="tel" required />
             </div>
           </div>
         </fieldset>
 
         <fieldset className="space-y-4">
-          <legend className="mb-1 font-serif text-xl font-semibold text-[var(--ink)]">
+          <legend className="mb-1 font-serif text-xl font-semibold text-[var(--texto)]">
             Dirección de entrega
           </legend>
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="sm:col-span-2">
-              <label className="etiqueta-panal" htmlFor="calle">Calle</label>
-              <input className="campo-panal" id="calle" name="calle" required />
+              <label className="etiqueta" htmlFor="calle">Calle</label>
+              <input className="campo" id="calle" name="calle" required />
             </div>
             <div>
-              <label className="etiqueta-panal" htmlFor="numero_dir">Número</label>
-              <input className="campo-panal" id="numero_dir" name="numero_dir" required />
+              <label className="etiqueta" htmlFor="numero_dir">Número</label>
+              <input className="campo" id="numero_dir" name="numero_dir" required />
             </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-3">
             <div>
-              <label className="etiqueta-panal" htmlFor="pisoDepto">Piso / Depto (opcional)</label>
-              <input className="campo-panal" id="pisoDepto" name="pisoDepto" />
+              <label className="etiqueta" htmlFor="pisoDepto">Piso / Depto (opcional)</label>
+              <input className="campo" id="pisoDepto" name="pisoDepto" />
             </div>
             <div>
-              <label className="etiqueta-panal" htmlFor="localidad">Barrio</label>
-              <input className="campo-panal" id="localidad" name="localidad" required />
+              <label className="etiqueta" htmlFor="localidad">Barrio</label>
+              <input className="campo" id="localidad" name="localidad" required />
             </div>
             <div>
-              <label className="etiqueta-panal" htmlFor="codigoPostal">Código postal</label>
-              <input className="campo-panal" id="codigoPostal" name="codigoPostal" required />
+              <label className="etiqueta" htmlFor="codigoPostal">Código postal</label>
+              <input className="campo" id="codigoPostal" name="codigoPostal" required />
             </div>
           </div>
           <div>
-            <label className="etiqueta-panal" htmlFor="provincia">Zona de envío</label>
-            <input className="campo-panal opacity-80" id="provincia" value={ZONA_DE_ENVIO} readOnly aria-describedby="zona-ayuda" />
+            <label className="etiqueta" htmlFor="provincia">Zona de envío</label>
+            <input className="campo opacity-80" id="provincia" value={ZONA_DE_ENVIO} readOnly aria-describedby="zona-ayuda" />
             <input type="hidden" name="provincia" value={ZONA_DE_ENVIO} />
             <p id="zona-ayuda" className="mt-1 text-xs texto-suave">
               Por ahora enviamos solo dentro de CABA. Pronto sumamos más zonas.
@@ -121,14 +121,14 @@ export default function CheckoutForm({ producto, cantidadInicial, origen }: Prop
         </fieldset>
       </div>
 
-      <div className="h-fit tarjeta-panal p-6">
-        <h2 className="font-serif text-xl font-semibold text-[var(--ink)]">Resumen</h2>
+      <div className="h-fit tarjeta p-6">
+        <h2 className="font-serif text-xl font-semibold text-[var(--texto)]">Resumen</h2>
         <div className="mt-4 flex items-center justify-between text-sm texto-suave">
           <span>{producto.nombre}</span>
           <div className="flex items-center gap-2">
             <button
               type="button"
-              className="flex h-7 w-7 items-center justify-center rounded-full border border-[rgba(234,162,28,0.45)] text-sm disabled:opacity-40"
+              className="flex h-7 w-7 items-center justify-center rounded-full border border-[rgb(var(--acento-rgb)/0.45)] text-sm disabled:opacity-40"
               onClick={() => setCantidad((c) => Math.max(1, c - 1))}
               disabled={cantidad <= 1}
               aria-label="Restar cantidad"
@@ -138,7 +138,7 @@ export default function CheckoutForm({ producto, cantidadInicial, origen }: Prop
             <span className="w-4 text-center">{cantidad}</span>
             <button
               type="button"
-              className="flex h-7 w-7 items-center justify-center rounded-full border border-[rgba(234,162,28,0.45)] text-sm"
+              className="flex h-7 w-7 items-center justify-center rounded-full border border-[rgb(var(--acento-rgb)/0.45)] text-sm"
               onClick={() => setCantidad((c) => c + 1)}
               aria-label="Sumar cantidad"
             >
@@ -149,18 +149,18 @@ export default function CheckoutForm({ producto, cantidadInicial, origen }: Prop
         <p className="mt-2 text-right text-xs texto-suave">
           {cantidad} × {formatPrecio(unitario)}
         </p>
-        <div className="mt-3 flex items-center justify-between border-t border-[rgba(234,162,28,0.22)] pt-4 font-semibold text-[var(--ink)]">
+        <div className="mt-3 flex items-center justify-between border-t border-[rgb(var(--acento-rgb)/0.22)] pt-4 font-semibold text-[var(--texto)]">
           <span>Total</span>
           <span>{formatPrecio(total)}</span>
         </div>
         {ahorro > 0 && (
-          <p className="mt-2 text-sm font-semibold text-[var(--glow)]">Ahorrás {formatPrecio(ahorro)} con la promo</p>
+          <p className="mt-2 text-sm font-semibold text-[var(--destacado)]">Ahorrás {formatPrecio(ahorro)} con la promo</p>
         )}
         {proximo && (
           <button
             type="button"
             onClick={() => setCantidad(proximo.desde)}
-            className="mt-2 text-left text-xs text-[var(--glow)] underline underline-offset-2"
+            className="mt-2 text-left text-xs text-[var(--destacado)] underline underline-offset-2"
           >
             Llevando {cantidadConUnidad(proximo.desde)} pagás {formatPrecio(proximo.precio)} {cadaUno}
           </button>
@@ -173,7 +173,7 @@ export default function CheckoutForm({ producto, cantidadInicial, origen }: Prop
           <p className="mt-4 rounded-lg border border-red-400/40 bg-red-950/60 px-3 py-2 text-sm text-red-200">{error}</p>
         )}
 
-        <button type="submit" className="btn-panal mt-6 w-full" disabled={loading}>
+        <button type="submit" className="btn mt-6 w-full" disabled={loading}>
           {loading ? "Redirigiendo a MercadoPago..." : "Ir a pagar"}
         </button>
       </div>
