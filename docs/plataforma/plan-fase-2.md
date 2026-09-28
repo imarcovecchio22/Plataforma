@@ -91,7 +91,15 @@ Plan original:
 producto destacado como hoy y, si hay más de uno, el listado debajo. Con un solo producto, Melera
 queda igual.
 
-### Paso 4: pedidos con ítems (sin cambiar todavía el checkout)
+### Paso 4: pedidos con ítems (sin cambiar todavía el checkout) ✅ (2026-09-28)
+Hecho: `OrderItem` (copia de nombre, precio unitario con la promo, cantidad y subtotal; se borra
+con su pedido). Migración `20260928210000_pedidos_con_items` escrita a mano: cada pedido existente
+pasa a un ítem (precio unitario = total / cantidad) y recién después se borran `productId` y
+`cantidad`; probada con dos pedidos creados antes de migrar (uno con promo) y `prisma migrate diff`
+en 0. El checkout crea el pedido con su ítem; el pago descuenta el stock de cada ítem (atómico,
+igual que antes); el aviso de Telegram y el admin de pedidos muestran los ítems (con uno solo, el
+texto y el HTML de siempre: los snapshots de Melera no cambiaron). Probado con el checkout real.
+Plan original:
 `OrderItem` + migración que pasa los pedidos existentes a un ítem cada uno (probada con pedidos
 creados antes de migrar). El checkout sigue siendo de un producto pero ya escribe ítems; el pago
 descuenta stock por ítem; admin de pedidos y aviso de Telegram muestran los ítems.

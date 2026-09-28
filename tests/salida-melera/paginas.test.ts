@@ -64,9 +64,7 @@ const PEDIDO = {
   localidad: "Palermo",
   provincia: "CABA",
   codigoPostal: "1414",
-  productId: "prod-1",
-  product: PRODUCTO,
-  cantidad: 5,
+  items: [{ id: "item-1", productId: "prod-1", nombre: "Miel Artesanal 500g", precioUnitario: 6000, cantidad: 5, subtotal: 30000 }],
   total: 30000,
   estado: "pagado",
   mpPaymentId: "111",
@@ -217,7 +215,7 @@ beforeAll(() => {
       },
     ] as never;
   db.eventLog.count = async () => 1;
-  db.product.findMany = async () => [{ ...PRODUCTO, _count: { orders: 3 } }] as never;
+  db.product.findMany = async () => [{ ...PRODUCTO, _count: { items: 3 } }] as never;
   // Las preguntas frecuentes de Melera, como quedan en la base después del seed
   db.preguntaFrecuente.findMany = async () =>
     seedMelera.preguntas.map((p, i) => ({ id: i + 1, ...p, activa: true })) as never;

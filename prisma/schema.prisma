@@ -34,7 +34,7 @@ model Product {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  orders Order[]
+  items OrderItem[]
 
   @@index([activo, orden])
 }
@@ -59,11 +59,9 @@ model Order {
   provincia    String
   codigoPostal String
 
-  // Detalle del pedido
-  productId String
-  product   Product @relation(fields: [productId], references: [id])
-  cantidad  Int
-  total     Int
+  // Detalle del pedido: sus ítems, y el total cobrado
+  items OrderItem[]
+  total Int
 
   estado         OrderStatus @default(pendiente)
   mpPaymentId    String?
@@ -74,6 +72,23 @@ model Order {
 
   @@index([estado])
   @@index([mpPreferenceId])
+}
+
+// Un producto dentro de un pedido. Guarda una copia de lo que se vendió (nombre y precios), así
+// el pedido no cambia si después se edita el producto.
+model OrderItem {
+  id             String  @id @default(cuid())
+  orderId        String
+  order          Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId      String
+  product        Product @relation(fields: [productId], references: [id])
+  nombre         String
+  precioUnitario Int // con la promo por cantidad ya aplicada
+  cantidad       Int
+  subtotal       Int
+
+  @@index([orderId])
+  @@index([productId])
 }
 
 enum CanalRespuesta {

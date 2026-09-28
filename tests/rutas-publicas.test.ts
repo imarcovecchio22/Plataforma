@@ -164,7 +164,13 @@ describe("/api/checkout", () => {
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ orderId: "ord-9", redirectUrl: expect.stringContaining("mercadopago") });
     expect(db.order.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({ total: 13000, cantidad: 2, estado: "pendiente", origen: "instagram", provincia: "CABA" }),
+      data: expect.objectContaining({
+        total: 13000,
+        estado: "pendiente",
+        origen: "instagram",
+        provincia: "CABA",
+        items: { create: [{ productId: "prod-1", nombre: "Miel Artesanal 500g", precioUnitario: 6500, cantidad: 2, subtotal: 13000 }] },
+      }),
     });
     const body = mp.create.mock.calls[0][0].body;
     expect(body.items[0]).toMatchObject({ unit_price: 6500, quantity: 2, currency_id: "ARS" });

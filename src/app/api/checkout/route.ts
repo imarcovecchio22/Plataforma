@@ -54,8 +54,11 @@ export async function POST(req: NextRequest) {
       localidad: data.localidad,
       provincia: data.provincia,
       codigoPostal: data.codigoPostal,
-      productId: product.id,
-      cantidad: data.cantidad,
+      items: {
+        create: [
+          { productId: product.id, nombre: product.nombre, precioUnitario: unitario, cantidad: data.cantidad, subtotal: total },
+        ],
+      },
       total,
       estado: "pendiente",
       origen: data.origen || null,
@@ -65,7 +68,7 @@ export async function POST(req: NextRequest) {
   await logEvent("pedido", `Pedido #${order.numero} creado, esperando el pago`, {
     detalle: {
       cliente: `${order.nombre} ${order.apellido}`,
-      cantidad: order.cantidad,
+      items: [{ producto: product.nombre, cantidad: data.cantidad }],
       total: order.total,
       origen: order.origen,
     },

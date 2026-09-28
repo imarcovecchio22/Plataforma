@@ -39,9 +39,9 @@ export async function PATCH(req: NextRequest, { params }: Contexto) {
 // Borra un producto que nunca se vendió; si tiene pedidos, hay que desactivarlo.
 export async function DELETE(_req: NextRequest, { params }: Contexto) {
   const { id } = await params;
-  const producto = await prisma.product.findUnique({ where: { id }, include: { _count: { select: { orders: true } } } });
+  const producto = await prisma.product.findUnique({ where: { id }, include: { _count: { select: { items: true } } } });
   if (!producto) return NextResponse.json({ error: "Producto no encontrado" }, { status: 404 });
-  if (producto._count.orders > 0) {
+  if (producto._count.items > 0) {
     return NextResponse.json(
       { error: "Este producto tiene pedidos: no se puede borrar. Desactivalo para que no se muestre en la tienda." },
       { status: 409 }

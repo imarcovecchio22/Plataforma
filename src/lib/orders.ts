@@ -3,7 +3,7 @@ import { getPaymentClient } from "@/lib/mercadopago";
 import { sendTelegramMessage, siteUrl } from "@/lib/telegram";
 import { formatPrecio } from "@/lib/utils";
 import { errorMessage, logEvent } from "@/lib/logs";
-import type { OrderStatus, Product } from "@prisma/client";
+import type { OrderStatus } from "@prisma/client";
 
 export function mapMpStatus(status: string): OrderStatus | null {
   switch (status) {
@@ -52,7 +52,7 @@ async function applyPayment(
   const nuevoEstado = payment.status ? mapMpStatus(payment.status) : null;
   if (!nuevoEstado) return null;
 
-  const order = await prisma.order.findUnique({ where: { id: orderId } });
+  const order = await prisma.order.findUnique({ where: { id: orderId }, include: { items: true } });
   if (!order) {
     await logEvent("pago", `Pago ${payment.id} sin pedido asociado`, {
       nivel: "warn",
@@ -72,23 +72,27 @@ async function applyPayment(
   // actualización. Mercado Pago avisa más de una vez (y la página de éxito también aplica el
   // pago): si dos avisos llegan juntos, solo uno pasa el pedido a pagado, descuenta el stock
   // y avisa por Telegram. Tampoco deja que un "rechazado" tardío pise un pago aprobado.
-  const { updated, product, pasoAPagado } = await prisma.$transaction(async (tx) => {
+  const { updated, stocks, pasoAPagado } = await prisma.$transaction(async (tx) => {
     const { count } = await tx.order.updateMany({
       where: { id: orderId, estado: { not: "pagado" } },
       data: { estado: nuevoEstado, mpPaymentId: String(payment.id) },
     });
     const pasoAPagado = count === 1 && nuevoEstado === "pagado";
 
-    let product: Product | null = null;
+    // Stock que queda de cada producto después de descontar (para el aviso)
+    const stocks = new Map<string, number>();
     if (pasoAPagado) {
-      product = await tx.product.update({
-        where: { id: order.productId },
-        data: { stock: { decrement: order.cantidad } },
-      });
+      for (const item of order.items) {
+        const producto = await tx.product.update({
+          where: { id: item.productId },
+          data: { stock: { decrement: item.cantidad } },
+        });
+        stocks.set(item.productId, producto.stock);
+      }
     }
 
     const updated = await tx.order.findUniqueOrThrow({ where: { id: orderId } });
-    return { updated, product, pasoAPagado };
+    return { updated, stocks, pasoAPagado };
   });
 
   if (order.estado !== nuevoEstado && updated.estado === nuevoEstado) {
@@ -98,10 +102,10 @@ async function applyPayment(
     });
   }
 
-  if (pasoAPagado && product) {
+  if (pasoAPagado) {
     // Se espera (con timeout) para que Vercel no corte el envío al terminar la respuesta.
     try {
-      const enviado = await notifyOrderPaid(updated, product);
+      const enviado = await notifyOrderPaid(updated, order.items, stocks);
       await logEvent(
         "telegram",
         enviado
@@ -131,20 +135,26 @@ async function notifyOrderPaid(
     numero: number;
     nombre: string;
     apellido: string;
-    cantidad: number;
     total: number;
     localidad: string;
     provincia: string;
     origen: string | null;
   },
-  product: { nombre: string; stock: number }
+  items: { productId: string; nombre: string; cantidad: number; subtotal: number }[],
+  stocks: Map<string, number>
 ) {
+  // Con un solo ítem, el mismo texto de siempre; con varios, una línea por ítem y el total
+  const stock =
+    items.length === 1
+      ? `${stocks.get(items[0].productId)}`
+      : items.map((i) => `${i.nombre}: ${stocks.get(i.productId)}`).join(", ");
   return sendTelegramMessage(
     [
       `🛒 Pedido #${order.numero} pagado`,
       `${order.nombre} ${order.apellido} · ${order.localidad}, ${order.provincia}`,
-      `${product.nombre} × ${order.cantidad} — ${formatPrecio(order.total)}`,
-      `Stock restante: ${product.stock} · origen: ${order.origen ?? "directo"}`,
+      ...items.map((i) => `${i.nombre} × ${i.cantidad} — ${formatPrecio(i.subtotal)}`),
+      ...(items.length > 1 ? [`Total: ${formatPrecio(order.total)}`] : []),
+      `Stock restante: ${stock} · origen: ${order.origen ?? "directo"}`,
       `Admin: ${siteUrl()}/admin/pedidos/${order.id}`,
     ].join("\n")
   );

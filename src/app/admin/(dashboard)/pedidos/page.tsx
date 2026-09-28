@@ -7,6 +7,7 @@ export const dynamic = "force-dynamic";
 export default async function AdminPedidosPage() {
   const pedidos = await prisma.order.findMany({
     orderBy: { createdAt: "desc" },
+    include: { items: { select: { cantidad: true } } },
   });
 
   return (
@@ -41,7 +42,7 @@ export default async function AdminPedidosPage() {
                   {p.calle} {p.numero_dir}
                   {p.pisoDepto ? `, ${p.pisoDepto}` : ""}, {p.localidad}
                 </td>
-                <td className="px-4 py-3">{p.cantidad}</td>
+                <td className="px-4 py-3">{p.items.reduce((suma, i) => suma + i.cantidad, 0)}</td>
                 <td className="px-4 py-3 font-medium">{formatPrecio(p.total)}</td>
                 <td className="px-4 py-3">
                   <span

@@ -157,7 +157,8 @@ describe("avisos de Telegram de Melera", () => {
 
   it("pedido pagado", async () => {
     db.pedido = {
-      id: "ord-1", numero: 7, estado: "pendiente", productId: "prod-1", cantidad: 5, total: 30000,
+      id: "ord-1", numero: 7, estado: "pendiente", total: 30000,
+      items: [{ productId: "prod-1", nombre: "Miel Artesanal 500g", cantidad: 5, subtotal: 30000 }],
       nombre: "Ana", apellido: "Pérez", localidad: "Palermo", provincia: "CABA", origen: "instagram",
     };
     await applyPaymentStatusFromPayment({ id: 111, status: "approved", external_reference: "ord-1" } as never);

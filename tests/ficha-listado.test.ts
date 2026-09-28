@@ -124,13 +124,16 @@ describe("checkout del producto elegido", () => {
     catalogo.productos = [producto("uno"), producto("dos", { precio: 2500 })];
     const res = await comprar({ producto: "dos" });
     expect(res.status).toBe(200);
-    expect(db.order.create.mock.calls[0][0].data).toMatchObject({ productId: "id-dos", cantidad: 2, total: 5000 });
+    expect(db.order.create.mock.calls[0][0].data).toMatchObject({
+      total: 5000,
+      items: { create: [{ productId: "id-dos", nombre: "Producto dos", precioUnitario: 2500, cantidad: 2, subtotal: 5000 }] },
+    });
   });
 
   it("sin producto (formularios viejos) compra el destacado", async () => {
     catalogo.productos = [producto("uno"), producto("dos")];
     await comprar({});
-    expect(db.order.create.mock.calls[0][0].data.productId).toBe("id-uno");
+    expect(db.order.create.mock.calls[0][0].data.items.create[0].productId).toBe("id-uno");
   });
 
   it("un producto que ya no está a la venta responde 404 sin crear el pedido", async () => {

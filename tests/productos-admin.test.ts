@@ -27,7 +27,7 @@ const mensajes = () => logs.logEvent.mock.calls.map((c) => c[1]);
 
 beforeEach(() => {
   vi.clearAllMocks();
-  db.findUnique.mockResolvedValue({ ...MIEL, _count: { orders: 0 } });
+  db.findUnique.mockResolvedValue({ ...MIEL, _count: { items: 0 } });
   db.update.mockImplementation(async ({ data }) => ({ ...MIEL, ...data }));
   db.create.mockImplementation(async ({ data }) => ({ id: "nuevo", ...data }));
 });
@@ -123,7 +123,7 @@ describe("crear y borrar", () => {
   });
 
   it("no borra un producto con pedidos (hay que desactivarlo)", async () => {
-    db.findUnique.mockResolvedValue({ ...MIEL, _count: { orders: 3 } });
+    db.findUnique.mockResolvedValue({ ...MIEL, _count: { items: 3 } });
     const res = await borrar(pedido("DELETE"), ctx());
     expect(res.status).toBe(409);
     expect((await res.json()).error).toMatch(/Desactivalo/);

@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 export default async function AdminProductosPage() {
   const productos = await prisma.product.findMany({
     orderBy: [{ orden: "asc" }, { createdAt: "asc" }],
-    include: { _count: { select: { orders: true } } },
+    include: { _count: { select: { items: true } } },
   });
   const destacado = productos.find((p) => p.activo);
   const ordenSugerido = productos.length ? Math.max(...productos.map((p) => p.orden)) + 10 : 10;
@@ -39,7 +39,7 @@ export default async function AdminProductosPage() {
                 <span className="text-xs">orden {p.orden}</span>
               </div>
               <p className="mt-2 text-sm text-stone-700">
-                <strong>{formatPrecio(p.precio)}</strong> · {p.stock} en stock · {p._count.orders} pedidos
+                <strong>{formatPrecio(p.precio)}</strong> · {p.stock} en stock · {p._count.items} pedidos
                 {promos && <> · Promos: {promos}</>}
               </p>
               <div className="mt-4">
