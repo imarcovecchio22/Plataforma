@@ -23,7 +23,8 @@ const tg = vi.hoisted(() => ({
 }));
 vi.mock("@/lib/telegram", () => tg);
 
-vi.mock("@/lib/product", () => ({ getMainProduct: async () => ({ precio: 6500 }) }));
+vi.mock("@/lib/product", () => ({ getProductosActivos: async () => [{ nombre: "Miel", precio: 6500, escalones: [] }] }));
+vi.mock("@/lib/zonas", async () => (await import("./zonas-de-prueba")).mockZonas("melera"));
 vi.mock("@/lib/logs", () => ({
   logEvent: vi.fn(async () => {}),
   errorMessage: (e: unknown) => (e instanceof Error ? e.message : String(e)),

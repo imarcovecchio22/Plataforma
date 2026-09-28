@@ -1,10 +1,9 @@
 import type { AccionEventoIG, AutoRespuesta } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { formatFecha, haceMs } from "@/lib/utils";
-import { getMainProduct } from "@/lib/product";
+import { datosParaTextos } from "@/lib/datos-textos";
 import { siteUrl } from "@/lib/telegram";
 import { leerBotones } from "@/lib/instagram/reglas";
-import { textosDelProducto } from "@/lib/precios";
 import { HORAS_ENTRE_RESPUESTAS } from "@/lib/instagram/autorespuestas";
 import { diasRestantes, getInstagramToken, RENOVAR_DIAS_ANTES } from "@/lib/instagram/token";
 import AutoRespuestaForm, { type AutoRespuestaValores } from "@/components/admin/AutoRespuestaForm";
@@ -53,14 +52,14 @@ async function estadoToken() {
 
 export default async function AdminAutoRespuestasPage() {
   exigirModulo("autorespuestas");
-  const [reglas, eventos, product, token] = await Promise.all([
+  const [reglas, eventos, datos, token] = await Promise.all([
     prisma.autoRespuesta.findMany({ orderBy: [{ activa: "desc" }, { prioridad: "desc" }, { id: "asc" }] }),
     prisma.instagramEvento.findMany({
       orderBy: { createdAt: "desc" },
       take: 50,
       include: { regla: { select: { nombre: true } } },
     }),
-    getMainProduct(),
+    datosParaTextos(),
     estadoToken(),
   ]);
 
@@ -140,7 +139,7 @@ export default async function AdminAutoRespuestasPage() {
         <h2 className="font-serif text-lg font-semibold text-oscuro">Probador</h2>
         <p className="mb-3 text-sm text-stone-500">Escribí un mensaje de ejemplo: muestra qué se respondería, sin mandar nada.</p>
         <div className="rounded-xl border border-marca-100 bg-white p-5 shadow-soft">
-          <ProbadorRespuestas reglas={reglasProbador} precio={textosDelProducto(product).precio} promos={textosDelProducto(product).promos} />
+          <ProbadorRespuestas reglas={reglasProbador} datos={datos} />
         </div>
       </section>
 

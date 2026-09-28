@@ -4,8 +4,7 @@ import ConsultaForm from "@/components/ConsultaForm";
 import RespuestaFrecuente from "@/components/RespuestaFrecuente";
 import { prisma } from "@/lib/prisma";
 import { armarRespuesta } from "@/lib/preguntas";
-import { getMainProduct } from "@/lib/product";
-import { textosDelProducto } from "@/lib/precios";
+import { datosParaTextos } from "@/lib/datos-textos";
 import { cliente } from "@/plataforma/cliente";
 
 export const dynamic = "force-dynamic";
@@ -21,12 +20,11 @@ export default async function ConsultasPage({
   searchParams: Promise<{ origen?: string | string[] }>;
 }) {
   const searchParams = await searchParamsPromise;
-  const [product, preguntas] = await Promise.all([
-    getMainProduct(),
+  const [datos, preguntas] = await Promise.all([
+    datosParaTextos(),
     prisma.preguntaFrecuente.findMany({ where: { activa: true }, orderBy: [{ orden: "asc" }, { id: "asc" }] }),
   ]);
   const origen = Array.isArray(searchParams.origen) ? searchParams.origen[0] : searchParams.origen;
-  const datos = textosDelProducto(product);
 
   return (
     <>

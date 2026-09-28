@@ -44,7 +44,6 @@ export default definirCliente({
     chat: {
       producto: "Producto de ejemplo",
       datos: [
-        "Envíos: a coordinar después de la compra.",
         "Pago: online con Mercado Pago, al finalizar la compra en la web.",
         "Consultas: en $SITIO/consultas, y le respondemos por Instagram o por email.",
       ],

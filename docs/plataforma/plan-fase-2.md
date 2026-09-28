@@ -160,6 +160,17 @@ código ya no nombra a CABA (el test de "sin rastros" no tiene pendientes).
   y `$ZONAS`; qué pasa con `$PRECIO` y `$PRODUCTO`: pregunta 4.
 - La pregunta de envíos del seed de Melera usa `$ZONAS`.
 
+**✅ (2026-09-28):** las variables viven en `src/lib/variables.ts` (un solo reemplazo para las
+preguntas frecuentes, las respuestas automáticas y el Probador) y sus valores los arma
+`datosParaTextos()` con la base: `$PRODUCTO`, `$PRECIO` y `$PROMOS` siguen siendo del producto
+destacado; `$CATALOGO` = "Miel ($ 6.500) y Vela ($ 2.000)"; `$ZONAS` = "CABA (a coordinar después
+de la compra) y Zona sur ($ 2.500)"; sin nada cargado, "a confirmar" (como `$PRECIO`). Chat: con un
+producto, las mismas líneas de antes; con varios, el catálogo de la base (precio por unidad, promos,
+descripción y ficha de cada uno) y "para comprar" manda a `/productos`. La línea de envíos se arma
+con las zonas activas (costo y aclaración de cada una) y salió de `ia.chat.datos` de Melera y del
+cliente de ejemplo. La pregunta de envíos de Melera ahora dice "Por ahora enviamos a $ZONAS…" (en la
+base de desarrollo se actualizó porque seguía con el texto del seed).
+
 ### Paso 8: Instagram con catálogo
 Posts de producto y de promo: se elige el producto del catálogo (nombre, precio y foto se
 completan solos; hoy se cargan a mano). `PostIG` suma el producto elegido (migración).

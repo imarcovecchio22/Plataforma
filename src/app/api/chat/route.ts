@@ -1,9 +1,12 @@
 import { GoogleGenAI } from "@google/genai";
 import { logEvent } from "@/lib/logs";
 import { clientIp, demasiadosIntentos } from "@/lib/security";
-import { getMainProduct } from "@/lib/product";
+import { getProductosActivos } from "@/lib/product";
+import { getZonasActivas } from "@/lib/zonas";
 import { textosDelProducto } from "@/lib/precios";
-import { cliente, hostCliente, type Unidad } from "@/plataforma/cliente";
+import { formatPrecio } from "@/lib/utils";
+import type { ZonaParaCheckout } from "@/lib/envios";
+import { cliente, hostCliente } from "@/plataforma/cliente";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -17,22 +20,68 @@ const MAX_CHARS_TOTAL = 8000;
 const MAX_MENSAJES_POR_IP = 20;
 const VENTANA_MINUTOS = 10;
 
+type ProductoChat = NonNullable<Parameters<typeof textosDelProducto>[0]> & { slug: string; descripcion: string };
+
 /**
- * Instrucciones del asistente: la marca y sus datos salen de la config del cliente; el precio
- * y las promos, de la base (se editan en /admin/stock).
+ * Los productos: con uno (o ninguno), la descripción de la config con el precio y las promos de la
+ * base; con varios, el catálogo de la base, cada uno con su precio, sus promos y su ficha.
  */
-function buildSystemPrompt(precio: string, promos: string, unidad: Unidad) {
+function lineasProductos(productos: ProductoChat[]) {
+  if (productos.length <= 1) {
+    const { precio, promos, unidad } = textosDelProducto(productos[0] ?? null);
+    return [
+      `- Producto: ${cliente.ia.chat.producto}, ${precio}`,
+      ...(promos
+        ? [`- Promos por cantidad (el precio baja para cada ${unidad.singular}): ${promos}. Se aplican solas en la web al elegir la cantidad.`]
+        : []),
+    ];
+  }
+  return [
+    "- Productos a la venta (precio por unidad):",
+    ...productos.map((p) => {
+      const { precio, promos, unidad } = textosDelProducto(p);
+      // Sin el punto final: la línea agrega el suyo
+      const descripcion = p.descripcion.trim().slice(0, 300).replace(/[.\s]+$/, "");
+      return `  - ${p.nombre}: ${precio} cada ${unidad.singular}${promos ? `. Promos por cantidad: ${promos}` : ""}${descripcion ? `. ${descripcion}` : ""}. Ficha: ${hostCliente}/producto/${p.slug}`;
+    }),
+    "- Las promos por cantidad se aplican solas en la web al elegir la cantidad.",
+  ];
+}
+
+/** Los envíos, con las zonas activas de la base (se editan en /admin/envios). */
+function lineaEnvios(zonas: ZonaParaCheckout[]) {
+  if (zonas.length === 0) {
+    return `- Envíos: todavía no hay zonas de envío cargadas; para coordinarlo, que escriba en ${hostCliente}/consultas.`;
+  }
+  const detalle = zonas.map((z) => {
+    const costo =
+      z.costo === null
+        ? "a coordinar: después de la compra le escribimos para coordinar el envío"
+        : `${formatPrecio(z.costo)}, se suma al total al pagar`;
+    const aclaracion = z.aclaracion.trim().replace(/[.\s]+$/, "");
+    return `${z.nombre} (${costo})${aclaracion ? `. ${aclaracion}` : ""}`;
+  });
+  return `- Envíos (la zona se elige al finalizar la compra): ${detalle.join("; ")}. Si la persona está en otra zona, que escriba en ${hostCliente}/consultas y le avisamos.`;
+}
+
+/**
+ * Instrucciones del asistente: la marca y sus datos salen de la config del cliente; los productos
+ * (precio y promos) y las zonas de envío, de la base.
+ */
+function buildSystemPrompt(productos: ProductoChat[], zonas: ZonaParaCheckout[]) {
   const { ia } = cliente;
-  const datos = ia.chat.datos.map((d) => `- ${d.replace(/\$SITIO/g, hostCliente)}`).join("\n");
+  const datos = ia.chat.datos.map((d) => `- ${d.replace(/\$SITIO/g, hostCliente)}`);
+  const comprar =
+    productos.length > 1
+      ? `- Para comprar: redirigí a ${hostCliente}/productos o a la ficha del producto que le interese.`
+      : `- Para comprar: redirigí siempre a la página de producto en ${hostCliente}/producto.`;
   return `Sos el asistente virtual de ${cliente.nombre}, ${ia.descripcion}. Respondés preguntas de clientes de forma amigable, breve y en español rioplatense informal (tuteás). Solo respondés preguntas relacionadas con ${ia.tema}. Si te preguntan algo que no tiene que ver, redirigís amablemente.
 
 Información que conocés:
-- Producto: ${ia.chat.producto}, ${precio}${promos ? `
-- Promos por cantidad (el precio baja para cada ${unidad.singular}): ${promos}. Se aplican solas en la web al elegir la cantidad.` : ""}
-${datos}
+${[...lineasProductos(productos), ...datos, lineaEnvios(zonas)].join("\n")}
 - Instagram: @${cliente.instagram}
 - Sitio web: ${hostCliente}
-- Para comprar: redirigí siempre a la página de producto en ${hostCliente}/producto.
+${comprar}
 
 Si no sabés algo, decís que escriban en ${hostCliente}/consultas.`;
 }
@@ -88,7 +137,7 @@ export async function POST(req: Request) {
   await logEvent("chat", "Mensaje al chat", { detalle: { ip } });
 
   const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-  const { precio, promos, unidad } = textosDelProducto(await getMainProduct());
+  const [productos, zonas] = await Promise.all([getProductosActivos(), getZonasActivas()]);
 
   const contents = messages.map((m) => ({
     role: m.role === "assistant" ? ("model" as const) : ("user" as const),
@@ -102,7 +151,7 @@ export async function POST(req: Request) {
         const geminiStream = await ai.models.generateContentStream({
           model: MODEL,
           contents,
-          config: { systemInstruction: buildSystemPrompt(precio, promos, unidad) },
+          config: { systemInstruction: buildSystemPrompt(productos, zonas) },
         });
 
         for await (const chunk of geminiStream) {

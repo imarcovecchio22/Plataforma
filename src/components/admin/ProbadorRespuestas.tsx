@@ -9,6 +9,7 @@ import {
   type CanalEvento,
   type ReglaParaCoincidir,
 } from "@/lib/instagram/reglas";
+import type { DatosTextos } from "@/lib/variables";
 
 type ReglaProbador = ReglaParaCoincidir & {
   nombre: string;
@@ -21,7 +22,7 @@ type ReglaProbador = ReglaParaCoincidir & {
  * Muestra qué regla coincidiría con un mensaje de ejemplo y qué se respondería,
  * sin mandar nada. Usa la misma lógica que el webhook.
  */
-export default function ProbadorRespuestas({ reglas, precio, promos = "" }: { reglas: ReglaProbador[]; precio: string; promos?: string }) {
+export default function ProbadorRespuestas({ reglas, datos }: { reglas: ReglaProbador[]; datos: DatosTextos }) {
   const [texto, setTexto] = useState("");
   const [canal, setCanal] = useState<CanalEvento>("dm");
 
@@ -52,7 +53,7 @@ export default function ProbadorRespuestas({ reglas, precio, promos = "" }: { re
             <p className="font-semibold text-emerald-800">
               Coincide: #{regla.id} {regla.nombre} (prioridad {regla.prioridad})
             </p>
-            <p className="mt-2 whitespace-pre-wrap">{armarTextoRespuesta(regla.respuesta, precio, promos)}</p>
+            <p className="mt-2 whitespace-pre-wrap">{armarTextoRespuesta(regla.respuesta, datos)}</p>
             {regla.botones.length > 0 && (
               <div className="mt-2 flex flex-wrap gap-2">
                 {regla.botones.map((b) => (

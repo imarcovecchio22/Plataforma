@@ -19,6 +19,7 @@ vi.mock("@/lib/product", () => ({
   getProductoPorSlug: async () => PRODUCTO_EJEMPLO,
 }));
 vi.mock("@/lib/prisma", () => ({ prisma: { preguntaFrecuente: { findMany: async () => [] } } }));
+vi.mock("@/lib/zonas", async () => (await import("./zonas-de-prueba")).mockZonas("ejemplo"));
 
 import ejemplo from "../clientes/ejemplo/config";
 import { problemasDeConfig } from "@/plataforma/cliente/validar";

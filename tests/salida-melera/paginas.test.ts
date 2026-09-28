@@ -105,13 +105,7 @@ vi.mock("@/lib/telegram", async (original) => ({
 }));
 
 // Las zonas del seed de Melera: con ellas el checkout tiene que verse como antes de las zonas
-vi.mock("@/lib/zonas", async () => {
-  const { default: seed } = await import("../../clientes/melera/seed");
-  return {
-    getZonasActivas: async () =>
-      (seed.zonas ?? []).map((z, i) => ({ id: i + 1, costo: null, aclaracion: "", detalleResumen: "", ...z })),
-  };
-});
+vi.mock("@/lib/zonas", async () => (await import("../zonas-de-prueba")).mockZonas("melera"));
 import seedMelera from "../../clientes/melera/seed";
 import RootLayout, { metadata as metadataRaiz } from "@/app/layout";
 import PublicoLayout from "@/app/(publico)/layout";

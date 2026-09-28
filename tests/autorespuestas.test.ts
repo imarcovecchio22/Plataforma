@@ -89,13 +89,28 @@ describe("elegirRegla", () => {
 });
 
 describe("armado de la respuesta", () => {
+  const datos = (cambios = {}) => ({
+    nombre: "Miel", precio: "$ 6.500", promos: "", catalogo: "Miel ($ 6.500) y Vela ($ 2.000)",
+    zonas: "CABA (a coordinar después de la compra)", ...cambios,
+  });
+
   it("reemplaza $PROMOS por las promos por cantidad", () => {
-    expect(armarTextoRespuesta("Frasco a $PRECIO. Promos: $PROMOS", "$ 6.500", "5 frascos a $ 30.000")).toBe("Frasco a $ 6.500. Promos: 5 frascos a $ 30.000");
-    expect(armarTextoRespuesta("Promos: $PROMOS", "$ 6.500")).toBe("Promos: ");
+    expect(armarTextoRespuesta("Frasco a $PRECIO. Promos: $PROMOS", datos({ promos: "5 frascos a $ 30.000" }))).toBe("Frasco a $ 6.500. Promos: 5 frascos a $ 30.000");
+    expect(armarTextoRespuesta("Promos: $PROMOS", datos())).toBe("Promos: ");
   });
 
   it("reemplaza $PRECIO", () => {
-    expect(armarTextoRespuesta("Frasco a $PRECIO. Dos a 2x$PRECIO", "$ 6.500")).toBe("Frasco a $ 6.500. Dos a 2x$ 6.500");
+    expect(armarTextoRespuesta("Frasco a $PRECIO. Dos a 2x$PRECIO", datos())).toBe("Frasco a $ 6.500. Dos a 2x$ 6.500");
+  });
+
+  it("reemplaza $PRODUCTO, $CATALOGO y $ZONAS", () => {
+    expect(armarTextoRespuesta("$PRODUCTO. Tenemos $CATALOGO. Enviamos a $ZONAS.", datos())).toBe(
+      "Miel. Tenemos Miel ($ 6.500) y Vela ($ 2.000). Enviamos a CABA (a coordinar después de la compra)."
+    );
+  });
+
+  it("no vuelve a reemplazar lo que ya se reemplazó", () => {
+    expect(armarTextoRespuesta("$PRODUCTO", datos({ nombre: "Promo $PRECIO" }))).toBe("Promo $PRECIO");
   });
 
   it("lee los botones guardados sin confiar en su forma", () => {

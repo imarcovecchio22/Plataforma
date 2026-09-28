@@ -159,12 +159,16 @@ export const esquemaCliente = z
         tema: texto,
         chat: z
           .object({
-            /** "- Producto: <producto>, $ 6.500" (el precio sale de la base). */
+            /**
+             * "- Producto: <producto>, $ 6.500" (el precio sale de la base). Con varios productos a la
+             * venta no se usa: el asistente recibe el catálogo de la base.
+             */
             producto: texto,
             /**
              * Datos que el asistente conoce, uno por línea (ej. "Pago: online con Mercado Pago…").
              * $SITIO se reemplaza por el dominio sin https:// (ej. melera.vercel.app).
-             * Instagram, el sitio y a dónde mandar para comprar o consultar los agrega la plataforma.
+             * Instagram, el sitio, los envíos (zonas de la base) y a dónde mandar para comprar o
+             * consultar los agrega la plataforma.
              */
             datos: z.array(texto).min(1),
           })

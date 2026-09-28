@@ -49,7 +49,10 @@ vi.mock("@/lib/security", async (original) => ({
 }));
 vi.mock("@/lib/logs", () => ({ logEvent: vi.fn(async () => {}) }));
 vi.mock("@/lib/product", () => ({
-  getMainProduct: async () => ({ precio: 9000, escalones: [{ desde: 3, precio: 8000 }] }),
+  getProductosActivos: async () => [{ nombre: "Maceta", slug: "maceta", descripcion: "", precio: 9000, escalones: [{ desde: 3, precio: 8000 }] }],
+}));
+vi.mock("@/lib/zonas", () => ({
+  getZonasActivas: async () => [{ id: 1, nombre: "Todo el país", costo: 4000, aclaracion: "", detalleResumen: "" }],
 }));
 
 import { POST as chat } from "@/app/api/chat/route";

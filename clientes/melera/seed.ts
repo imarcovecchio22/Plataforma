@@ -29,7 +29,7 @@ export default definirSeed({
       orden: 20,
       pregunta: "¿Hacen envíos? ¿A qué zonas?",
       respuesta:
-        "Por ahora enviamos solo dentro de CABA, y el envío lo coordinamos con vos después de la compra. Pronto vamos a sumar más zonas: si estás en otro lugar, [escribinos acá abajo](#escribinos) y te avisamos.",
+        "Por ahora enviamos a $ZONAS. Pronto vamos a sumar más zonas: si estás en otro lugar, [escribinos acá abajo](#escribinos) y te avisamos.",
     },
     {
       orden: 30,

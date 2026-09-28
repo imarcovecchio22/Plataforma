@@ -2,6 +2,7 @@
  * Coincidencia de palabras clave de las respuestas automáticas de Instagram.
  * Sin dependencias de servidor: lo usan el webhook y el Probador del admin.
  */
+import { reemplazarVariables, type DatosTextos } from "@/lib/variables";
 
 export type CanalEvento = "dm" | "comentario";
 
@@ -58,9 +59,9 @@ export function elegirRegla<T extends ReglaParaCoincidir>(texto: string, canal: 
   );
 }
 
-/** Reemplaza $PRECIO por el precio y $PROMOS por las promos por cantidad (ya formateados). */
-export function armarTextoRespuesta(respuesta: string, precioFormateado: string, promos = "") {
-  return respuesta.replace(/\$PRECIO/g, precioFormateado).replace(/\$PROMOS/g, promos);
+/** Reemplaza las variables ($PRECIO, $PROMOS, $CATALOGO, $ZONAS…) por los datos ya formateados. */
+export function armarTextoRespuesta(respuesta: string, datos: DatosTextos) {
+  return reemplazarVariables(respuesta, datos);
 }
 
 /** Lee la columna Json de botones sin confiar en su forma. */

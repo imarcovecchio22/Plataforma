@@ -28,9 +28,9 @@ export type SeedCliente = {
     /** En el resumen de la compra (si no, uno según el costo) */
     detalleResumen?: string;
   }[];
-  /** Preguntas frecuentes de /consultas (formato de la respuesta: src/lib/preguntas.ts). */
+  /** Preguntas frecuentes de /consultas (formato de la respuesta: src/lib/preguntas.ts; variables: src/lib/variables.ts). */
   preguntas: { pregunta: string; respuesta: string; orden: number }[];
-  /** Reglas de respuesta automática de Instagram ($PRECIO y $PROMOS se reemplazan al responder). */
+  /** Reglas de respuesta automática de Instagram (las variables de src/lib/variables.ts se reemplazan al responder). */
   autorespuestas?: {
     nombre: string;
     palabrasClave: string[];
