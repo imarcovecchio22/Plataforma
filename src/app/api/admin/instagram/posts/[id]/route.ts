@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { postIGSchema } from "@/lib/validation";
 import { logEvent } from "@/lib/logs";
+import { datosDelPost } from "@/lib/instagram/posts";
 
 const accionSchema = z.object({ accion: z.enum(["editar", "reintentar", "eliminar"]) });
 
@@ -51,23 +52,11 @@ export async function PATCH(req: NextRequest, { params: paramsPromise }: { param
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Datos inválidos" }, { status: 400 });
   }
-  const d = parsed.data;
-  const esProducto = d.tipo === "producto";
+  const datos = await datosDelPost(parsed.data);
+  if ("error" in datos) return NextResponse.json({ error: datos.error }, { status: 400 });
   await prisma.postIG.update({
     where: { id },
-    data: {
-      fecha: new Date(`${d.fecha}T00:00:00.000Z`),
-      tipo: d.tipo,
-      estilo: d.estilo,
-      tema: d.tema,
-      nombreProducto: esProducto ? d.nombreProducto : null,
-      categoria: esProducto ? d.categoria || null : null,
-      precio: esProducto ? d.precio : null,
-      presentacion: esProducto ? d.presentacion || null : null,
-      imagenUrl: esProducto ? d.imagenUrl : null,
-      estado: "pendiente",
-      error: null,
-    },
+    data: { ...datos.data, estado: "pendiente", error: null },
   });
   await logEvent("admin", `Post de Instagram #${id} editado`);
   return NextResponse.json({ ok: true });

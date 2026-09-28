@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { postIGSchema } from "@/lib/validation";
 import { logEvent } from "@/lib/logs";
+import { datosDelPost } from "@/lib/instagram/posts";
 
 // Crea un post nuevo en el cronograma (queda "pendiente").
 export async function POST(req: NextRequest) {
@@ -15,20 +16,9 @@ export async function POST(req: NextRequest) {
   }
 
   const d = parsed.data;
-  const esProducto = d.tipo === "producto";
-  const post = await prisma.postIG.create({
-    data: {
-      fecha: new Date(`${d.fecha}T00:00:00.000Z`),
-      tipo: d.tipo,
-      estilo: d.estilo,
-      tema: d.tema,
-      nombreProducto: esProducto ? d.nombreProducto : null,
-      categoria: esProducto ? d.categoria || null : null,
-      precio: esProducto ? d.precio : null,
-      presentacion: esProducto ? d.presentacion || null : null,
-      imagenUrl: esProducto ? d.imagenUrl : null,
-    },
-  });
+  const datos = await datosDelPost(d);
+  if ("error" in datos) return NextResponse.json({ error: datos.error }, { status: 400 });
+  const post = await prisma.postIG.create({ data: datos.data });
 
   await logEvent("admin", `Post de Instagram #${post.id} creado para el ${d.fecha}`, {
     detalle: { tipo: d.tipo, estilo: d.estilo },

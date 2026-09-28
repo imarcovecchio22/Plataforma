@@ -50,7 +50,9 @@ const DESCRIPCIONES: Record<keyof CopyIG, string> = {
 /** El pedido a Gemini. Los datos del post van como datos, delimitados, no como instrucciones. */
 export function armarPrompt(
   post: Pick<PostIG, "tipo" | "tema" | "nombreProducto" | "categoria" | "precio" | "presentacion">,
-  promos?: string
+  promos?: string,
+  /** De qué son las promos (un producto elegido del catálogo); si no, el promosDe de la config. */
+  promosDe?: string
 ) {
   const datos = {
     tipo: post.tipo,
@@ -76,7 +78,7 @@ ${JSON.stringify(datos, null, 2)}
 </datos>
 
 Si el tipo es "producto", nombre_producto, categoria, precio y presentacion son datos REALES que no debés modificar ni inventar.
-Si el tipo es "promo", promos son los precios REALES (${copy.promosDe}): no inventes otros números ni otras promos.
+Si el tipo es "promo", promos son los precios REALES (${promosDe ?? copy.promosDe}): no inventes otros números ni otras promos.
 
 Los textos van sobre una imagen, así que tienen que ser CORTOS. Completá SOLO los campos que correspondan al tipo de post:
 - presentacion -> tagline (2 a 4 palabras, va chiquito en mayúsculas arriba del título), titulo (2 a 5 palabras; podés envolver UNA palabra clave en <em></em> para destacarla en cursiva, ej: ${ej.titulo}), subtitulo (1 o 2 oraciones, máximo 110 caracteres), cta (llamado a la acción de 2 a 4 palabras, ej: Escribinos por DM)
@@ -102,7 +104,8 @@ export function limpiarCopy(crudo: unknown): CopyIG {
 
 export async function generarCopy(
   post: Pick<PostIG, "tipo" | "tema" | "nombreProducto" | "categoria" | "precio" | "presentacion">,
-  promos?: string
+  promos?: string,
+  promosDe?: string
 ) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) throw new Error("Falta GEMINI_API_KEY");
@@ -110,7 +113,7 @@ export async function generarCopy(
   const ai = new GoogleGenAI({ apiKey });
   const respuesta = await ai.models.generateContent({
     model: MODEL,
-    contents: [{ role: "user", parts: [{ text: armarPrompt(post, promos) }] }],
+    contents: [{ role: "user", parts: [{ text: armarPrompt(post, promos, promosDe) }] }],
     config: {
       responseMimeType: "application/json",
       responseSchema: {

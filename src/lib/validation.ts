@@ -124,9 +124,11 @@ export const postIGSchema = z
     precio: z.string().trim().max(20, "El precio puede tener hasta 20 caracteres").optional().default(""),
     presentacion: z.string().trim().max(60).optional().default(""),
     imagenUrl: z.string().trim().max(500).optional().default(""),
+    // Producto del catálogo (producto y promo); vacío = a mano (producto) o el destacado (promo)
+    productoId: z.string().trim().max(50).optional().default(""),
   })
   .superRefine((data, ctx) => {
-    if (data.tipo !== "producto") return;
+    if (data.tipo !== "producto" || data.productoId) return;
     if (!data.nombreProducto) ctx.addIssue({ code: "custom", path: ["nombreProducto"], message: "Falta el nombre del producto" });
     if (!data.precio) ctx.addIssue({ code: "custom", path: ["precio"], message: "Falta el precio" });
     if (!data.imagenUrl) {

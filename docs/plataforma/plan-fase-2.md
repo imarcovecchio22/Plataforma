@@ -175,6 +175,16 @@ base de desarrollo se actualizó porque seguía con el texto del seed).
 Posts de producto y de promo: se elige el producto del catálogo (nombre, precio y foto se
 completan solos; hoy se cargan a mano). `PostIG` suma el producto elegido (migración).
 
+**✅ (2026-09-28):** `PostIG.productoId` (migración `*_post_ig_producto`, opcional, `SetNull` si se
+borra el producto). En el admin, los posts de producto y de promo tienen un selector de producto:
+el de producto arranca con el primero del catálogo (o "Cargar los datos a mano", como antes;
+categoría y presentación siguen siendo a mano) y el de promo con "El destacado" (como antes). Al
+generar, nombre, precio (formateado) y foto salen del producto en ese momento (sin foto propia, la
+del sitio) y quedan guardados en el post para verlos en el admin; la promo usa las promos y la foto
+del producto elegido, y a Gemini le dice de qué producto son (sin producto elegido, el `promosDe` de
+la config). Errores claros si el producto ya no existe o no tiene promos. Los posts de Melera cargados
+a mano generan exactamente lo mismo (el snapshot solo suma `productoId: null`).
+
 ### Paso 9: cierre
 Comparación visual de Melera contra el final de la fase 1, test de que no quede nada de
 "solo CABA" en el código, pruebas de punta a punta del checkout con varios ítems y zona (sin pagar:

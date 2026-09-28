@@ -40,7 +40,8 @@ model Product {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
-  items OrderItem[]
+  items   OrderItem[]
+  postsIG PostIG[]
 
   @@index([activo, orden])
 }
@@ -211,7 +212,14 @@ model PostIG {
   estilo String // uno de config.estilosInstagram del cliente (se valida en la app)
   tema   String
 
-  // Solo para tipo producto (datos reales que carga el admin)
+  // Producto del catálogo (tipo producto y promo): al generar, nombre, precio, foto y promos salen de
+  // él. En un post de promo sin producto se usa el destacado; en uno de producto sin producto, los
+  // datos que se cargan a mano abajo.
+  productoId String?
+  producto   Product? @relation(fields: [productoId], references: [id], onDelete: SetNull)
+
+  // Solo para tipo producto (datos reales que carga el admin; con producto del catálogo, lo que se
+  // usó en la última generación)
   nombreProducto String?
   categoria      String?
   precio         String?
