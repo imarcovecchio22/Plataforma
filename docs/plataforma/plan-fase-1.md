@@ -285,7 +285,17 @@ Plan original:
 - `postIGSchema` valida `estilo` contra los estilos del cliente; `PostIGForm` los lista desde la config.
 - Test: un estilo que el cliente no declara se rechaza con un mensaje claro.
 
-## Paso 12: Módulos
+## Paso 12: Módulos ✅ (2026-09-28)
+
+Hecho: config `modulos` (instagram, autorespuestas, chatIA, cotizador); Melera y el ejemplo con
+los tres primeros prendidos y el cotizador apagado. `src/plataforma/cliente/modulos.ts` tiene el
+mapa de rutas de cada módulo (un test verifica que existan). Con un módulo apagado: el proxy
+responde 404 a sus rutas de API, crons y webhooks (el proxy ahora pasa también por esas rutas,
+sin pedir sesión a las que no son del admin), sus páginas del admin dan 404 (`exigirModulo`), no
+aparecen en el menú y el chat no se muestra. Snapshots de Melera sin cambios; en la app real las
+rutas responden igual que antes.
+
+Plan original:
 
 Config `modulos: { instagram, autorespuestas, chatIA, cotizador }`. Melera: los tres primeros
 prendidos, cotizador apagado. Si un módulo está apagado: no aparece en el menú del admin, sus

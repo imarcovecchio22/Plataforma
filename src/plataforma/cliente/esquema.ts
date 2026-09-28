@@ -118,6 +118,19 @@ export const esquemaCliente = z
           .strict(),
       })
       .strict(),
+    /** Funcionalidades opcionales (ver src/plataforma/cliente/modulos.ts). */
+    modulos: z
+      .object({
+        /** Cronograma de posts, imágenes, aprobación por Telegram y publicación. */
+        instagram: z.boolean(),
+        /** Respuestas automáticas de DMs y comentarios de Instagram. */
+        autorespuestas: z.boolean(),
+        /** Chat con IA (Gemini) en la tienda. */
+        chatIA: z.boolean(),
+        /** Cotizador de impresión 3D (previsto, todavía sin código). */
+        cotizador: z.boolean(),
+      })
+      .strict(),
     /**
      * Estilos de las imágenes de Instagram. Por cada uno tiene que existir
      * clientes/<slug>/instagram/<id>-<tipo>.html para los 4 tipos (presentacion, producto, dato

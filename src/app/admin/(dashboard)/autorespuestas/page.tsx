@@ -13,6 +13,7 @@ import ProbadorRespuestas from "@/components/admin/ProbadorRespuestas";
 import TokenIGRenovar from "@/components/admin/TokenIGRenovar";
 import ReiniciarLimiteIG from "@/components/admin/ReiniciarLimiteIG";
 import { cliente } from "@/plataforma/cliente";
+import { exigirModulo } from "@/plataforma/cliente/modulos";
 
 export const dynamic = "force-dynamic";
 
@@ -51,6 +52,7 @@ async function estadoToken() {
 }
 
 export default async function AdminAutoRespuestasPage() {
+  exigirModulo("autorespuestas");
   const [reglas, eventos, product, token] = await Promise.all([
     prisma.autoRespuesta.findMany({ orderBy: [{ activa: "desc" }, { prioridad: "desc" }, { id: "asc" }] }),
     prisma.instagramEvento.findMany({

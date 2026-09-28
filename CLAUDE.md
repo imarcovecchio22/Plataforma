@@ -80,6 +80,9 @@ Plan de la fase 1: [`docs/plataforma/plan-fase-1.md`](docs/plataforma/plan-fase-
   `globals.css` con `postcss-import`, así sus `@layer` funcionan. Los componentes del tema (entrada,
   fondo animado y logo) los exporta `clientes/<slug>/tema/index.tsx` y la plataforma los toma de
   `@cliente/tema`; lo que el fondo animado no tiene que tapar lleva `data-fondo-evita`.
+- **Módulos**: una ruta nueva de un módulo opcional va en `RUTAS_DE_MODULOS`
+  (`src/plataforma/cliente/modulos.ts`) y, si no es del admin, en el `matcher` de `src/proxy.ts`;
+  sus páginas del admin empiezan con `exigirModulo("<módulo>")`.
 - Un cliente sin `tema.css` o sin `tema/index.tsx` usa el **tema neutro** (`src/plataforma/tema/`).
   `clientes/ejemplo/` es un cliente completo sin tema: sirve para probar sin Melera
   (`CLIENTE=ejemplo npm run dev`) y como base para uno nuevo.

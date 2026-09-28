@@ -8,6 +8,7 @@ import { DESTINO_LABEL, hoyLocal } from "@/lib/instagram/botones";
 import PostIGForm, { type PostIGValores } from "@/components/admin/PostIGForm";
 import PostIGActions from "@/components/admin/PostIGActions";
 import InstagramControls from "@/components/admin/InstagramControls";
+import { exigirModulo } from "@/plataforma/cliente/modulos";
 
 export const dynamic = "force-dynamic";
 
@@ -69,6 +70,7 @@ async function estadoConexiones() {
 }
 
 export default async function AdminInstagramPage() {
+  exigirModulo("instagram");
   const [posts, conexiones] = await Promise.all([
     prisma.postIG.findMany({ orderBy: [{ fecha: "desc" }, { id: "desc" }], take: 200 }),
     estadoConexiones(),

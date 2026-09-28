@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { cliente, hostCliente } from "@/plataforma/cliente";
+import { moduloActivo } from "@/plataforma/cliente/modulos";
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
 
@@ -10,7 +11,12 @@ const WELCOME: ChatMessage = {
   content: `¡Hola! ${cliente.textos.emoji} Soy el asistente de ${cliente.nombre}. ¿En qué te puedo ayudar?`,
 };
 
+/** Chat con IA de la tienda: solo si el cliente tiene prendido el módulo chatIA. */
 export default function ChatWidget() {
+  return moduloActivo("chatIA") ? <Chat /> : null;
+}
+
+function Chat() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([WELCOME]);
   const [input, setInput] = useState("");

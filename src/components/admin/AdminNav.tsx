@@ -4,16 +4,20 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { cliente } from "@/plataforma/cliente";
+import { moduloActivo, type Modulo } from "@/plataforma/cliente/modulos";
 
-const links = [
+const todos: { href: string; label: string; modulo?: Modulo }[] = [
   { href: "/admin/pedidos", label: "Pedidos" },
   { href: "/admin/stock", label: "Precio y stock" },
   { href: "/admin/consultas", label: "Consultas" },
   { href: "/admin/preguntas", label: "Preguntas frecuentes" },
-  { href: "/admin/instagram", label: "Instagram" },
-  { href: "/admin/autorespuestas", label: "Autorespuestas" },
+  { href: "/admin/instagram", label: "Instagram", modulo: "instagram" },
+  { href: "/admin/autorespuestas", label: "Autorespuestas", modulo: "autorespuestas" },
   { href: "/admin/logs", label: "Logs" },
 ];
+
+// Sin los de módulos que el cliente no tiene prendidos
+const links = todos.filter((l) => !l.modulo || moduloActivo(l.modulo));
 
 export default function AdminNav() {
   const pathname = usePathname();

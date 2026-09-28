@@ -34,6 +34,7 @@ export default definirCliente({
     // Sin fondo; la etiqueta se editó de 900 a 500 g
     producto: { src: "/producto-miel-500g.png", alt: "Frasco de miel artesanal Melera", ancho: 433, alto: 577 },
   },
+  modulos: { instagram: true, autorespuestas: true, chatIA: true, cotizador: false },
   estilosInstagram: [
     { id: "organico", nombre: "Orgánico (fondo oscuro)", usaSemilla: false },
     { id: "geo", nombre: "Geo (fondo crema)", usaSemilla: false },
