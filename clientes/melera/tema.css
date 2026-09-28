@@ -1,5 +1,5 @@
 /*
- * Tema de Melera: el panal (prototipo aprobado, docs/melera-panal-prototipo.html).
+ * Tema de Melera: el panal (prototipo aprobado, clientes/melera/docs/panal-prototipo.html).
  * scripts/preparar-cliente.ts lo copia a src/app/tema-cliente.css y globals.css lo importa.
  *
  * Contrato de tema (lo usan los componentes públicos de la plataforma; todo tema lo define):

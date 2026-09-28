@@ -103,7 +103,7 @@ export default function QuantitySelector({
           </button>
         </div>
         <span className="wrap-focus w-fit">
-          <button type="button" onClick={comprar} className="btn" data-bee-avoid>
+          <button type="button" onClick={comprar} className="btn" data-fondo-evita>
             Comprar · {formatPrecio(total)}
           </button>
         </span>

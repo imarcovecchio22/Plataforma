@@ -1,5 +1,5 @@
 import Link from "next/link";
-import LogoCelda from "@/components/LogoCelda";
+import tema from "@cliente/tema";
 import { cliente } from "@/plataforma/cliente";
 
 export default function Header() {
@@ -10,7 +10,7 @@ export default function Header() {
         aria-label={`${cliente.nombre}, inicio`}
         className="flex shrink-0 items-center gap-2.5 rounded-md font-serif text-[1.4rem] font-semibold tracking-[-0.01em] text-[var(--texto)]"
       >
-        <LogoCelda tamano={44} />
+        {tema.Logo && <tema.Logo tamano={44} />}
         <span>{cliente.nombre}</span>
       </Link>
       <nav aria-label="Principal" className="flex items-center gap-[clamp(0.8rem,2vw,1.6rem)]">
@@ -24,7 +24,7 @@ export default function Header() {
           Consultas
         </Link>
         <span className="wrap-focus">
-          <Link href="/producto" className="btn btn-sm" data-bee-avoid>
+          <Link href="/producto" className="btn btn-sm" data-fondo-evita>
             Comprar
           </Link>
         </span>

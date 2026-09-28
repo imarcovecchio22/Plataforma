@@ -4,7 +4,8 @@ const TONOS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
 const color = (variable: string) => `rgb(var(--${variable}) / <alpha-value>)`;
 
 const config: Config = {
-  content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
+  // El código genérico y el del cliente de este despliegue (su tema tiene componentes propios)
+  content: ["./src/**/*.{js,ts,jsx,tsx,mdx}", `./clientes/${process.env.CLIENTE?.trim() || "*"}/**/*.{ts,tsx}`],
   theme: {
     extend: {
       // Colores del cliente (config.colores): variables CSS que define el layout raíz

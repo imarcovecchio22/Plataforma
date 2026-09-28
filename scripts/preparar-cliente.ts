@@ -32,6 +32,11 @@ async function main() {
   const problemas = problemasDeConfig(slug, config);
   if (problemas.length) fallar(`clientes/${slug}/config.ts no es válida:\n  - ${problemas.join("\n  - ")}`);
 
+  // Hasta que exista el tema neutro de la plataforma (paso 9 de la fase 1), el tema es obligatorio
+  if (!fs.existsSync(path.join(raiz, "clientes", slug, "tema", "index.tsx"))) {
+    fallar(`falta clientes/${slug}/tema/index.tsx (componentes del tema: entrada, fondo y logo).`);
+  }
+
   const faltan = imagenesFaltantes(raiz, slug, config);
   if (faltan.length) fallar(`faltan imágenes en clientes/${slug}/public/: ${faltan.join(", ")}`);
 

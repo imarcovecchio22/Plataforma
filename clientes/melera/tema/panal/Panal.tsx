@@ -2,10 +2,10 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { ENTRADA_VISTA_KEY, LOGO_ENTRADA_URL } from "@/components/panal/config";
-import { MotorPanal } from "@/components/panal/motor";
-import { Abeja } from "@/components/panal/abeja";
-import { quitarVeloEntrada } from "@/components/panal/velo";
+import { ENTRADA_VISTA_KEY, LOGO_ENTRADA_URL } from "./config";
+import { MotorPanal } from "./motor";
+import { Abeja } from "./abeja";
+import { quitarVeloEntrada } from "./velo";
 
 function entradaYaVista() {
   try {

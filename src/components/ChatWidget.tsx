@@ -140,7 +140,7 @@ export default function ChatWidget() {
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? "Cerrar chat" : "Abrir chat"}
-        data-bee-avoid
+        data-fondo-evita
         className="flex h-14 w-14 items-center justify-center rounded-full bg-marca-600 text-2xl text-claro shadow-soft transition hover:bg-marca-700"
       >
         {open ? "✕" : cliente.textos.emoji}

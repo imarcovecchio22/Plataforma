@@ -1,5 +1,5 @@
 /**
- * Funciones de dibujo del panal, portadas tal cual de docs/melera-panal-prototipo.html.
+ * Funciones de dibujo del panal, portadas tal cual de clientes/melera/docs/panal-prototipo.html.
  * Sin React: las usa el motor (motor.ts).
  */
 

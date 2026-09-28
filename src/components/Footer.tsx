@@ -1,4 +1,4 @@
-import LogoCelda from "@/components/LogoCelda";
+import tema from "@cliente/tema";
 import Link from "next/link";
 import { cliente } from "@/plataforma/cliente";
 
@@ -7,7 +7,7 @@ export default function Footer() {
     <footer className="relative z-[1] bg-[var(--fondo-seccion)] text-[var(--texto-pie)]">
       <div className="contenedor-publico flex flex-col items-center gap-5 py-8 text-center sm:flex-row sm:justify-between sm:text-left">
         <div className="flex items-center gap-2.5">
-          <LogoCelda tamano={40} />
+          {tema.Logo && <tema.Logo tamano={40} />}
           <div>
             <p className="font-serif text-lg font-semibold text-[var(--texto)]">{cliente.nombre}</p>
             <p className="text-sm">{cliente.textos.pie}</p>

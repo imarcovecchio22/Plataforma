@@ -27,7 +27,7 @@ export default function ProductoSection({ product }: { product: Product }) {
             </p>
           ) : (
             <span className="wrap-focus mt-6">
-              <Link href="/producto" className="btn" data-bee-avoid>
+              <Link href="/producto" className="btn" data-fondo-evita>
                 Comprar ahora
               </Link>
             </span>

@@ -1,4 +1,4 @@
-import { PANAL } from "@/components/panal/config";
+import { PANAL } from "./config";
 import {
   MARGEN,
   clamp,
@@ -7,7 +7,7 @@ import {
   easeInOut,
   renderLayer,
   type Capa,
-} from "@/components/panal/dibujo";
+} from "./dibujo";
 
 /** Lo que dibuja encima del panal (la abeja con sus gotas, fase C). */
 export interface Actor {
@@ -41,7 +41,7 @@ type Opciones = {
 
 /**
  * Motor del panal: fondo en 3 capas con parallax y luz, entrada atravesando una celda,
- * y un actor encima (la abeja). Porta el script de docs/melera-panal-prototipo.html.
+ * y un actor encima (la abeja). Porta el script de clientes/melera/docs/panal-prototipo.html.
  * Un solo requestAnimationFrame; se pausa con la pestaña oculta y respeta "reducir movimiento".
  */
 export class MotorPanal {

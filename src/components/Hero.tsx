@@ -33,7 +33,7 @@ export default function Hero({ precio, escalones = [] }: { precio: number; escal
         )}
         <div className="flex flex-wrap items-center gap-x-[1.4rem] gap-y-3">
           <span className="wrap-focus">
-            <Link href="/producto" className="btn" data-bee-avoid>
+            <Link href="/producto" className="btn" data-fondo-evita>
               Comprar ahora
             </Link>
           </span>

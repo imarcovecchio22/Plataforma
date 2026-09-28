@@ -1,4 +1,4 @@
-import { ENTRADA_VISTA_KEY } from "@/components/panal/config";
+import { ENTRADA_VISTA_KEY } from "./config";
 
 /**
  * Velo de la entrada, previo a que cargue el canvas: un script mínimo en el <head> de la

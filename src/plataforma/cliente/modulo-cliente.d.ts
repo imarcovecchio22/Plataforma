@@ -4,3 +4,8 @@ declare module "@cliente/config" {
   const config: import("@/plataforma/cliente/esquema").ConfigCliente;
   export default config;
 }
+
+declare module "@cliente/tema" {
+  const tema: import("@/plataforma/tema/tipos").TemaPublico;
+  export default tema;
+}

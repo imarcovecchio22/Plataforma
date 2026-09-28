@@ -106,7 +106,7 @@ y **a qué fase le toca**. Categorías:
 | Fuentes Poppins + Fraunces | `src/app/layout.tsx:1-16` | I | 1 |
 | Paleta Tailwind `miel-*`, `crema`, `beige`, `marron`, `ambar`, sombra `soft` | `tailwind.config.ts` | I | 1 | Se usa en **todo el admin** (`border-miel-100`, `text-miel-700`…) y en el `ChatWidget` |
 | `.container-melera` | `globals.css`, `admin/(dashboard)/layout.tsx`, `AdminNav.tsx` | C | 1 | Solo el nombre |
-| Prototipo y referencias de diseño | `docs/melera-panal-prototipo.html`, `docs/templates-panal/*` | I | 1 | Mover a `clientes/melera/docs/` |
+| Prototipo y referencias de diseño | `clientes/melera/docs/panal-prototipo.html`, `docs/templates-panal/*` | I | 1 | Mover a `clientes/melera/docs/` |
 
 ## 8. Instagram: plantillas y estilos
 

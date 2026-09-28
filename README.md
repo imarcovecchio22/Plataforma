@@ -102,7 +102,7 @@ Ver `.env.example` para el detalle completo.
 
 ## Diseño del panal (páginas públicas)
 
-- **Referencia:** el prototipo aprobado `docs/melera-panal-prototipo.html`. Los valores ajustables (radio de huida, velocidades, gotas, luz, parallax, duración de la entrada) están en `src/components/panal/config.ts`.
+- **Referencia:** el prototipo aprobado `clientes/melera/docs/panal-prototipo.html`. Los valores ajustables (radio de huida, velocidades, gotas, luz, parallax, duración de la entrada) están en `src/components/panal/config.ts`.
 - **Dónde va:** `/`, `/producto`, `/consultas` y `/privacidad` comparten el layout `src/app/(publico)/layout.tsx` (Header, Footer, fondo de panal y abeja). `/checkout` tiene su layout con la misma paleta, fondo oscuro liso y sin animación. El admin no cambia.
 - **Código:** `components/panal/dibujo.ts` (capas y entrada), `abeja.ts` (abeja y gotas), `motor.ts` (un solo `requestAnimationFrame`, pausa con la pestaña oculta, DPR hasta 2), `Panal.tsx` (se carga con `dynamic(ssr: false)`). Los botones que la abeja esquiva llevan `data-bee-avoid`.
 - **Entrada:** solo en la home, una vez por sesión (`sessionStorage`), con "Saltar" y Esc. Para que no parpadee, un script mínimo marca `<html data-entrada>` antes de pintar y un velo CSS muestra el primer cuadro hasta que carga el canvas.

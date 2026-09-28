@@ -200,7 +200,15 @@ En tres pasos chicos:
   Plan original: separar `globals.css`: base genérica (variables semánticas, clases de botones, campos,
   tarjetas) y `clientes/melera/tema/tema.css` con la paleta del panal. Las clases públicas pasan a
   nombres genéricos (`.btn-panal` → `.btn`, etc.) sin cambiar su CSS.
-- **8b.** Mover `src/components/panal/*`, `LogoCelda` y el velo de entrada a `clientes/melera/tema/`.
+- **8b.** ✅ (2026-09-28) Hecho: `src/components/panal/` → `clientes/melera/tema/panal/`,
+  `LogoCelda` → `clientes/melera/tema/`, la entrada (script + velo) → `clientes/melera/tema/Entrada.tsx`
+  y el prototipo → `clientes/melera/docs/`. Cada cliente exporta en `clientes/<slug>/tema/index.tsx`
+  un `TemaPublico` (`src/plataforma/tema/tipos.ts`): `Entrada`, `Fondo` y `Logo`, todos opcionales;
+  el layout público, el Header y el Footer los usan si están (`@cliente/tema`). `data-bee-avoid` →
+  `data-fondo-evita`. Tailwind escanea también `clientes/<CLIENTE>/`. Verificado: snapshots iguales
+  salvo el atributo renombrado, CSS compilado idéntico, y en Chrome la home muestra el panal, la
+  abeja y el logo sin errores en la consola.
+  Plan original: mover `src/components/panal/*`, `LogoCelda` y el velo de entrada a `clientes/melera/tema/`.
   La config del cliente declara el fondo animado y la entrada; el layout público los usa si existen.
 - **8c.** Fuentes: la config del cliente exporta sus fuentes (`next/font` necesita llamadas con
   valores fijos, así que van en un archivo del cliente, no en la config zod).

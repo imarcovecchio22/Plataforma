@@ -1,15 +1,15 @@
-import { PANAL } from "@/components/panal/config";
-import { clamp, lerpAngle } from "@/components/panal/dibujo";
-import type { Actor, EstadoMotor } from "@/components/panal/motor";
+import { PANAL } from "./config";
+import { clamp, lerpAngle } from "./dibujo";
+import type { Actor, EstadoMotor } from "./motor";
 
 type Gota = { x: number; y: number; vx: number; vy: number; life: number; max: number; s: number };
 
-/** Cada cuánto se vuelven a buscar los [data-bee-avoid] (cambian al navegar). */
+/** Cada cuánto se vuelven a buscar los [data-fondo-evita] (cambian al navegar). */
 const REFRESCO_EVITAR_MS = 1000;
 
 /**
  * La abeja geométrica que pasea, huye del cursor o del dedo, esquiva los botones de compra
- * ([data-bee-avoid]) y lleva un jarrón que gotea miel. Portada tal cual del prototipo.
+ * ([data-fondo-evita]) y lleva un jarrón que gotea miel. Portada tal cual del prototipo.
  */
 export class Abeja implements Actor {
   private alive = false;
@@ -73,7 +73,7 @@ export class Abeja implements Actor {
   private zonasEvitar() {
     const ahora = performance.now();
     if (ahora - this.evitarRefrescado > REFRESCO_EVITAR_MS) {
-      this.evitar = Array.from(document.querySelectorAll("[data-bee-avoid]"));
+      this.evitar = Array.from(document.querySelectorAll("[data-fondo-evita]"));
       this.evitarRefrescado = ahora;
     }
     return this.evitar;

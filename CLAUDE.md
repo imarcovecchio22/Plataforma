@@ -77,5 +77,7 @@ Plan de la fase 1: [`docs/plataforma/plan-fase-1.md`](docs/plataforma/plan-fase-
   `--fondo-seccion`…) y clases (`.tema-publico`, `.btn`, `.campo`, `.tarjeta`…) genéricas; cada tema
   las define (lista completa arriba de `clientes/melera/tema.css`). Nada de colores fijos en los
   componentes públicos. El tema se copia a `src/app/tema-cliente.css` (generado) y lo importa
-  `globals.css` con `postcss-import`, así sus `@layer` funcionan.
+  `globals.css` con `postcss-import`, así sus `@layer` funcionan. Los componentes del tema (entrada,
+  fondo animado y logo) los exporta `clientes/<slug>/tema/index.tsx` y la plataforma los toma de
+  `@cliente/tema`; lo que el fondo animado no tiene que tapar lleva `data-fondo-evita`.
 - Más detalle (Instagram, autorespuestas, seguridad, base) en el `README.md`.

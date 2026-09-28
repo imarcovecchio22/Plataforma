@@ -1,5 +1,5 @@
 /**
- * Valores aprobados en el prototipo del panal (docs/melera-panal-prototipo.html).
+ * Valores aprobados en el prototipo del panal (clientes/melera/docs/panal-prototipo.html).
  * Es el único lugar donde se ajustan: el panel de "Ajustes" del prototipo no va a producción.
  */
 export const PANAL = {
