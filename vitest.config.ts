@@ -1,11 +1,14 @@
 import { defineConfig } from "vitest/config";
 import path from "path";
+import { aliasCliente } from "./scripts/alias-cliente";
+
+// Los tests corren con Melera, salvo que se pida otro cliente con CLIENTE.
+const alias = aliasCliente(__dirname, process.env.CLIENTE || "melera");
 
 export default defineConfig({
   resolve: {
     alias: [
-      // Los tests corren con Melera, salvo que se pida otro cliente con CLIENTE.
-      { find: /^@cliente\/(.*)$/, replacement: path.resolve(__dirname, "clientes", process.env.CLIENTE || "melera", "$1") },
+      ...Object.entries(alias).map(([find, ruta]) => ({ find, replacement: path.resolve(__dirname, ruta) })),
       { find: "@", replacement: path.resolve(__dirname, "src") },
     ],
   },

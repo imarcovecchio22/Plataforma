@@ -3,6 +3,8 @@
 const fs = require("fs");
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const path = require("path");
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { aliasCliente } = require("./scripts/alias-cliente");
 
 // El cliente de este despliegue (clientes/<CLIENTE>). Sin cliente no se levanta nada.
 // La config en sí se valida antes en scripts/preparar-cliente.ts.
@@ -51,9 +53,7 @@ if (process.env.NODE_ENV === "production") {
 const nextConfig = {
   poweredByHeader: false,
   turbopack: {
-    resolveAlias: {
-      "@cliente/*": `./clientes/${CLIENTE}/*`,
-    },
+    resolveAlias: aliasCliente(__dirname, CLIENTE),
   },
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];

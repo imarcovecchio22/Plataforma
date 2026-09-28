@@ -32,20 +32,17 @@ async function main() {
   const problemas = problemasDeConfig(slug, config);
   if (problemas.length) fallar(`clientes/${slug}/config.ts no es válida:\n  - ${problemas.join("\n  - ")}`);
 
-  // Hasta que exista el tema neutro de la plataforma (paso 9 de la fase 1), el tema es obligatorio
-  if (!fs.existsSync(path.join(raiz, "clientes", slug, "tema", "index.tsx"))) {
-    fallar(`falta clientes/${slug}/tema/index.tsx (componentes del tema: entrada, fondo y logo).`);
-  }
-
   const faltan = imagenesFaltantes(raiz, slug, config);
   if (faltan.length) fallar(`faltan imágenes en clientes/${slug}/public/: ${faltan.join(", ")}`);
 
   console.log(`✔ Cliente "${slug}" válido.`);
 
   const { iconos } = copiarAssets(raiz, slug);
-  // Hasta que exista el tema neutro de la plataforma (paso 9 de la fase 1), el tema es obligatorio
-  if (!copiarTema(raiz, slug)) fallar(`falta clientes/${slug}/tema.css.`);
-  console.log(`✔ Tema de "${slug}" copiado a src/app/tema-cliente.css.`);
+  const tema = copiarTema(raiz, slug);
+  const componentes = fs.existsSync(path.join(raiz, "clientes", slug, "tema", "index.tsx"));
+  console.log(
+    `✔ Tema: CSS ${tema === "cliente" ? `de "${slug}"` : "neutro"}, componentes ${componentes ? `de "${slug}"` : "neutros"}.`
+  );
   console.log(`✔ Assets de "${slug}" copiados a public/${iconos.length ? ` e íconos a src/app/ (${iconos.join(", ")})` : ""}.`);
 }
 

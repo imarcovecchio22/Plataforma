@@ -219,7 +219,21 @@ En tres pasos chicos:
   Plan original: fuentes: la config del cliente exporta sus fuentes (`next/font` necesita llamadas con
   valores fijos, así que van en un archivo del cliente, no en la config zod).
 
-## Paso 9: Tema neutro por defecto
+## Paso 9: Tema neutro por defecto ✅ (2026-09-28)
+
+Hecho: `src/plataforma/tema/neutro.css` (fondo claro, acento con `colores.marca` de la config,
+botones redondeados, tarjetas con borde, fuentes del sistema) y `neutro.tsx` (solo el logo de la
+config). Un cliente sin `tema.css` o sin `tema/index.tsx` usa los neutros:
+`scripts/alias-cliente.js` resuelve `@cliente/tema` igual en Next y en vitest, y
+`preparar-cliente` copia el CSS neutro. `clientes/ejemplo/` (config completa, imágenes SVG y seed,
+sin tema): build y capturas en Chrome OK, y un test arma sus páginas sin ningún rastro de Melera.
+El CSS de Melera no cambió.
+
+Pendiente para el tema de Rino: los avisos de error (`bg-red-950/60…`), los íconos de éxito,
+pendiente y falla del checkout y dos detalles blancos semitransparentes están pensados para fondo
+oscuro; en el tema claro se leen pero no quedan finos. Pasarlos al contrato de tema cuando haga falta.
+
+Plan original:
 
 Un tema de la plataforma (fondo liso, paleta sobria, fuentes del sistema o una sans libre, sin
 animación) que se usa cuando el cliente no trae tema. Se prueba con un cliente de prueba

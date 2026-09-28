@@ -66,17 +66,21 @@ describe("imagenesFaltantes", () => {
 });
 
 describe("copiarTema", () => {
+  beforeEach(() => {
+    escribir("src/plataforma/tema/neutro.css", ".btn{color:gray}");
+  });
+
   it("copia clientes/<slug>/tema.css a src/app/tema-cliente.css", () => {
     escribir("clientes/uno/tema.css", ".btn{color:red}");
-    expect(copiarTema(raiz, "uno")).toBe(true);
+    expect(copiarTema(raiz, "uno")).toBe("cliente");
     expect(leer("src/app/tema-cliente.css")).toBe(".btn{color:red}");
   });
 
-  it("un cliente sin tema devuelve false y no deja el del anterior", () => {
+  it("un cliente sin tema usa el neutro (y no queda el del anterior)", () => {
     escribir("clientes/uno/tema.css", ".btn{color:red}");
     copiarTema(raiz, "uno");
-    expect(copiarTema(raiz, "dos")).toBe(false);
-    expect(existe("src/app/tema-cliente.css")).toBe(false);
+    expect(copiarTema(raiz, "dos")).toBe("neutro");
+    expect(leer("src/app/tema-cliente.css")).toBe(".btn{color:gray}");
   });
 
   it("el tema de Melera define todas las variables y clases del contrato", () => {

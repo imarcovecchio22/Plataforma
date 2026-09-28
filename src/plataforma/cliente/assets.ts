@@ -7,7 +7,8 @@ import type { ConfigCliente } from "@/plataforma/cliente/esquema";
  * despliegue sirve solo los de su cliente):
  * - clientes/<slug>/public/  → public/        (lo que se sirve tal cual: logos, fotos, OG)
  * - clientes/<slug>/app/<ícono> → src/app/<ícono> (favicons por convención de Next)
- * - clientes/<slug>/tema.css  → src/app/tema-cliente.css (lo importa globals.css)
+ * - clientes/<slug>/tema.css  → src/app/tema-cliente.css (lo importa globals.css; sin tema propio,
+ *   va el neutro de la plataforma, src/plataforma/tema/neutro.css)
  * public/, esos íconos y tema-cliente.css son generados: están en .gitignore.
  */
 
@@ -41,14 +42,13 @@ export function copiarAssets(raiz: string, slug: string) {
 }
 
 /**
- * Copia el tema del cliente (variables y clases de las páginas públicas) a src/app/tema-cliente.css.
- * Devuelve false si el cliente no tiene tema.
+ * Copia el tema del cliente (variables y clases de las páginas públicas) a src/app/tema-cliente.css,
+ * o el neutro de la plataforma si el cliente no tiene. Devuelve cuál copió.
  */
-export function copiarTema(raiz: string, slug: string) {
-  const origen = path.join(raiz, "clientes", slug, "tema.css");
-  const destino = path.join(raiz, "src", "app", "tema-cliente.css");
-  fs.rmSync(destino, { force: true });
-  if (!fs.existsSync(origen)) return false;
-  fs.copyFileSync(origen, destino);
-  return true;
+export function copiarTema(raiz: string, slug: string): "cliente" | "neutro" {
+  const propio = path.join(raiz, "clientes", slug, "tema.css");
+  const neutro = path.join(raiz, "src", "plataforma", "tema", "neutro.css");
+  const usaPropio = fs.existsSync(propio);
+  fs.copyFileSync(usaPropio ? propio : neutro, path.join(raiz, "src", "app", "tema-cliente.css"));
+  return usaPropio ? "cliente" : "neutro";
 }
