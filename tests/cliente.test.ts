@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { spawnSync } from "child_process";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import TextoConNegrita from "@/components/TextoConNegrita";
 import path from "path";
 import melera from "../clientes/melera/config";
 import { cliente } from "@/plataforma/cliente";
@@ -27,6 +30,8 @@ describe("config del cliente", () => {
     ["campo desconocido", (c: ReturnType<typeof valida>) => (c.colorFavorito = "rojo"), /colorFavorito/],
     ["Instagram con @", (c: ReturnType<typeof valida>) => (c.instagram = "@melera.miel"), /^instagram:/],
     ["SEO sin título", (c: ReturnType<typeof valida>) => ((c.seo as Record<string, string>).titulo = ""), /^seo\.titulo:/],
+    ["Quiénes somos sin párrafos", (c: ReturnType<typeof valida>) => (((c.textos as Record<string, Record<string, unknown>>).nosotros.parrafos = [])), /^textos\.nosotros\.parrafos:/],
+    ["texto vacío", (c: ReturnType<typeof valida>) => (((c.textos as Record<string, Record<string, unknown>>).hero.titulo = "  ")), /^textos\.hero\.titulo: No puede estar vacío/],
     ["sin región", (c: ReturnType<typeof valida>) => delete (c as Partial<ReturnType<typeof valida>>).region, /^region:/],
   ])("rechaza: %s", (_nombre, romper, esperado) => {
     const config = valida();
@@ -66,4 +71,15 @@ describe("scripts/validar-cliente.ts (corre antes de dev y build)", () => {
     expect(r.stderr).toContain("no existe clientes/no-existe/config.ts");
     expect(r.status).toBe(1);
   }, 30000);
+});
+
+describe("TextoConNegrita", () => {
+  it("lo que va entre ** sale en <strong> con la clase pedida", () => {
+    const html = renderToStaticMarkup(createElement(TextoConNegrita, { texto: "Hecha por **Apícola Mercedes**, de **Tomás Jofré**.", className: "x" }));
+    expect(html).toBe('Hecha por <strong class="x">Apícola Mercedes</strong>, de <strong class="x">Tomás Jofré</strong>.');
+  });
+
+  it("sin ** queda igual", () => {
+    expect(renderToStaticMarkup(createElement(TextoConNegrita, { texto: "Solo texto" }))).toBe("Solo texto");
+  });
 });

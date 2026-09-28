@@ -10,8 +10,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: `Consultas | ${cliente.nombre}`,
-  description:
-    "¿Tenés alguna duda sobre nuestra miel artesanal? Mirá las preguntas frecuentes o escribinos y te respondemos por Instagram o por email.",
+  description: cliente.textos.descripcionConsultas,
 };
 
 export default async function ConsultasPage({

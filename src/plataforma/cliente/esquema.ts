@@ -34,6 +34,8 @@ function monedaValida(moneda: string) {
   }
 }
 
+const texto = z.string().trim().min(1, "No puede estar vacío");
+
 export const esquemaCliente = z
   .object({
     /** Igual al nombre de la carpeta en clientes/ y al valor de CLIENTE. */
@@ -57,6 +59,59 @@ export const esquemaCliente = z
         descripcion: z.string().trim().min(1),
         /** Texto alternativo de la imagen para links compartidos. */
         altImagen: z.string().trim().min(1),
+      })
+      .strict(),
+    /**
+     * Textos de la tienda. En los que dicen "admite **negrita**", lo que va entre ** se
+     * muestra destacado.
+     */
+    textos: z
+      .object({
+        /** Emoji de la marca (saludo del chat, gracias de /consultas, respuestas de ejemplo). */
+        emoji: z.string().trim().min(1),
+        hero: z
+          .object({
+            titulo: texto,
+            bajada: texto,
+            /** Botón que baja a "Quiénes somos". */
+            botonNosotros: texto,
+          })
+          .strict(),
+        /** Va al lado del precio en la home y en /producto (ej. "el frasco de 500 g"). */
+        aclaracionPrecio: texto,
+        nosotros: z
+          .object({
+            titulo: texto,
+            /** Admite **negrita**. */
+            parrafos: z.array(texto).min(1),
+          })
+          .strict(),
+        /** Línea debajo del nombre en el pie. */
+        pie: texto,
+        /** Descripción de /consultas para buscadores. */
+        descripcionConsultas: texto,
+        privacidad: z
+          .object({
+            /** Va entre paréntesis después del nombre (ej. "miel artesanal de Tomás Jofré, Buenos Aires"). */
+            quienes: texto,
+            /** Qué información mandan las respuestas automáticas (ej. "información de la miel"). */
+            infoRespuestas: texto,
+          })
+          .strict(),
+        /** Título de la ventana del chat. */
+        tituloChat: texto,
+        /** Ejemplos (placeholders) de los formularios del admin. */
+        ejemplosAdmin: z
+          .object({
+            palabrasClave: texto,
+            tituloBoton: texto,
+            temaPost: texto,
+            nombreProducto: texto,
+            categoria: texto,
+            presentacion: texto,
+            mensajeProbador: texto,
+          })
+          .strict(),
       })
       .strict(),
     region: z

@@ -95,7 +95,7 @@ export default function AutoRespuestaForm({
         </div>
         <div>
           <label className="label-field" htmlFor={`${idBase}-claves`}>Palabras clave (separadas por coma)</label>
-          <input id={`${idBase}-claves`} className="input-field" value={valores.palabrasClave} onChange={(e) => set("palabrasClave", e.target.value)} placeholder="miel, precio, comprar" required />
+          <input id={`${idBase}-claves`} className="input-field" value={valores.palabrasClave} onChange={(e) => set("palabrasClave", e.target.value)} placeholder={cliente.textos.ejemplosAdmin.palabrasClave} required />
         </div>
       </div>
 
@@ -133,7 +133,7 @@ export default function AutoRespuestaForm({
         <p className="label-field">Botones con link (hasta 3)</p>
         {valores.botones.map((b, i) => (
           <div key={i} className="grid gap-2 sm:grid-cols-[1fr_2fr_auto]">
-            <input aria-label={`Título del botón ${i + 1}`} className="input-field" value={b.titulo} onChange={(e) => setBoton(i, "titulo", e.target.value)} placeholder="🍯 Quiero comprar (hasta 20)" />
+            <input aria-label={`Título del botón ${i + 1}`} className="input-field" value={b.titulo} onChange={(e) => setBoton(i, "titulo", e.target.value)} placeholder={`${cliente.textos.ejemplosAdmin.tituloBoton} (hasta 20)`} />
             <input aria-label={`Link del botón ${i + 1}`} className="input-field" value={b.url} onChange={(e) => setBoton(i, "url", e.target.value)} placeholder={`${cliente.dominio}/producto?origen=instagram`} />
             <button type="button" onClick={() => set("botones", valores.botones.filter((_, j) => j !== i))} className="rounded-full border border-stone-300 px-3 py-1.5 text-sm text-stone-600 hover:bg-stone-50">
               Quitar
@@ -150,7 +150,7 @@ export default function AutoRespuestaForm({
       {permiteComentarios && (
         <div>
           <label className="label-field" htmlFor={`${idBase}-publica`}>Respuesta pública al comentario (opcional)</label>
-          <input id={`${idBase}-publica`} className="input-field" value={valores.respuestaPublicaComentario} onChange={(e) => set("respuestaPublicaComentario", e.target.value)} placeholder="¡Te mandamos un DM! 🐝" maxLength={300} />
+          <input id={`${idBase}-publica`} className="input-field" value={valores.respuestaPublicaComentario} onChange={(e) => set("respuestaPublicaComentario", e.target.value)} placeholder={`¡Te mandamos un DM! ${cliente.textos.emoji}`} maxLength={300} />
         </div>
       )}
 

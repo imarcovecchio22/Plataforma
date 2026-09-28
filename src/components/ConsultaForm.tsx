@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { cliente } from "@/plataforma/cliente";
 
 type Canal = "instagram" | "email";
 
@@ -63,7 +64,7 @@ export default function ConsultaForm({ origen }: { origen?: string }) {
     return (
       <div className="tarjeta-panal p-6 text-center sm:p-8">
         <p className="text-4xl" aria-hidden>
-          🐝
+          {cliente.textos.emoji}
         </p>
         <h2 className="mt-3 font-serif text-2xl font-semibold text-[var(--ink)]">¡Gracias por escribirnos!</h2>
         <p className="mt-2 texto-suave">

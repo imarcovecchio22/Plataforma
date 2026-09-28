@@ -1,3 +1,6 @@
+import TextoConNegrita from "@/components/TextoConNegrita";
+import { cliente } from "@/plataforma/cliente";
+
 export default function QuienesSomos() {
   return (
     <section
@@ -7,24 +10,14 @@ export default function QuienesSomos() {
       <div className="grid max-w-[1100px] gap-10 lg:grid-cols-2 lg:gap-16">
         <div>
           <span className="etiqueta-seccion">Quiénes somos</span>
-          <h2 className="titulo-panal mt-2 max-w-[18ch]">Del campo a tu mesa</h2>
+          <h2 className="titulo-panal mt-2 max-w-[18ch]">{cliente.textos.nosotros.titulo}</h2>
         </div>
         <div className="texto-suave space-y-4 leading-[1.65]">
-          <p>
-            Melera nació de las colmenas de Tomás Jofré, un pueblo rural en el corazón de la provincia de
-            Buenos Aires. Ahí, entre campos abiertos y flores silvestres, nuestras abejas trabajan como lo
-            vienen haciendo por generaciones: sin apuro y sin atajos.
-          </p>
-          <p>
-            Toda nuestra miel es producida por{" "}
-            <strong className="font-semibold text-[var(--ink)]">Apícola Mercedes</strong>, un apiario
-            familiar con años de trayectoria en la zona. Cada frasco que vendemos tiene ese respaldo:
-            trazabilidad real, cosecha artesanal y un compromiso genuino con la calidad.
-          </p>
-          <p>
-            No industrializamos el proceso. Extraemos, decantamos y envasamos con cuidado para que la miel
-            llegue a tu casa tal como sale de la colmena: pura, espesa y con todo su sabor natural.
-          </p>
+          {cliente.textos.nosotros.parrafos.map((parrafo) => (
+            <p key={parrafo}>
+              <TextoConNegrita texto={parrafo} className="font-semibold text-[var(--ink)]" />
+            </p>
+          ))}
         </div>
       </div>
     </section>

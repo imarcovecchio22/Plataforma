@@ -81,7 +81,15 @@ Reemplazar con la config lo de la sección 1 del inventario: título y metadata 
 cookie del admin (`<slug>_admin_session`, igual para Melera), `package.json`. Sacar los ids reales de
 Telegram y Meta de `.env.example` y del README.
 
-## Paso 3: Textos de la tienda
+## Paso 3: Textos de la tienda ✅ (2026-09-28)
+
+Hecho: config `textos` (emoji de la marca, hero, aclaración junto al precio, Quiénes somos con
+`**negrita**` vía `TextoConNegrita`, pie, descripción de `/consultas`, frases de privacidad,
+título del chat y ejemplos de los formularios del admin). Los nombres de secciones y botones
+genéricos ("Producto", "Quiénes somos", "Comprar ahora", "¿Tenés alguna consulta?") quedan en el
+código, iguales para todos. Las preguntas frecuentes siguen en el código hasta el paso 3b.
+
+Plan original:
 
 Config `textos` para Hero, Quiénes somos, Header, Footer, privacidad, metadata de `/consultas`,
 saludo y título del chat, placeholders del admin. Los componentes quedan genéricos y leen la config.

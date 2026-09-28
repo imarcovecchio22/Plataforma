@@ -10,7 +10,7 @@ export default function Footer() {
           <LogoCelda tamano={40} />
           <div>
             <p className="font-serif text-lg font-semibold text-[var(--ink)]">{cliente.nombre}</p>
-            <p className="text-sm">Miel artesanal de Tomás Jofré, Buenos Aires.</p>
+            <p className="text-sm">{cliente.textos.pie}</p>
           </div>
         </div>
 

@@ -21,7 +21,7 @@ export default function PrivacidadPage() {
           </div>
 
           <p>
-            {cliente.nombre} (miel artesanal de Tomás Jofré, Buenos Aires) cuida los datos de las personas que nos escriben y nos
+            {cliente.nombre} ({cliente.textos.privacidad.quienes}) cuida los datos de las personas que nos escriben y nos
             compran. Esta página explica qué datos recibimos, para qué los usamos y cómo pedir que los borremos.
           </p>
 
@@ -37,7 +37,10 @@ export default function PrivacidadPage() {
           <section className="space-y-2">
             <h2 className="font-serif text-xl font-semibold text-[var(--ink)]">Para qué los usamos</h2>
             <ul className="list-disc space-y-1 pl-5">
-              <li>Para responderte automáticamente con información de la miel, el precio y los links para comprar o consultar.</li>
+              <li>
+                Para responderte automáticamente con {cliente.textos.privacidad.infoRespuestas}, el precio y los links para
+                comprar o consultar.
+              </li>
               <li>Para no mandarte la misma respuesta repetida y para revisar que las respuestas funcionen bien.</li>
               <li>
                 Si comprás o nos dejás una consulta en la web, usamos los datos que cargás (nombre, contacto y dirección

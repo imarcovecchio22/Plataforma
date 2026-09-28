@@ -7,7 +7,7 @@ type ChatMessage = { role: "user" | "assistant"; content: string };
 
 const WELCOME: ChatMessage = {
   role: "assistant",
-  content: `¡Hola! 🐝 Soy el asistente de ${cliente.nombre}. ¿En qué te puedo ayudar?`,
+  content: `¡Hola! ${cliente.textos.emoji} Soy el asistente de ${cliente.nombre}. ¿En qué te puedo ayudar?`,
 };
 
 export default function ChatWidget() {
@@ -76,7 +76,7 @@ export default function ChatWidget() {
       {open && (
         <div className="flex h-[70vh] max-h-[560px] w-[92vw] max-w-sm flex-col overflow-hidden rounded-2xl border border-miel-100 bg-white shadow-soft">
           <div className="flex items-center justify-between bg-miel-700 px-4 py-3">
-            <p className="font-serif text-lg font-semibold text-crema">Melera 🍯</p>
+            <p className="font-serif text-lg font-semibold text-crema">{cliente.textos.tituloChat}</p>
             <button
               type="button"
               onClick={() => setOpen(false)}
@@ -143,7 +143,7 @@ export default function ChatWidget() {
         data-bee-avoid
         className="flex h-14 w-14 items-center justify-center rounded-full bg-miel-600 text-2xl text-crema shadow-soft transition hover:bg-miel-700"
       >
-        {open ? "✕" : "🐝"}
+        {open ? "✕" : cliente.textos.emoji}
       </button>
     </div>
   );

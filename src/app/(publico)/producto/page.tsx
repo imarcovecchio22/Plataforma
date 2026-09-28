@@ -4,6 +4,7 @@ import QuantitySelector from "@/components/QuantitySelector";
 import { getMainProduct } from "@/lib/product";
 import { formatPrecio } from "@/lib/utils";
 import { leerEscalones, textoPromos } from "@/lib/precios";
+import { cliente } from "@/plataforma/cliente";
 
 export const dynamic = "force-dynamic";
 
@@ -32,7 +33,7 @@ export default async function ProductoPage({
             <p className="texto-suave mt-4 leading-[1.65]">{product.descripcion}</p>
             <p className="mt-6 flex items-baseline gap-2.5">
               <span className="precio-panal text-[2.5rem]">{formatPrecio(product.precio)}</span>
-              <span className="texto-suave">el frasco de 500 g</span>
+              <span className="texto-suave">{cliente.textos.aclaracionPrecio}</span>
             </p>
             {escalones.length > 0 && (
               <p className="mt-2 text-sm font-semibold text-[var(--glow)]">Promo: {textoPromos(escalones)}</p>

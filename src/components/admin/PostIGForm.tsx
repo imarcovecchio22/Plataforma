@@ -113,7 +113,7 @@ export default function PostIGForm({
           className="input-field"
           value={valores.tema}
           onChange={(e) => set("tema", e.target.value)}
-          placeholder="Ej: cuántas flores visitan las abejas para hacer miel"
+          placeholder={`Ej: ${cliente.textos.ejemplosAdmin.temaPost}`}
           maxLength={300}
           required
         />
@@ -123,7 +123,7 @@ export default function PostIGForm({
         <div className="grid gap-4 rounded-lg bg-miel-50/60 p-4 sm:grid-cols-2">
           <div>
             <label className="label-field" htmlFor={`${idBase}-nombre`}>Nombre del producto</label>
-            <input id={`${idBase}-nombre`} className="input-field" value={valores.nombreProducto} onChange={(e) => set("nombreProducto", e.target.value)} placeholder="Miel <em>Artesanal</em>" maxLength={80} />
+            <input id={`${idBase}-nombre`} className="input-field" value={valores.nombreProducto} onChange={(e) => set("nombreProducto", e.target.value)} placeholder={cliente.textos.ejemplosAdmin.nombreProducto} maxLength={80} />
           </div>
           <div>
             <label className="label-field" htmlFor={`${idBase}-precio`}>Precio</label>
@@ -131,11 +131,11 @@ export default function PostIGForm({
           </div>
           <div>
             <label className="label-field" htmlFor={`${idBase}-categoria`}>Categoría</label>
-            <input id={`${idBase}-categoria`} className="input-field" value={valores.categoria} onChange={(e) => set("categoria", e.target.value)} placeholder="miel pura" maxLength={60} />
+            <input id={`${idBase}-categoria`} className="input-field" value={valores.categoria} onChange={(e) => set("categoria", e.target.value)} placeholder={cliente.textos.ejemplosAdmin.categoria} maxLength={60} />
           </div>
           <div>
             <label className="label-field" htmlFor={`${idBase}-presentacion`}>Presentación</label>
-            <input id={`${idBase}-presentacion`} className="input-field" value={valores.presentacion} onChange={(e) => set("presentacion", e.target.value)} placeholder="frasco 500 g" maxLength={60} />
+            <input id={`${idBase}-presentacion`} className="input-field" value={valores.presentacion} onChange={(e) => set("presentacion", e.target.value)} placeholder={cliente.textos.ejemplosAdmin.presentacion} maxLength={60} />
           </div>
           <div className="sm:col-span-2">
             <label className="label-field" htmlFor={`${idBase}-imagen`}>Foto (link https)</label>

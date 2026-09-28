@@ -2,6 +2,7 @@ import Link from "next/link";
 import FotoFrasco from "@/components/FotoFrasco";
 import { formatPrecio } from "@/lib/utils";
 import { textoPromos, type Escalon } from "@/lib/precios";
+import { cliente } from "@/plataforma/cliente";
 
 export default function Hero({ precio, escalones = [] }: { precio: number; escalones?: Escalon[] }) {
   return (
@@ -18,15 +19,14 @@ export default function Hero({ precio, escalones = [] }: { precio: number; escal
       />
       <div className="velo-texto max-w-[37rem] lg:order-1">
         <h1 id="titulo-hero" className="titulo-hero mb-[1.15rem]">
-          Miel artesanal, pura y natural
+          {cliente.textos.hero.titulo}
         </h1>
         <p className="texto-suave mb-6 max-w-[31rem] text-[clamp(1rem,1.25vw,1.13rem)] leading-[1.65]">
-          Producida por Apícola Mercedes en Tomás Jofré, Buenos Aires. Sin aditivos, sin procesos
-          industriales — tal cual sale de la colmena.
+          {cliente.textos.hero.bajada}
         </p>
         <p className={`flex items-baseline gap-2.5 ${escalones.length ? "mb-1" : "mb-[1.6rem]"}`}>
           <span className="precio-panal text-[2.3rem]">{formatPrecio(precio)}</span>
-          <span className="texto-suave">el frasco de 500 g</span>
+          <span className="texto-suave">{cliente.textos.aclaracionPrecio}</span>
         </p>
         {escalones.length > 0 && (
           <p className="mb-[1.6rem] text-sm font-semibold text-[var(--glow)]">Promo: {textoPromos(escalones)}</p>
@@ -38,7 +38,7 @@ export default function Hero({ precio, escalones = [] }: { precio: number; escal
             </Link>
           </span>
           <Link href="/#nosotros" className="btn-ghost">
-            Conocé nuestra historia
+            {cliente.textos.hero.botonNosotros}
           </Link>
         </div>
       </div>
