@@ -2,7 +2,7 @@ import { z } from "zod";
 
 /**
  * Config de identidad de un cliente (clientes/<slug>/config.ts). Se valida antes de cada build
- * (scripts/validar-cliente.ts): si no cumple este esquema, el build falla.
+ * (scripts/preparar-cliente.ts): si no cumple este esquema, el build falla.
  *
  * Es pública: llega al navegador junto con los componentes que la usan. Nada secreto acá
  * (los secretos van en las variables de entorno del despliegue).
@@ -36,6 +36,11 @@ function monedaValida(moneda: string) {
 
 const texto = z.string().trim().min(1, "No puede estar vacío");
 
+const rutaPublica = z
+  .string()
+  .regex(/^\/[\w./-]+$/, "Tiene que ser una ruta de public/ que empiece con / (ej. /brand/logo.png)")
+  .refine((r) => !r.includes(".."), "La ruta no puede tener ..");
+
 export const esquemaCliente = z
   .object({
     /** Igual al nombre de la carpeta en clientes/ y al valor de CLIENTE. */
@@ -59,6 +64,27 @@ export const esquemaCliente = z
         descripcion: z.string().trim().min(1),
         /** Texto alternativo de la imagen para links compartidos. */
         altImagen: z.string().trim().min(1),
+      })
+      .strict(),
+    /**
+     * Imágenes de la marca. Las rutas son de clientes/<slug>/public/ (se copian a public/ antes
+     * de dev y build), empiezan con / y el archivo tiene que existir.
+     */
+    imagenes: z
+      .object({
+        /** Logo cuadrado del admin (login y menú). */
+        logo: rutaPublica,
+        /** Imagen para links compartidos (1200 × 630). */
+        compartir: rutaPublica,
+        /** Foto del producto, sin fondo (home, /producto y posts de promos). */
+        producto: z
+          .object({
+            src: rutaPublica,
+            alt: texto,
+            ancho: z.number().int().positive(),
+            alto: z.number().int().positive(),
+          })
+          .strict(),
       })
       .strict(),
     /** Lo que Gemini tiene que saber de la marca (chat de la web y textos de Instagram). */

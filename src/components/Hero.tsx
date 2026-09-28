@@ -1,5 +1,5 @@
 import Link from "next/link";
-import FotoFrasco from "@/components/FotoFrasco";
+import FotoProducto from "@/components/FotoProducto";
 import { formatPrecio } from "@/lib/utils";
 import { textoPromos, type Escalon } from "@/lib/precios";
 import { cliente } from "@/plataforma/cliente";
@@ -11,7 +11,7 @@ export default function Hero({ precio, escalones = [] }: { precio: number; escal
       className="contenedor-panal grid min-h-[calc(100svh-80px)] content-center gap-5 pb-[clamp(36px,8vh,100px)] pt-1 sm:min-h-[calc(100svh-92px)] lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-center lg:gap-10"
     >
       {/* Mobile: la foto arriba del título (hasta 34svh). Escritorio: a la derecha, grande. */}
-      <FotoFrasco
+      <FotoProducto
         lcp
         sizes="(min-width: 1024px) 460px, 260px"
         className="lg:order-2"

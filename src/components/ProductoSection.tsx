@@ -1,5 +1,5 @@
 import Link from "next/link";
-import FotoFrasco from "@/components/FotoFrasco";
+import FotoProducto from "@/components/FotoProducto";
 import { formatPrecio } from "@/lib/utils";
 import { leerEscalones, textoPromos } from "@/lib/precios";
 import type { Product } from "@prisma/client";
@@ -10,7 +10,7 @@ export default function ProductoSection({ product }: { product: Product }) {
   return (
     <section id="producto" className="contenedor-panal scroll-mt-4 bg-[rgba(18,7,2,0.93)] py-[clamp(56px,8vw,96px)]">
       <div className="grid max-w-[1100px] items-center gap-10 lg:grid-cols-2 lg:gap-16">
-        <FotoFrasco sizes="(min-width: 1024px) 288px, 224px" imgClassName="h-auto w-56 sm:w-72" />
+        <FotoProducto sizes="(min-width: 1024px) 288px, 224px" imgClassName="h-auto w-56 sm:w-72" />
         <div>
           <span className="etiqueta-seccion">Nuestro producto</span>
           <h2 className="titulo-panal mt-2">{product.nombre}</h2>

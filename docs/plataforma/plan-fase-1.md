@@ -149,7 +149,17 @@ Plan original:
 - `armarPrompt` y `buildSystemPrompt` arman el mismo texto a partir de la config. El test del paso 0
   confirma que es idéntico carácter por carácter.
 
-## Paso 6: Assets
+## Paso 6: Assets ✅ (2026-09-28)
+
+Hecho: `public/` → `clientes/melera/public/`, favicons → `clientes/melera/app/`, `images/` →
+`clientes/melera/marca/` (fuentes de diseño, no se sirven). `scripts/validar-cliente.ts` pasa a
+`scripts/preparar-cliente.ts`: además de validar, falla si falta una imagen de la config y copia
+los assets a `public/` y `src/app/` (generados, en `.gitignore`). Config `imagenes` (logo del
+admin, imagen para compartir, foto del producto con alt y tamaño). `FotoFrasco` → `FotoProducto`.
+Probado con `next start`: imágenes, favicons y `og:image` iguales. Quedan para el paso 8 las
+imágenes del tema del panal (`LogoCelda`, logo de la entrada) y la clase `.foto-frasco`.
+
+Plan original:
 
 Mover logos, íconos, OG, favicons y la foto del frasco a `clientes/melera/public/` (y `images/` a
 `clientes/melera/`). Un paso previo al build copia `clientes/<slug>/public/` a `public/` (que pasa a

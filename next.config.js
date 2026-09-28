@@ -5,7 +5,7 @@ const fs = require("fs");
 const path = require("path");
 
 // El cliente de este despliegue (clientes/<CLIENTE>). Sin cliente no se levanta nada.
-// La config en sí se valida antes en scripts/validar-cliente.ts.
+// La config en sí se valida antes en scripts/preparar-cliente.ts.
 const CLIENTE = process.env.CLIENTE?.trim();
 if (!CLIENTE) {
   throw new Error("Falta la variable de entorno CLIENTE (ej. CLIENTE=melera).");

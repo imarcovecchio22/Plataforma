@@ -1,11 +1,12 @@
 import Image from "next/image";
+import { cliente } from "@/plataforma/cliente";
 
 /**
- * Foto del frasco (/producto-miel-500g.png, sin fondo; la etiqueta se editó de 900 a 500 g) con el resplandor cálido y la sombra del panal.
+ * Foto del producto (la de la config del cliente, sin fondo) con el resplandor y la sombra del tema.
  * `lcp` solo donde es el elemento del LCP (hero de la home y /producto): se pide enseguida y con
  * prioridad alta (en Next 16 `priority` quedó obsoleto y no subía la prioridad de la descarga).
  */
-export default function FotoFrasco({
+export default function FotoProducto({
   lcp = false,
   sizes,
   className = "",
@@ -16,13 +17,14 @@ export default function FotoFrasco({
   className?: string;
   imgClassName?: string;
 }) {
+  const foto = cliente.imagenes.producto;
   return (
     <div className={`foto-frasco ${className}`}>
       <Image
-        src="/producto-miel-500g.png"
-        alt="Frasco de miel artesanal Melera"
-        width={433}
-        height={577}
+        src={foto.src}
+        alt={foto.alt}
+        width={foto.ancho}
+        height={foto.alto}
         loading={lcp ? "eager" : "lazy"}
         fetchPriority={lcp ? "high" : "auto"}
         sizes={sizes}

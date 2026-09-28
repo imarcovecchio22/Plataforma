@@ -49,7 +49,7 @@ function LoginForm() {
         className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-soft"
       >
         <div className="flex items-center gap-2">
-          <Image src="/brand/melera-logo.png" alt="" width={40} height={40} />
+          <Image src={cliente.imagenes.logo} alt="" width={40} height={40} />
           <h1 className="font-serif text-2xl font-semibold text-marron">
             Panel {cliente.nombre}
           </h1>

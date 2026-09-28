@@ -70,4 +70,7 @@ Plan de la fase 1: [`docs/plataforma/plan-fase-1.md`](docs/plataforma/plan-fase-
 - La CLI de Prisma lee `.env`, no `.env.local`: para migrar, exportar antes `DATABASE_URL` de
   `.env.local`. La base de Neon se suspende sola; por eso la URL lleva `connect_timeout=30`.
   `npm run db:seed` y los scripts sí leen `.env.local` (usan `@next/env`).
+- `public/` y los íconos de `src/app/` (`icon.png`, `apple-icon.png`…) son **generados**: los copia
+  `scripts/preparar-cliente.ts` desde `clientes/<CLIENTE>/public/` y `clientes/<CLIENTE>/app/` antes de
+  `dev` y `build`. Las imágenes nuevas van en la carpeta del cliente, nunca en `public/`.
 - Más detalle (Instagram, autorespuestas, seguridad, base) en el `README.md`.

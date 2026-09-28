@@ -33,6 +33,8 @@ describe("config del cliente", () => {
     ["Quiénes somos sin párrafos", (c: ReturnType<typeof valida>) => (((c.textos as Record<string, Record<string, unknown>>).nosotros.parrafos = [])), /^textos\.nosotros\.parrafos:/],
     ["texto vacío", (c: ReturnType<typeof valida>) => (((c.textos as Record<string, Record<string, unknown>>).hero.titulo = "  ")), /^textos\.hero\.titulo: No puede estar vacío/],
     ["género de la unidad inválido", (c: ReturnType<typeof valida>) => ((c.unidad as Record<string, string>).genero = "neutro"), /^unidad\.genero:/],
+    ["imagen sin / al principio", (c: ReturnType<typeof valida>) => ((c.imagenes as Record<string, string>).logo = "brand/logo.png"), /^imagenes\.logo:/],
+    ["imagen con ..", (c: ReturnType<typeof valida>) => ((c.imagenes as Record<string, string>).compartir = "/../secreto.png"), /^imagenes\.compartir:/],
     ["sin región", (c: ReturnType<typeof valida>) => delete (c as Partial<ReturnType<typeof valida>>).region, /^region:/],
   ])("rechaza: %s", (_nombre, romper, esperado) => {
     const config = valida();
@@ -47,9 +49,9 @@ describe("config del cliente", () => {
   });
 });
 
-describe("scripts/validar-cliente.ts (corre antes de dev y build)", () => {
+describe("scripts/preparar-cliente.ts (corre antes de dev y build)", () => {
   const correr = (cliente: string) =>
-    spawnSync(process.execPath, [path.join("node_modules", "tsx", "dist", "cli.mjs"), "scripts/validar-cliente.ts"], {
+    spawnSync(process.execPath, [path.join("node_modules", "tsx", "dist", "cli.mjs"), "scripts/preparar-cliente.ts"], {
       cwd: path.resolve(__dirname, ".."),
       env: { ...process.env, CLIENTE: cliente },
       encoding: "utf8",

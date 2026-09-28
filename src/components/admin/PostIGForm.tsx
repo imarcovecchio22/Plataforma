@@ -25,7 +25,7 @@ const VACIO = (fecha: string): PostIGValores => ({
   categoria: "",
   precio: "",
   presentacion: "",
-  imagenUrl: `${cliente.dominio}/producto-miel-500g.png`,
+  imagenUrl: `${cliente.dominio}${cliente.imagenes.producto.src}`,
 });
 
 /** Formulario para cargar (o editar, si recibe postId) un post del cronograma. */

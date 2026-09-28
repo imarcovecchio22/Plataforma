@@ -1,6 +1,8 @@
 /**
- * Corre antes de `next dev` y `next build`: si CLIENTE no está definida, no existe
- * clientes/<CLIENTE>/ o su config no cumple el esquema, corta con un mensaje claro.
+ * Corre antes de `next dev` y `next build`:
+ * 1. Valida: si CLIENTE no está definida, no existe clientes/<CLIENTE>/, su config no cumple el
+ *    esquema o falta alguna imagen que nombra, corta con un mensaje claro (y el build falla).
+ * 2. Copia los assets del cliente a public/ y src/app/ (ver src/plataforma/cliente/assets.ts).
  * Lee las mismas variables de entorno que Next (.env, .env.local, etc.).
  */
 import fs from "fs";
@@ -8,6 +10,7 @@ import path from "path";
 import { pathToFileURL } from "url";
 import { loadEnvConfig } from "@next/env";
 import { problemasDeConfig } from "../src/plataforma/cliente/validar";
+import { copiarAssets, imagenesFaltantes } from "../src/plataforma/cliente/assets";
 
 const raiz = path.resolve(__dirname, "..");
 loadEnvConfig(raiz, process.argv.includes("--dev"));
@@ -25,10 +28,17 @@ async function main() {
   if (!fs.existsSync(archivo)) fallar(`no existe clientes/${slug}/config.ts.`);
 
   const modulo = await import(pathToFileURL(archivo).href);
-  const problemas = problemasDeConfig(slug, modulo.default?.default ?? modulo.default);
+  const config = modulo.default?.default ?? modulo.default;
+  const problemas = problemasDeConfig(slug, config);
   if (problemas.length) fallar(`clientes/${slug}/config.ts no es válida:\n  - ${problemas.join("\n  - ")}`);
 
+  const faltan = imagenesFaltantes(raiz, slug, config);
+  if (faltan.length) fallar(`faltan imágenes en clientes/${slug}/public/: ${faltan.join(", ")}`);
+
   console.log(`✔ Cliente "${slug}" válido.`);
+
+  const { iconos } = copiarAssets(raiz, slug);
+  console.log(`✔ Assets de "${slug}" copiados a public/${iconos.length ? ` e íconos a src/app/ (${iconos.join(", ")})` : ""}.`);
 }
 
 main();

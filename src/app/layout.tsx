@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/melera-og-clara.png",
+        url: cliente.imagenes.compartir,
         width: 1200,
         height: 630,
         alt: cliente.seo.altImagen,
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
-    images: ["/melera-og-clara.png"],
+    images: [cliente.imagenes.compartir],
   },
 };
 

@@ -1,5 +1,5 @@
 import ChatWidget from "@/components/ChatWidget";
-import FotoFrasco from "@/components/FotoFrasco";
+import FotoProducto from "@/components/FotoProducto";
 import QuantitySelector from "@/components/QuantitySelector";
 import { getMainProduct } from "@/lib/product";
 import { formatPrecio } from "@/lib/utils";
@@ -23,7 +23,7 @@ export default async function ProductoPage({
       <main className="contenedor-panal flex-1 pb-16 pt-2 sm:pb-24">
         <div className="mx-auto grid max-w-[1100px] items-center gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-16">
           {/* La foto es la protagonista (y el LCP de la página) */}
-          <FotoFrasco
+          <FotoProducto
             lcp
             sizes="(min-width: 1024px) 480px, 260px"
             imgClassName="h-[42svh] w-auto lg:h-[min(72svh,640px)]"

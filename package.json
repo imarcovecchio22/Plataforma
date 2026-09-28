@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "tsx scripts/validar-cliente.ts --dev && next dev",
-    "build": "prisma generate && tsx scripts/validar-cliente.ts && next build",
+    "dev": "tsx scripts/preparar-cliente.ts --dev && next dev",
+    "build": "prisma generate && tsx scripts/preparar-cliente.ts && next build",
     "start": "next start",
     "lint": "eslint .",
     "postinstall": "prisma generate",
@@ -13,7 +13,7 @@
     "db:seed": "tsx prisma/seed.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "validar-cliente": "tsx scripts/validar-cliente.ts"
+    "preparar-cliente": "tsx scripts/preparar-cliente.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
