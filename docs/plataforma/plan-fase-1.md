@@ -323,7 +323,20 @@ Plan original:
   producto de ejemplo).
 - La migración con la regla de ManyChat: ver decisiones.
 
-## Paso 14: Cierre
+## Paso 14: Cierre ✅ (2026-09-28)
+
+Hecho:
+- `tests/sin-rastros-de-melera.test.ts`: ninguna línea de código de la plataforma (fuera de
+  comentarios) nombra a Melera, la miel ni el panal; la única excepción declarada es el envío
+  "solo CABA" (fase 2). Los mensajes de error usan `CLIENTE=ejemplo` como ejemplo.
+- Comparación visual con el código original de `main` (`1b346f5`), las dos versiones contra la
+  misma base y con "reducir movimiento": login del admin idéntico; tienda, privacidad y checkout
+  iguales a la vista (menos de 150 píxeles de subpíxel en textos que ahora salen de la config);
+  admin igual salvo el link nuevo "Preguntas frecuentes" (y los registros nuevos en logs).
+- README con la estructura de `clientes/` y cómo crear un cliente nuevo; `CLIENTE` en la tabla de
+  variables.
+
+Plan original:
 
 - Revisar que no quede "melera", "miel", "frasco", "panal" ni "abeja" fuera de `clientes/melera/`
   (con un test que lo verifique en `src/`).

@@ -4,7 +4,33 @@ Plataforma para emprendimientos: **tienda propia** (landing, productos, checkout
 
 Cada cliente es **una instancia desplegada** de este mismo repo, con su propia base y sus propias credenciales. La variable de entorno `CLIENTE` elige qué cliente carga el despliegue; su identidad (marca, tema visual, textos, plantillas de Instagram, tono para Gemini) vive en `clientes/<slug>/`, los datos del negocio en su base y los secretos en sus variables de entorno. Las funcionalidades opcionales (autorespuestas, chat con IA, cotizador) se prenden por cliente.
 
-El primer cliente es **Melera** (miel artesanal), de donde salió el código; el segundo va a ser **3DRinoMaker** (impresiones 3D). La conversión está en curso: ver [`CLAUDE.md`](CLAUDE.md) y [`docs/plataforma/`](docs/plataforma/). Mientras tanto, el resto de este README todavía describe a Melera.
+El primer cliente es **Melera** (miel artesanal), de donde salió el código; el segundo va a ser **3DRinoMaker** (impresiones 3D). La fase 1 (Melera como cliente de la plataforma, sin cambiar lo que se ve) está terminada; las próximas son multiproducto y zonas de envío, y después Rino. Detalle en [`CLAUDE.md`](CLAUDE.md) y [`docs/plataforma/`](docs/plataforma/). Las secciones de más abajo todavía describen el funcionamiento con Melera como ejemplo.
+
+## Clientes
+
+```
+clientes/<slug>/
+  config.ts        identidad, validada con zod (src/plataforma/cliente/esquema.ts): nombre, dominio,
+                   Instagram, SEO, colores, imágenes, módulos, estilos de Instagram, textos para Gemini,
+                   unidad de venta, textos de la tienda y región
+  seed.ts          datos iniciales del negocio (producto, preguntas frecuentes, respuestas automáticas)
+  public/          imágenes que se sirven tal cual (logo, foto del producto, imagen para compartir)
+  app/             favicons (icon.png, apple-icon.png…)
+  tema.css         opcional: variables y clases del contrato de tema (si no, el tema neutro)
+  tema/index.tsx   opcional: entrada, fondo animado, logo y fuentes del tema (si no, los neutros)
+  instagram/       plantillas <estilo>-<tipo>.html de cada estilo declarado, logo.png y scripts
+```
+
+- `CLIENTE=<slug>` elige el cliente. Antes de `dev` y `build`, `scripts/preparar-cliente.ts` valida la config, las imágenes y las plantillas (**el build falla si algo está mal**) y copia `public/`, los favicons y el tema a su lugar (esos archivos generados no van a git).
+- `clientes/melera/` es Melera (tema del panal). `clientes/ejemplo/` es una tienda de ejemplo sin tema propio: sirve para probar sin Melera (`CLIENTE=ejemplo npm run dev`).
+
+### Crear un cliente nuevo
+
+1. Copiar `clientes/ejemplo/` a `clientes/<slug>/` y cambiar `slug` en `config.ts` (tiene que ser igual al nombre de la carpeta).
+2. Completar la config: marca, colores, imágenes (en `public/`), textos, módulos y estilos de Instagram (con sus plantillas en `instagram/`).
+3. Opcional: tema propio (`tema.css` y `tema/index.tsx`); si no, se usa el neutro con los colores de la config.
+4. Base nueva: `npx prisma migrate deploy` y `CLIENTE=<slug> npm run db:seed` (con los datos de `seed.ts`).
+5. `CLIENTE=<slug> npm run dev` y revisar; `npm test` tiene que seguir pasando.
 
 ## Stack
 
@@ -49,6 +75,7 @@ npm run dev                  # http://localhost:3000
 
 | Variable | Descripción |
 |---|---|
+| `CLIENTE` | Cliente de este despliegue: carpeta `clientes/<CLIENTE>` (ej. `melera`). Sin ella no arranca ni compila |
 | `DATABASE_URL` | Connection string de PostgreSQL (Neon en producción) |
 | `MP_ACCESS_TOKEN` | Access token de MercadoPago (server-side) |
 | `MP_PUBLIC_KEY` | Public key de MercadoPago (client-side) |

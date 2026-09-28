@@ -42,6 +42,7 @@ de la plataforma".
 
 1. **Convertir Melera en el cliente `melera` de la plantilla SIN cambiar comportamiento.** Melera
    tiene que quedar idéntica y todos los tests tienen que seguir pasando.
+   **✅ Terminada el 2026-09-28 (rama `fase-1`).**
 2. **Multiproducto y zonas de envío configurables** (hoy: un solo producto y envío fijo "solo CABA").
 3. **Crear `clientes/rino/` y levantar 3DRinoMaker** (impresiones 3D, catálogo de productos fijos:
    listado, ficha por slug, pedido con ítems, checkout de MP con varios ítems, stock por producto,

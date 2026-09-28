@@ -12,7 +12,7 @@ const prisma = new PrismaClient();
 
 async function cargarSeedCliente(): Promise<SeedCliente> {
   const slug = process.env.CLIENTE?.trim();
-  if (!slug) throw new Error("Falta la variable de entorno CLIENTE (ej. CLIENTE=melera).");
+  if (!slug) throw new Error("Falta la variable de entorno CLIENTE (ej. CLIENTE=ejemplo).");
   const archivo = path.resolve(__dirname, "..", "clientes", slug, "seed.ts");
   if (!fs.existsSync(archivo)) throw new Error(`No existe clientes/${slug}/seed.ts.`);
   const modulo = await import(pathToFileURL(archivo).href);

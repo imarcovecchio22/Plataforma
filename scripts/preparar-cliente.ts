@@ -23,7 +23,7 @@ function fallar(mensaje: string): never {
 
 async function main() {
   const slug = process.env.CLIENTE?.trim();
-  if (!slug) fallar("falta la variable de entorno CLIENTE (ej. CLIENTE=melera).");
+  if (!slug) fallar("falta la variable de entorno CLIENTE (ej. CLIENTE=ejemplo).");
 
   const archivo = path.join(raiz, "clientes", slug, "config.ts");
   if (!fs.existsSync(archivo)) fallar(`no existe clientes/${slug}/config.ts.`);

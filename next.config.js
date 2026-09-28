@@ -10,7 +10,7 @@ const { aliasCliente } = require("./scripts/alias-cliente");
 // La config en sí se valida antes en scripts/preparar-cliente.ts.
 const CLIENTE = process.env.CLIENTE?.trim();
 if (!CLIENTE) {
-  throw new Error("Falta la variable de entorno CLIENTE (ej. CLIENTE=melera).");
+  throw new Error("Falta la variable de entorno CLIENTE (ej. CLIENTE=ejemplo).");
 }
 if (!fs.existsSync(path.join(__dirname, "clientes", CLIENTE, "config.ts"))) {
   throw new Error(`CLIENTE="${CLIENTE}" pero no existe clientes/${CLIENTE}/config.ts.`);
