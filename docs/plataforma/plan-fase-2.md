@@ -52,7 +52,14 @@ creados antes de migrar, como en la fase 1).
 
 ## Pasos
 
-### Paso 1: slug, activo y orden en `Product`
+### Paso 1: slug, activo y orden en `Product` ✅ (2026-09-28)
+Hecho: migración `20260928200000_producto_slug_activo_orden` escrita a mano (Prisma no deja crear
+una columna obligatoria sobre datos existentes sin preguntar): arma el slug con el nombre (sin
+tildes, `-2` si se repite, `producto` si no queda nada) y el orden por fecha de creación. Probada
+en la base de desarrollo con productos de prueba; `prisma migrate diff` confirma que la base quedó
+igual al esquema. `getMainProduct()` = primer activo por orden. El seed pasa a `productos` (lista,
+con slug). La unidad por producto (decisión 7) va cuando se use, en los pasos 3 a 5.
+Plan original:
 Migración con `slug` a partir del nombre para los productos existentes. `getMainProduct()` pasa a
 ser "el primer producto activo por orden". Sin cambios visibles.
 

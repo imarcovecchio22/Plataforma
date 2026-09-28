@@ -19,6 +19,12 @@ enum OrderStatus {
 model Product {
   id          String   @id @default(cuid())
   nombre      String
+  // Para la URL de la ficha: /producto/<slug>
+  slug        String   @unique
+  // Los inactivos no se muestran en la tienda (el admin los sigue viendo)
+  activo      Boolean  @default(true)
+  // Orden en la tienda, de menor a mayor: el primero activo es el destacado de la home
+  orden       Int      @default(0)
   descripcion String
   precio      Int
   // Promos por cantidad: [{ desde: 5, precio: 6000 }, ...] (precio por frasco desde esa cantidad)
@@ -29,6 +35,8 @@ model Product {
   updatedAt   DateTime @updatedAt
 
   orders Order[]
+
+  @@index([activo, orden])
 }
 
 model Order {

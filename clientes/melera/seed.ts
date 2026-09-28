@@ -1,13 +1,16 @@
 import { definirSeed } from "../../src/plataforma/cliente/seed";
 
 export default definirSeed({
-  producto: {
-    nombre: "Miel Artesanal 500g",
-    descripcion:
-      "Miel pura de abejas, producida por Apícola Mercedes (Tomás Jofré, Buenos Aires). Envasada en frasco de vidrio de 500g.",
-    precio: 6500,
-    stock: 50,
-  },
+  productos: [
+    {
+      nombre: "Miel Artesanal 500g",
+      slug: "miel-artesanal-500g",
+      descripcion:
+        "Miel pura de abejas, producida por Apícola Mercedes (Tomás Jofré, Buenos Aires). Envasada en frasco de vidrio de 500g.",
+      precio: 6500,
+      stock: 50,
+    },
+  ],
   preguntas: [
     {
       orden: 10,

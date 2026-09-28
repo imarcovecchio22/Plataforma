@@ -1,13 +1,16 @@
 import { definirSeed } from "../../src/plataforma/cliente/seed";
 
 export default definirSeed({
-  producto: {
-    nombre: "Producto de ejemplo",
-    descripcion: "Un producto para probar la tienda.",
-    precio: 5000,
-    stock: 20,
-    escalones: [{ desde: 3, precio: 4500 }],
-  },
+  productos: [
+    {
+      nombre: "Producto de ejemplo",
+      slug: "producto-de-ejemplo",
+      descripcion: "Un producto para probar la tienda.",
+      precio: 5000,
+      stock: 20,
+      escalones: [{ desde: 3, precio: 4500 }],
+    },
+  ],
   preguntas: [
     {
       orden: 10,
