@@ -166,7 +166,17 @@ Mover logos, íconos, OG, favicons y la foto del frasco a `clientes/melera/publi
 ser generado e ignorado por git). `FotoFrasco` pasa a `FotoProducto`, con la
 foto y el alt que diga la config (en fase 2 van a salir del producto).
 
-## Paso 7: Colores del admin y del chat (Tailwind)
+## Paso 7: Colores del admin y del chat (Tailwind) ✅ (2026-09-28)
+
+Hecho: config `colores` (escala `marca` 50–900, `claro`, `oscuro`, `sombra`, en hex validado).
+El layout raíz define las variables CSS (`src/plataforma/cliente/colores.ts`) y Tailwind las usa:
+`miel-*` → `marca-*`, `crema` → `claro`, `marron` → `oscuro`, `shadow-soft` con el tono de la
+config; `beige` y `ambar` no se usaban y se sacaron. `.container-melera` → `.contenedor`.
+Verificado: los snapshots viejos con el mismo renombrado aplicado son idénticos a los nuevos (salvo
+el `<style>` con las variables), y en el CSS compilado las 23 clases de color resuelven al mismo
+color (la sombra pasa de 0,251 a 0,25 de opacidad, por el redondeo del minificador de antes).
+
+Plan original:
 
 Renombrar la paleta `miel-*`, `crema`, `marron`… a nombres semánticos (`marca-*`, `fondo`, `texto`…)
 que toman sus valores de variables CSS, y definir esas variables con los valores actuales en el tema

@@ -49,11 +49,11 @@ export default function PreguntaActions({
         <button
           onClick={() => pedir("PATCH", { activa: !valores.activa })}
           disabled={loading}
-          className={`${botonChico} ${valores.activa ? "border-stone-300 text-stone-600 hover:bg-stone-50" : "border-miel-500 bg-miel-500 text-white hover:bg-miel-600"}`}
+          className={`${botonChico} ${valores.activa ? "border-stone-300 text-stone-600 hover:bg-stone-50" : "border-marca-500 bg-marca-500 text-white hover:bg-marca-600"}`}
         >
           {valores.activa ? "Ocultar" : "Mostrar"}
         </button>
-        <button onClick={() => setEditando((e) => !e)} className={`${botonChico} border-miel-500 text-miel-700 hover:bg-miel-50`}>
+        <button onClick={() => setEditando((e) => !e)} className={`${botonChico} border-marca-500 text-marca-700 hover:bg-marca-50`}>
           {editando ? "Cerrar edición" : "Editar"}
         </button>
         {confirmarBorrado ? (
@@ -73,7 +73,7 @@ export default function PreguntaActions({
       </div>
       {error && <p className="text-xs text-red-600">{error}</p>}
       {editando && (
-        <div className="rounded-lg border border-miel-100 bg-miel-50/40 p-4">
+        <div className="rounded-lg border border-marca-100 bg-marca-50/40 p-4">
           <PreguntaForm preguntaId={preguntaId} inicial={valores} datos={datos} onListo={() => setEditando(false)} />
         </div>
       )}

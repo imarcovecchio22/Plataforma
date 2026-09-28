@@ -36,6 +36,8 @@ function monedaValida(moneda: string) {
 
 const texto = z.string().trim().min(1, "No puede estar vacío");
 
+const hex = z.string().regex(/^#[0-9a-fA-F]{6}$/, "Color inválido (tiene que ser #rrggbb)");
+
 const rutaPublica = z
   .string()
   .regex(/^\/[\w./-]+$/, "Tiene que ser una ruta de public/ que empiece con / (ej. /brand/logo.png)")
@@ -64,6 +66,35 @@ export const esquemaCliente = z
         descripcion: z.string().trim().min(1),
         /** Texto alternativo de la imagen para links compartidos. */
         altImagen: z.string().trim().min(1),
+      })
+      .strict(),
+    /**
+     * Colores del admin, el chat y los botones genéricos (clases de Tailwind marca-*, claro,
+     * oscuro y la sombra shadow-soft). En hexadecimal (#rrggbb).
+     */
+    colores: z
+      .object({
+        /** Escala del color de la marca, de más claro (50) a más oscuro (900). */
+        marca: z
+          .object({
+            50: hex,
+            100: hex,
+            200: hex,
+            300: hex,
+            400: hex,
+            500: hex,
+            600: hex,
+            700: hex,
+            800: hex,
+            900: hex,
+          })
+          .strict(),
+        /** Fondo de la página y texto sobre fondos oscuros. */
+        claro: hex,
+        /** Títulos y texto principal. */
+        oscuro: hex,
+        /** Tono de la sombra de tarjetas y botones. */
+        sombra: hex,
       })
       .strict(),
     /**

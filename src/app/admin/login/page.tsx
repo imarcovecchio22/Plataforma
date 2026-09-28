@@ -43,14 +43,14 @@ function LoginForm() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-miel-50 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-marca-50 px-4">
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-soft"
       >
         <div className="flex items-center gap-2">
           <Image src={cliente.imagenes.logo} alt="" width={40} height={40} />
-          <h1 className="font-serif text-2xl font-semibold text-marron">
+          <h1 className="font-serif text-2xl font-semibold text-oscuro">
             Panel {cliente.nombre}
           </h1>
         </div>

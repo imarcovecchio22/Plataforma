@@ -26,9 +26,9 @@ export default function AdminNav() {
   }
 
   return (
-    <header className="border-b border-miel-100 bg-white">
-      <div className="container-melera flex min-h-16 flex-wrap items-center justify-between gap-x-6 gap-y-2 py-3">
-        <Link href="/admin/pedidos" className="flex items-center gap-2 font-serif text-xl font-semibold text-miel-700">
+    <header className="border-b border-marca-100 bg-white">
+      <div className="contenedor flex min-h-16 flex-wrap items-center justify-between gap-x-6 gap-y-2 py-3">
+        <Link href="/admin/pedidos" className="flex items-center gap-2 font-serif text-xl font-semibold text-marca-700">
           <Image src={cliente.imagenes.logo} alt="" width={32} height={32} />
           {cliente.nombre} · Admin
         </Link>
@@ -39,8 +39,8 @@ export default function AdminNav() {
               href={link.href}
               className={
                 pathname.startsWith(link.href)
-                  ? "text-miel-700"
-                  : "hover:text-miel-600"
+                  ? "text-marca-700"
+                  : "hover:text-marca-600"
               }
             >
               {link.label}

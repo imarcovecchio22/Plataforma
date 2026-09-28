@@ -35,6 +35,8 @@ describe("config del cliente", () => {
     ["género de la unidad inválido", (c: ReturnType<typeof valida>) => ((c.unidad as Record<string, string>).genero = "neutro"), /^unidad\.genero:/],
     ["imagen sin / al principio", (c: ReturnType<typeof valida>) => ((c.imagenes as Record<string, string>).logo = "brand/logo.png"), /^imagenes\.logo:/],
     ["imagen con ..", (c: ReturnType<typeof valida>) => ((c.imagenes as Record<string, string>).compartir = "/../secreto.png"), /^imagenes\.compartir:/],
+    ["color que no es hex", (c: ReturnType<typeof valida>) => ((c.colores as Record<string, unknown>).claro = "crema"), /^colores\.claro: Color inválido/],
+    ["falta un tono de la marca", (c: ReturnType<typeof valida>) => delete ((c.colores as Record<string, Record<string, string>>).marca as Record<string, string>)["500"], /^colores\.marca\.500:/],
     ["sin región", (c: ReturnType<typeof valida>) => delete (c as Partial<ReturnType<typeof valida>>).region, /^region:/],
   ])("rechaza: %s", (_nombre, romper, esperado) => {
     const config = valida();

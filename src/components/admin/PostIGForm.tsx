@@ -120,7 +120,7 @@ export default function PostIGForm({
       </div>
 
       {esProducto && (
-        <div className="grid gap-4 rounded-lg bg-miel-50/60 p-4 sm:grid-cols-2">
+        <div className="grid gap-4 rounded-lg bg-marca-50/60 p-4 sm:grid-cols-2">
           <div>
             <label className="label-field" htmlFor={`${idBase}-nombre`}>Nombre del producto</label>
             <input id={`${idBase}-nombre`} className="input-field" value={valores.nombreProducto} onChange={(e) => set("nombreProducto", e.target.value)} placeholder={cliente.textos.ejemplosAdmin.nombreProducto} maxLength={80} />

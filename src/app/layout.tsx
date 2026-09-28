@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Poppins, Fraunces } from "next/font/google";
 import "./globals.css";
 import { cliente } from "@/plataforma/cliente";
+import { variablesDeColor } from "@/plataforma/cliente/colores";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -56,6 +57,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" data-scroll-behavior="smooth">
+      <head>
+        <style dangerouslySetInnerHTML={{ __html: variablesDeColor(cliente.colores) }} />
+      </head>
       <body
         className={`${poppins.variable} ${fraunces.variable} flex min-h-screen flex-col font-sans`}
       >

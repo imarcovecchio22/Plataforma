@@ -46,8 +46,8 @@ export default function StockEditor({ product }: { product: Product }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-xl border border-miel-100 bg-white p-6 shadow-soft">
-      <h2 className="font-semibold text-marron">{product.nombre}</h2>
+    <form onSubmit={handleSubmit} className="rounded-xl border border-marca-100 bg-white p-6 shadow-soft">
+      <h2 className="font-semibold text-oscuro">{product.nombre}</h2>
       <p className="mt-1 text-sm text-stone-500">Precio {deLaUnidad} y unidades disponibles</p>
 
       <div className="mt-4 flex flex-wrap items-end gap-3">
@@ -76,8 +76,8 @@ export default function StockEditor({ product }: { product: Product }) {
         </div>
       </div>
 
-      <div className="mt-6 border-t border-miel-100 pt-5">
-        <h3 className="font-semibold text-marron">Promos por cantidad</h3>
+      <div className="mt-6 border-t border-marca-100 pt-5">
+        <h3 className="font-semibold text-oscuro">Promos por cantidad</h3>
         <p className="mt-1 text-sm text-stone-500">
           Desde cierta cantidad, cada {cliente.unidad.singular} sale {masBarato}. Se aplican solas en la web, el chat y las respuestas de Instagram ($PROMOS).
         </p>
@@ -105,7 +105,7 @@ export default function StockEditor({ product }: { product: Product }) {
             <button
               type="button"
               onClick={() => setEscalones((l) => [...l, { desde: (l.at(-1)?.desde ?? 1) + 5, precio: Math.max(1, (l.at(-1)?.precio ?? precio) - 500) }])}
-              className="rounded-full border border-miel-500 px-3 py-1.5 text-sm font-semibold text-miel-700 hover:bg-miel-50"
+              className="rounded-full border border-marca-500 px-3 py-1.5 text-sm font-semibold text-marca-700 hover:bg-marca-50"
             >
               + Agregar promo
             </button>

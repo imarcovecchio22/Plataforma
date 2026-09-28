@@ -11,12 +11,12 @@ export default async function AdminPedidosPage() {
 
   return (
     <div>
-      <h1 className="font-serif text-2xl font-semibold text-marron">Pedidos</h1>
+      <h1 className="font-serif text-2xl font-semibold text-oscuro">Pedidos</h1>
       <p className="mt-1 text-sm text-stone-500">{pedidos.length} pedidos en total</p>
 
-      <div className="mt-6 overflow-x-auto rounded-xl border border-miel-100 bg-white shadow-soft">
+      <div className="mt-6 overflow-x-auto rounded-xl border border-marca-100 bg-white shadow-soft">
         <table className="w-full min-w-[880px] text-left text-sm">
-          <thead className="border-b border-miel-100 bg-miel-50/60 text-stone-600">
+          <thead className="border-b border-marca-100 bg-marca-50/60 text-stone-600">
             <tr>
               <th className="px-4 py-3 font-semibold">N°</th>
               <th className="px-4 py-3 font-semibold">Fecha</th>
@@ -29,7 +29,7 @@ export default async function AdminPedidosPage() {
               <th className="px-4 py-3" />
             </tr>
           </thead>
-          <tbody className="divide-y divide-miel-50">
+          <tbody className="divide-y divide-marca-50">
             {pedidos.map((p) => (
               <tr key={p.id} className="text-stone-700">
                 <td className="px-4 py-3 font-medium">#{p.numero}</td>
@@ -52,7 +52,7 @@ export default async function AdminPedidosPage() {
                 </td>
                 <td className="px-4 py-3 text-stone-500">{p.origen ?? "directo"}</td>
                 <td className="px-4 py-3 text-right">
-                  <Link href={`/admin/pedidos/${p.id}`} className="text-miel-700 hover:underline">
+                  <Link href={`/admin/pedidos/${p.id}`} className="text-marca-700 hover:underline">
                     Ver
                   </Link>
                 </td>

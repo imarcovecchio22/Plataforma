@@ -53,12 +53,12 @@ export default function PostIGActions({ postId, estado }: { postId: number; esta
     <div className="space-y-2">
       <div className="flex flex-wrap gap-2">
         {estado === "pendiente" && (
-          <button onClick={() => ejecutar("generar")} disabled={!!loading} className={`${botonChico} border-miel-500 bg-miel-500 text-white hover:bg-miel-600`}>
+          <button onClick={() => ejecutar("generar")} disabled={!!loading} className={`${botonChico} border-marca-500 bg-marca-500 text-white hover:bg-marca-600`}>
             {loading === "generar" ? "Generando… (hasta 1 min)" : "Generar ahora"}
           </button>
         )}
         {(estado === "error" || estado === "descartado") && (
-          <button onClick={() => ejecutar("reintentar")} disabled={!!loading} className={`${botonChico} border-miel-500 text-miel-700 hover:bg-miel-50`}>
+          <button onClick={() => ejecutar("reintentar")} disabled={!!loading} className={`${botonChico} border-marca-500 text-marca-700 hover:bg-marca-50`}>
             Volver a pendiente
           </button>
         )}

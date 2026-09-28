@@ -141,7 +141,7 @@ export default function AutoRespuestaForm({
           </div>
         ))}
         {valores.botones.length < 3 && (
-          <button type="button" onClick={() => set("botones", [...valores.botones, { titulo: "", url: "" }])} className="rounded-full border border-miel-500 px-3 py-1.5 text-sm font-semibold text-miel-700 hover:bg-miel-50">
+          <button type="button" onClick={() => set("botones", [...valores.botones, { titulo: "", url: "" }])} className="rounded-full border border-marca-500 px-3 py-1.5 text-sm font-semibold text-marca-700 hover:bg-marca-50">
             + Agregar botón
           </button>
         )}

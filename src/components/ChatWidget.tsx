@@ -74,14 +74,14 @@ export default function ChatWidget() {
   return (
     <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-3 sm:bottom-6 sm:right-6">
       {open && (
-        <div className="flex h-[70vh] max-h-[560px] w-[92vw] max-w-sm flex-col overflow-hidden rounded-2xl border border-miel-100 bg-white shadow-soft">
-          <div className="flex items-center justify-between bg-miel-700 px-4 py-3">
-            <p className="font-serif text-lg font-semibold text-crema">{cliente.textos.tituloChat}</p>
+        <div className="flex h-[70vh] max-h-[560px] w-[92vw] max-w-sm flex-col overflow-hidden rounded-2xl border border-marca-100 bg-white shadow-soft">
+          <div className="flex items-center justify-between bg-marca-700 px-4 py-3">
+            <p className="font-serif text-lg font-semibold text-claro">{cliente.textos.tituloChat}</p>
             <button
               type="button"
               onClick={() => setOpen(false)}
               aria-label="Cerrar chat"
-              className="rounded-full p-1 text-crema/80 transition hover:bg-white/10 hover:text-crema"
+              className="rounded-full p-1 text-claro/80 transition hover:bg-white/10 hover:text-claro"
             >
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                 <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
@@ -89,14 +89,14 @@ export default function ChatWidget() {
             </button>
           </div>
 
-          <div ref={listRef} className="flex-1 space-y-3 overflow-y-auto bg-crema px-3 py-4">
+          <div ref={listRef} className="flex-1 space-y-3 overflow-y-auto bg-claro px-3 py-4">
             {messages.map((m, i) => (
               <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
                 <div
                   className={`max-w-[80%] whitespace-pre-wrap rounded-2xl px-3.5 py-2 text-sm leading-relaxed ${
                     m.role === "user"
-                      ? "rounded-br-sm bg-miel-600 text-crema"
-                      : "rounded-bl-sm border border-miel-100 bg-white text-marron"
+                      ? "rounded-br-sm bg-marca-600 text-claro"
+                      : "rounded-bl-sm border border-marca-100 bg-white text-oscuro"
                   }`}
                 >
                   {m.content}
@@ -105,28 +105,28 @@ export default function ChatWidget() {
             ))}
             {loading && (
               <div className="flex justify-start">
-                <div className="flex items-center gap-1 rounded-2xl rounded-bl-sm border border-miel-100 bg-white px-4 py-3">
-                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-miel-500 [animation-delay:-0.3s]" />
-                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-miel-500 [animation-delay:-0.15s]" />
-                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-miel-500" />
+                <div className="flex items-center gap-1 rounded-2xl rounded-bl-sm border border-marca-100 bg-white px-4 py-3">
+                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-marca-500 [animation-delay:-0.3s]" />
+                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-marca-500 [animation-delay:-0.15s]" />
+                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-marca-500" />
                 </div>
               </div>
             )}
           </div>
 
-          <form onSubmit={sendMessage} className="flex items-center gap-2 border-t border-miel-100 bg-white p-2.5">
+          <form onSubmit={sendMessage} className="flex items-center gap-2 border-t border-marca-100 bg-white p-2.5">
             <input
               id="chat-widget-input"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Escribí tu consulta..."
-              className="min-w-0 flex-1 rounded-full border border-stone-300 bg-white px-4 py-2 text-sm text-stone-800 outline-none transition focus:border-miel-400 focus:ring-2 focus:ring-miel-200"
+              className="min-w-0 flex-1 rounded-full border border-stone-300 bg-white px-4 py-2 text-sm text-stone-800 outline-none transition focus:border-marca-400 focus:ring-2 focus:ring-marca-200"
             />
             <button
               type="submit"
               disabled={!input.trim() || loading}
               aria-label="Enviar mensaje"
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-miel-600 text-crema transition hover:bg-miel-700 disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-marca-600 text-claro transition hover:bg-marca-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                 <path d="M2.5 10L17.5 2.5L12.5 17.5L9.5 11L2.5 10Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
@@ -141,7 +141,7 @@ export default function ChatWidget() {
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? "Cerrar chat" : "Abrir chat"}
         data-bee-avoid
-        className="flex h-14 w-14 items-center justify-center rounded-full bg-miel-600 text-2xl text-crema shadow-soft transition hover:bg-miel-700"
+        className="flex h-14 w-14 items-center justify-center rounded-full bg-marca-600 text-2xl text-claro shadow-soft transition hover:bg-marca-700"
       >
         {open ? "✕" : cliente.textos.emoji}
       </button>

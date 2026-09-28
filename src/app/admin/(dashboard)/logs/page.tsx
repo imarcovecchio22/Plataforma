@@ -74,13 +74,13 @@ export default async function AdminLogsPage({
   const filtroClase = (activo: boolean) =>
     `rounded-full border px-3 py-1 text-sm transition ${
       activo
-        ? "border-miel-500 bg-miel-50 font-semibold text-miel-700"
+        ? "border-marca-500 bg-marca-50 font-semibold text-marca-700"
         : "border-stone-300 text-stone-600 hover:bg-stone-50"
     }`;
 
   return (
     <div>
-      <h1 className="font-serif text-2xl font-semibold text-marron">Logs</h1>
+      <h1 className="font-serif text-2xl font-semibold text-oscuro">Logs</h1>
       <p className="mt-1 text-sm text-stone-500">
         {total} eventos{nivel || tipo || filtros.q ? " con estos filtros" : ""} ·{" "}
         <Link href={href({ nivel: "error", tipo: undefined, q: undefined, pagina: undefined })} className={errores24h ? "font-semibold text-red-700 hover:underline" : ""}>
@@ -126,16 +126,16 @@ export default async function AdminLogsPage({
             Buscar
           </button>
           {(nivel || tipo || filtros.q) && (
-            <Link href="/admin/logs" className="self-center text-sm text-miel-700 hover:underline">
+            <Link href="/admin/logs" className="self-center text-sm text-marca-700 hover:underline">
               Limpiar filtros
             </Link>
           )}
         </form>
       </div>
 
-      <div className="mt-6 overflow-x-auto rounded-xl border border-miel-100 bg-white shadow-soft">
+      <div className="mt-6 overflow-x-auto rounded-xl border border-marca-100 bg-white shadow-soft">
         <table className="w-full min-w-[720px] text-left text-sm">
-          <thead className="border-b border-miel-100 bg-miel-50/60 text-stone-600">
+          <thead className="border-b border-marca-100 bg-marca-50/60 text-stone-600">
             <tr>
               <th className="px-4 py-3 font-semibold">Fecha</th>
               <th className="px-4 py-3 font-semibold">Nivel</th>
@@ -143,7 +143,7 @@ export default async function AdminLogsPage({
               <th className="px-4 py-3 font-semibold">Evento</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-miel-50">
+          <tbody className="divide-y divide-marca-50">
             {logs.map((log) => (
               <tr key={log.id} className="align-top text-stone-700">
                 <td className="whitespace-nowrap px-4 py-3 tabular-nums text-stone-500">
@@ -155,7 +155,7 @@ export default async function AdminLogsPage({
                   </span>
                 </td>
                 <td className="px-4 py-3">
-                  <Link href={href({ tipo: log.tipo, pagina: undefined })} className="text-miel-700 hover:underline">
+                  <Link href={href({ tipo: log.tipo, pagina: undefined })} className="text-marca-700 hover:underline">
                     {log.tipo}
                   </Link>
                 </td>
@@ -187,7 +187,7 @@ export default async function AdminLogsPage({
       {paginas > 1 && (
         <nav className="mt-4 flex items-center justify-between text-sm text-stone-600" aria-label="Páginas">
           {pagina > 1 ? (
-            <Link href={href({ pagina: String(pagina - 1) })} className="text-miel-700 hover:underline">
+            <Link href={href({ pagina: String(pagina - 1) })} className="text-marca-700 hover:underline">
               ← Más nuevos
             </Link>
           ) : (
@@ -197,7 +197,7 @@ export default async function AdminLogsPage({
             Página {pagina} de {paginas}
           </span>
           {pagina < paginas ? (
-            <Link href={href({ pagina: String(pagina + 1) })} className="text-miel-700 hover:underline">
+            <Link href={href({ pagina: String(pagina + 1) })} className="text-marca-700 hover:underline">
               Más viejos →
             </Link>
           ) : (
