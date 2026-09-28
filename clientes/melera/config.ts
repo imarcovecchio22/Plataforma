@@ -11,6 +11,32 @@ export default definirCliente({
       "Miel pura de abejas, producida por Apícola Mercedes en Tomás Jofré, Buenos Aires. Directo del campo a tu mesa.",
     altImagen: "Melera — Miel Artesanal",
   },
+  ia: {
+    descripcion: "una marca de miel artesanal de Tomás Jofré, Buenos Aires",
+    tema: "Melera y la miel",
+    chat: {
+      producto: "Miel Artesanal 500g, frasco de vidrio",
+      datos: [
+        "Elaboración: producida por Apícola Mercedes en Tomás Jofré, Bs As. 100% artesanal, sin aditivos, sin procesos industriales, sin azúcar agregada, sin conservantes. Las abejas recolectan néctar de flores silvestres de la zona.",
+        "Envíos: por ahora solo dentro de CABA. Después de la compra, alguien del equipo de Melera le escribe para coordinar el envío. Pronto se suman más zonas; si la persona está fuera de CABA, que escriba en $SITIO/consultas y le avisamos.",
+        "Pago: online con Mercado Pago, al finalizar la compra en la web.",
+        "Consultas (retiro, compras mayoristas o cualquier otra duda): en $SITIO/consultas, y le respondemos por Instagram o por email. No hay WhatsApp de contacto.",
+      ],
+    },
+    copy: {
+      rol: "marca argentina de miel artesanal",
+      tono: "Tono cálido, cercano, artesanal, sin exagerar ni usar superlativos vacíos.",
+      promosDe: "miel de 500 g",
+      temaDatos: "abejas/apicultura/miel",
+      ejemplos: {
+        titulo: "Pura, <em>natural</em>",
+        caracteristicas: "Artesanal / Sin aditivos / Cosecha 2026",
+        presentacion: "Frasco 500 g",
+        ctaPromo: "Pedila en la web",
+        taglineDato: "la magia de la colmena",
+      },
+    },
+  },
   unidad: { singular: "frasco", plural: "frascos", genero: "masculino" },
   textos: {
     emoji: "🐝",

@@ -61,6 +61,48 @@ export const esquemaCliente = z
         altImagen: z.string().trim().min(1),
       })
       .strict(),
+    /** Lo que Gemini tiene que saber de la marca (chat de la web y textos de Instagram). */
+    ia: z
+      .object({
+        /** Va después del nombre: "Sos el asistente virtual de Melera, <descripcion>." */
+        descripcion: texto,
+        /** "Solo respondés preguntas relacionadas con <tema>." */
+        tema: texto,
+        chat: z
+          .object({
+            /** "- Producto: <producto>, $ 6.500" (el precio sale de la base). */
+            producto: texto,
+            /**
+             * Datos que el asistente conoce, uno por línea (ej. "Pago: online con Mercado Pago…").
+             * $SITIO se reemplaza por el dominio sin https:// (ej. melera.vercel.app).
+             * Instagram, el sitio y a dónde mandar para comprar o consultar los agrega la plataforma.
+             */
+            datos: z.array(texto).min(1),
+          })
+          .strict(),
+        copy: z
+          .object({
+            /** Va después del nombre: "Sos copywriter de Melera, <rol>." */
+            rol: texto,
+            tono: texto,
+            /** A qué corresponden los precios de las promos (ej. "miel de 500 g"). */
+            promosDe: texto,
+            /** Sobre qué son los "datos curiosos" (ej. "abejas/apicultura/miel"). */
+            temaDatos: texto,
+            /** Ejemplos que se le dan a Gemini para cada campo. */
+            ejemplos: z
+              .object({
+                titulo: texto,
+                caracteristicas: texto,
+                presentacion: texto,
+                ctaPromo: texto,
+                taglineDato: texto,
+              })
+              .strict(),
+          })
+          .strict(),
+      })
+      .strict(),
     /** Cómo se llama lo que se vende, para precios, promos y cantidades (ej. frasco / frascos). */
     unidad: z
       .object({

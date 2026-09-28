@@ -133,7 +133,15 @@ Config `unidad: { singular, plural }` y que la usen `precios.ts`, `QuantitySelec
 `CheckoutForm`, `StockEditor` y el form de autorespuestas. Los tests de `precios` quedan iguales
 porque Melera dice "frasco".
 
-## Paso 5: Prompts de Gemini
+## Paso 5: Prompts de Gemini ✅ (2026-09-28)
+
+Hecho: config `ia` (descripción y tema de la marca; producto y datos del chat, con `$SITIO`;
+rol, tono, a qué corresponden las promos, temática de los datos curiosos y ejemplos del copy).
+El esqueleto de los prompts (formato, reglas, protección contra instrucciones en los datos) queda
+en el código. Los snapshots de los dos prompts no cambiaron. Test con otra marca inventada: ningún
+rastro de Melera en los prompts. El texto de envíos sigue en `ia.chat.datos` hasta la fase 2.
+
+Plan original:
 
 - Config `marca`: descripción corta, tono, temática de los datos curiosos y ejemplos para el copy.
 - Config `chat`: los datos que hoy están escritos en el prompt (elaboración, pago, consultas,
