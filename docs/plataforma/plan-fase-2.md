@@ -125,6 +125,10 @@ con varios ítems.
   como siempre. Ícono en el Header solo si el carrito tiene algo (Melera nunca lo ve).
   `/carrito`: líneas con la promo y la unidad de cada producto, tope de stock, quitar, total, y
   saca lo que ya no está a la venta. Probado en Chrome de punta a punta.
+- **5d ✅ (2026-09-28):** `/checkout?carrito=1`: el formulario toma los ítems del carrito (resumen
+  con una línea por producto, su promo y su unidad, "Editar carrito", total y ahorro) y los manda
+  a la API. El checkout de un producto queda con el HTML de siempre. El carrito se vacía en la
+  página de pago aprobado (si el pago falla, queda). Probado en Chrome: pedido con dos ítems.
 
 Plan original del paso 5:
 Carrito (pregunta 3). La API de checkout recibe ítems, valida stock de cada uno, calcula todo en el

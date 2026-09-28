@@ -15,6 +15,7 @@ import {
 } from "@/lib/carrito";
 import CarritoIcono from "@/components/CarritoIcono";
 import FichaProducto from "@/components/FichaProducto";
+import CheckoutForm from "@/components/CheckoutForm";
 
 describe("operaciones del carrito", () => {
   it("limpia lo que no tiene forma de ítem, repetidos y cantidades inválidas", () => {
@@ -159,5 +160,11 @@ describe("en la tienda", () => {
   it("con un solo producto la ficha compra directo; con varios, agrega al carrito", () => {
     expect(renderToStaticMarkup(createElement(FichaProducto, { product: PRODUCTO }))).toMatch(/>Comprar · /);
     expect(renderToStaticMarkup(createElement(FichaProducto, { product: PRODUCTO, conCarrito: true }))).toMatch(/>Agregar al carrito · /);
+  });
+});
+
+describe("checkout del carrito", () => {
+  it("del lado del servidor no se muestra (el carrito está en el navegador: nada de un vacío por un instante)", () => {
+    expect(renderToStaticMarkup(createElement(CheckoutForm, { carrito: [] }))).toBe("");
   });
 });
