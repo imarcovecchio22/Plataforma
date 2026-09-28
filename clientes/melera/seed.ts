@@ -1,6 +1,13 @@
 import { definirSeed } from "../../src/plataforma/cliente/seed";
 
 export default definirSeed({
+  producto: {
+    nombre: "Miel Artesanal 500g",
+    descripcion:
+      "Miel pura de abejas, producida por Apícola Mercedes (Tomás Jofré, Buenos Aires). Envasada en frasco de vidrio de 500g.",
+    precio: 6500,
+    stock: 50,
+  },
   preguntas: [
     {
       orden: 10,
@@ -29,6 +36,25 @@ export default definirSeed({
       pregunta: "¿Es normal que la miel se ponga dura?",
       respuesta:
         "Sí. La miel pura cristaliza con el frío, es una señal de que es natural. Para que vuelva a estar líquida, entibiala a baño María.",
+    },
+  ],
+  autorespuestas: [
+    {
+      // La que insertaba la migración 20260925000100 (ver 20260928175457_sacar_regla_de_melera).
+      // Desactivada: se activó en producción al desconectar ManyChat.
+      nombre: "Bienvenida (como ManyChat)",
+      palabrasClave: ["miel", "precio", "comprar", "pedido", "info"],
+      coincidencia: "contiene",
+      canal: "ambos",
+      respuesta:
+        "¡Hola! 🐝 Gracias por escribirle a Melera. Tenemos miel artesanal pura de Tomás Jofré, frasco de 500 g a $PRECIO. ¿En qué te ayudamos?",
+      botones: [
+        { titulo: "🍯 Quiero comprar", url: "https://melera.vercel.app/producto?origen=instagram" },
+        { titulo: "💬 Tengo una consulta", url: "https://melera.vercel.app/consultas?origen=instagram" },
+      ],
+      respuestaPublicaComentario: "¡Te mandamos un DM! 🐝",
+      prioridad: 10,
+      activa: false,
     },
   ],
 });

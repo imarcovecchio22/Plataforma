@@ -5,8 +5,7 @@ import RespuestaFrecuente from "@/components/RespuestaFrecuente";
 import { prisma } from "@/lib/prisma";
 import { armarRespuesta } from "@/lib/preguntas";
 import { getMainProduct } from "@/lib/product";
-import { formatPrecio } from "@/lib/utils";
-import { leerEscalones, textoPromos } from "@/lib/precios";
+import { textosDelProducto } from "@/lib/precios";
 import { cliente } from "@/plataforma/cliente";
 
 export const dynamic = "force-dynamic";
@@ -27,11 +26,7 @@ export default async function ConsultasPage({
     prisma.preguntaFrecuente.findMany({ where: { activa: true }, orderBy: [{ orden: "asc" }, { id: "asc" }] }),
   ]);
   const origen = Array.isArray(searchParams.origen) ? searchParams.origen[0] : searchParams.origen;
-  const datos = {
-    nombre: product.nombre,
-    precio: formatPrecio(product.precio),
-    promos: textoPromos(leerEscalones(product.escalones)),
-  };
+  const datos = textosDelProducto(product);
 
   return (
     <>

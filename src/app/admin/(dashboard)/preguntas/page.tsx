@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getMainProduct } from "@/lib/product";
-import { formatPrecio } from "@/lib/utils";
-import { leerEscalones, textoPromos } from "@/lib/precios";
+import { textosDelProducto } from "@/lib/precios";
 import { armarRespuesta } from "@/lib/preguntas";
 import RespuestaFrecuente from "@/components/RespuestaFrecuente";
 import PreguntaForm from "@/components/admin/PreguntaForm";
@@ -14,11 +13,7 @@ export default async function AdminPreguntasPage() {
     prisma.preguntaFrecuente.findMany({ orderBy: [{ orden: "asc" }, { id: "asc" }] }),
     getMainProduct(),
   ]);
-  const datos = {
-    nombre: product.nombre,
-    precio: formatPrecio(product.precio),
-    promos: textoPromos(leerEscalones(product.escalones)),
-  };
+  const datos = textosDelProducto(product);
   const ordenSugerido = preguntas.length ? Math.max(...preguntas.map((p) => p.orden)) + 10 : 10;
 
   return (

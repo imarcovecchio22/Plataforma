@@ -23,6 +23,9 @@ export async function POST(req: NextRequest) {
 
   const data = parsed.data;
   const product = await getMainProduct();
+  if (!product) {
+    return NextResponse.json({ error: "No hay productos a la venta" }, { status: 404 });
+  }
 
   if (data.cantidad > product.stock) {
     await logEvent("pedido", `Compra rechazada por falta de stock (pidió ${data.cantidad}, hay ${product.stock})`, {

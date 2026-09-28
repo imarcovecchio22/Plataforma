@@ -302,7 +302,21 @@ prendidos, cotizador apagado. Si un módulo está apagado: no aparece en el men�
 páginas y rutas de API responden 404 y sus crons no hacen nada. `cotizador` queda solo declarado
 (sin código). Tests del apagado con el cliente de ejemplo.
 
-## Paso 13: Datos de Melera fuera del código
+## Paso 13: Datos de Melera fuera del código ✅ (2026-09-28)
+
+Hecho: `getMainProduct()` devuelve `null` si no hay producto (ya no crea "Miel Artesanal 500g").
+Sin producto: home, `/producto` y checkout muestran "Todavía no hay productos" (`SinProductos`), la
+API de checkout responde 404, `$PRECIO` dice "a confirmar" (chat, autorespuestas, preguntas;
+`textosDelProducto` en `precios.ts`), los posts de promo fallan con un mensaje claro y el admin de
+stock explica cómo cargarlo. El seed del cliente suma `producto` y `autorespuestas`
+(`prisma/seed.ts` carga cada parte solo si su tabla está vacía). Melera: producto a $6.500 (el que
+creaba `getMainProduct`; el seed viejo decía $6.000) y la regla de bienvenida. Migración
+`20260928175457_sacar_regla_de_melera`: borra la regla que insertaba la migración vieja solo si
+sigue desactivada y sin cambios; probada en la base de desarrollo con una copia activada y otra
+editada (quedaron) y la original (se borró). Un test verifica que la regla del seed y la de la
+migración coincidan.
+
+Plan original:
 
 - `getMainProduct()` deja de crear "Miel Artesanal 500g" si no hay producto (ver decisiones).
 - `prisma/seed.ts` toma los datos iniciales de `clientes/<slug>/seed.ts` (el de Melera queda con su

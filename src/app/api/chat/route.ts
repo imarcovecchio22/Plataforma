@@ -2,8 +2,7 @@ import { GoogleGenAI } from "@google/genai";
 import { logEvent } from "@/lib/logs";
 import { clientIp, demasiadosIntentos } from "@/lib/security";
 import { getMainProduct } from "@/lib/product";
-import { formatPrecio } from "@/lib/utils";
-import { leerEscalones, textoPromos } from "@/lib/precios";
+import { textosDelProducto } from "@/lib/precios";
 import { cliente, hostCliente } from "@/plataforma/cliente";
 
 export const runtime = "nodejs";
@@ -89,9 +88,7 @@ export async function POST(req: Request) {
   await logEvent("chat", "Mensaje al chat", { detalle: { ip } });
 
   const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-  const producto = await getMainProduct();
-  const precio = formatPrecio(producto.precio);
-  const promos = textoPromos(leerEscalones(producto.escalones));
+  const { precio, promos } = textosDelProducto(await getMainProduct());
 
   const contents = messages.map((m) => ({
     role: m.role === "assistant" ? ("model" as const) : ("user" as const),

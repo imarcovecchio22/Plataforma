@@ -22,21 +22,15 @@ async function cargarSeedCliente(): Promise<SeedCliente> {
 async function main() {
   const seed = await cargarSeedCliente();
 
-  // Producto (hasta el paso 13 del plan de la fase 1 sigue siendo el de Melera)
+  // Producto: solo si no hay ninguno
   const existing = await prisma.product.findFirst();
   if (existing) {
     console.log("Ya existe un producto, no se crea uno nuevo:", existing.id);
+  } else if (seed.producto) {
+    const product = await prisma.product.create({ data: seed.producto });
+    console.log("Producto creado:", product.nombre);
   } else {
-    const product = await prisma.product.create({
-      data: {
-        nombre: "Miel Artesanal 500g",
-        descripcion:
-          "Miel pura de abejas, producida por Apícola Mercedes (Tomás Jofré, Buenos Aires). Envasada en frasco de vidrio de 500g.",
-        precio: 6000,
-        stock: 50,
-      },
-    });
-    console.log("Producto creado:", product);
+    console.log("El seed del cliente no trae producto: la tienda va a mostrar que todavía no hay.");
   }
 
   // Preguntas frecuentes: solo si la tabla está vacía (no pisa lo que se editó en el admin)
@@ -46,6 +40,15 @@ async function main() {
   } else {
     const { count } = await prisma.preguntaFrecuente.createMany({ data: seed.preguntas });
     console.log(`Preguntas frecuentes cargadas: ${count}`);
+  }
+
+  // Respuestas automáticas de Instagram: solo si no hay ninguna
+  const reglas = await prisma.autoRespuesta.count();
+  if (reglas > 0) {
+    console.log(`Ya hay ${reglas} respuestas automáticas, no se cargan las del seed.`);
+  } else if (seed.autorespuestas?.length) {
+    const { count } = await prisma.autoRespuesta.createMany({ data: seed.autorespuestas });
+    console.log(`Respuestas automáticas cargadas: ${count}`);
   }
 }
 

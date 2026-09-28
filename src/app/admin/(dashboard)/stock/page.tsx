@@ -1,5 +1,6 @@
 import { getMainProduct } from "@/lib/product";
 import StockEditor from "@/components/admin/StockEditor";
+import { cliente } from "@/plataforma/cliente";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +15,13 @@ export default async function AdminStockPage() {
       </p>
 
       <div className="mt-6">
-        <StockEditor product={product} />
+        {product ? (
+          <StockEditor product={product} />
+        ) : (
+          <p className="rounded-xl border border-marca-100 bg-white px-4 py-10 text-center text-stone-500">
+            Todavía no hay producto cargado. Se carga con <code>npm run db:seed</code> (datos de clientes/{cliente.slug}/seed.ts).
+          </p>
+        )}
       </div>
     </div>
   );

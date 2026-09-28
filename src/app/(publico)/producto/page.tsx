@@ -1,5 +1,6 @@
 import ChatWidget from "@/components/ChatWidget";
 import FotoProducto from "@/components/FotoProducto";
+import SinProductos from "@/components/SinProductos";
 import QuantitySelector from "@/components/QuantitySelector";
 import { getMainProduct } from "@/lib/product";
 import { formatPrecio } from "@/lib/utils";
@@ -15,6 +16,7 @@ export default async function ProductoPage({
 }) {
   const searchParams = await searchParamsPromise;
   const product = await getMainProduct();
+  if (!product) return <SinProductos />;
   const origen = Array.isArray(searchParams.origen) ? searchParams.origen[0] : searchParams.origen;
   const escalones = leerEscalones(product.escalones);
 

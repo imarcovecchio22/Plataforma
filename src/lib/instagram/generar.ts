@@ -68,6 +68,7 @@ async function generarUno(post: PostIG) {
     let promo: { promos: string; imagenUrl: string; texto: string } | undefined;
     if (post.tipo === "promo") {
       const producto = await getMainProduct();
+      if (!producto) throw new Error("No hay producto cargado en Precio y stock");
       const escalones = leerEscalones(producto.escalones);
       if (!escalones.length) throw new Error("No hay promos cargadas en Precio y stock");
       promo = {

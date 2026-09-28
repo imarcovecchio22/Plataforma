@@ -3,8 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { errorMessage, logEvent } from "@/lib/logs";
 import { sendTelegramMessage, siteUrl } from "@/lib/telegram";
 import { getMainProduct } from "@/lib/product";
-import { formatPrecio } from "@/lib/utils";
-import { leerEscalones, textoPromos } from "@/lib/precios";
+import { textosDelProducto } from "@/lib/precios";
 import { armarTextoRespuesta, elegirRegla, leerBotones } from "@/lib/instagram/reglas";
 import { enviarDm, enviarRespuestaPrivada, responderComentario } from "@/lib/instagram/mensajes";
 import type { EventoEntrante } from "@/lib/instagram/webhook";
@@ -73,8 +72,8 @@ export async function procesarEvento(ev: EventoEntrante) {
 
     let texto = regla.respuesta;
     if (texto.includes("$PRECIO") || texto.includes("$PROMOS")) {
-      const producto = await getMainProduct();
-      texto = armarTextoRespuesta(texto, formatPrecio(producto.precio), textoPromos(leerEscalones(producto.escalones)));
+      const { precio, promos } = textosDelProducto(await getMainProduct());
+      texto = armarTextoRespuesta(texto, precio, promos);
     }
     const botones = leerBotones(regla.botones);
 

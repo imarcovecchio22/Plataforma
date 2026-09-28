@@ -1,5 +1,6 @@
 import ChatWidget from "@/components/ChatWidget";
 import CheckoutForm from "@/components/CheckoutForm";
+import SinProductos from "@/components/SinProductos";
 import { getMainProduct } from "@/lib/product";
 import { leerEscalones } from "@/lib/precios";
 
@@ -12,6 +13,7 @@ export default async function CheckoutPage({
 }) {
   const searchParams = await searchParamsPromise;
   const product = await getMainProduct();
+  if (!product) return <SinProductos />;
   const origen = Array.isArray(searchParams.origen) ? searchParams.origen[0] : searchParams.origen;
   const cantidadInicial = Math.max(
     1,

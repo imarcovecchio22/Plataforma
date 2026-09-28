@@ -72,3 +72,20 @@ export function promosParaPlantilla(precioBase: number, escalones: Escalon[]) {
   }
   return filas.join(";");
 }
+
+/** Lo que muestran $PRECIO y los textos cuando todavía no hay producto cargado. */
+export const PRECIO_SIN_PRODUCTO = "a confirmar";
+
+/**
+ * Nombre, precio y promos del producto ya formateados para textos ($PRODUCTO, $PRECIO, $PROMOS
+ * de las preguntas frecuentes, el chat y las respuestas automáticas). Sin producto: precio "a
+ * confirmar" y sin promos.
+ */
+export function textosDelProducto(producto: { nombre: string; precio: number; escalones: unknown } | null) {
+  if (!producto) return { nombre: "", precio: PRECIO_SIN_PRODUCTO, promos: "" };
+  return {
+    nombre: producto.nombre,
+    precio: formatPrecio(producto.precio),
+    promos: textoPromos(leerEscalones(producto.escalones)),
+  };
+}
