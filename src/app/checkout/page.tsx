@@ -4,6 +4,7 @@ import SinProductos from "@/components/SinProductos";
 import { notFound } from "next/navigation";
 import { getMainProduct, getProductoPorSlug } from "@/lib/product";
 import { leerEscalones } from "@/lib/precios";
+import { unidadDe } from "@/plataforma/cliente";
 
 export const dynamic = "force-dynamic";
 
@@ -32,7 +33,13 @@ export default async function CheckoutPage({
           Finalizar compra
         </h1>
         <CheckoutForm
-          producto={{ slug: product.slug, nombre: product.nombre, precio: product.precio, escalones: leerEscalones(product.escalones) }}
+          producto={{
+            slug: product.slug,
+            nombre: product.nombre,
+            precio: product.precio,
+            escalones: leerEscalones(product.escalones),
+            unidad: unidadDe(product),
+          }}
           cantidadInicial={cantidadInicial}
           origen={origen}
         />

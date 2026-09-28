@@ -4,11 +4,12 @@ import FotoProducto from "@/components/FotoProducto";
 import QuantitySelector from "@/components/QuantitySelector";
 import { formatPrecio } from "@/lib/utils";
 import { leerEscalones, textoPromos } from "@/lib/precios";
-import { cliente } from "@/plataforma/cliente";
+import { cliente, unidadDe } from "@/plataforma/cliente";
 
 /** La ficha de un producto: /producto/<slug> (y /producto cuando hay uno solo). */
 export default function FichaProducto({ product, origen }: { product: Product; origen?: string }) {
   const escalones = leerEscalones(product.escalones);
+  const unidad = unidadDe(product);
 
   return (
     <>
@@ -26,10 +27,10 @@ export default function FichaProducto({ product, origen }: { product: Product; o
             <p className="texto-suave mt-4 leading-[1.65]">{product.descripcion}</p>
             <p className="mt-6 flex items-baseline gap-2.5">
               <span className="precio text-[2.5rem]">{formatPrecio(product.precio)}</span>
-              <span className="texto-suave">{cliente.textos.aclaracionPrecio}</span>
+              <span className="texto-suave">{product.aclaracionPrecio || cliente.textos.aclaracionPrecio}</span>
             </p>
             {escalones.length > 0 && (
-              <p className="mt-2 text-sm font-semibold text-[var(--destacado)]">Promo: {textoPromos(escalones)}</p>
+              <p className="mt-2 text-sm font-semibold text-[var(--destacado)]">Promo: {textoPromos(escalones, unidad)}</p>
             )}
             <div className="mt-8">
               <QuantitySelector
@@ -38,6 +39,7 @@ export default function FichaProducto({ product, origen }: { product: Product; o
                 origen={origen}
                 precio={product.precio}
                 escalones={escalones}
+                unidad={unidad}
               />
             </div>
           </div>

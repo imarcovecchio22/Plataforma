@@ -2,6 +2,7 @@ import Link from "next/link";
 import FotoProducto from "@/components/FotoProducto";
 import { formatPrecio } from "@/lib/utils";
 import { leerEscalones, textoPromos } from "@/lib/precios";
+import { unidadDe } from "@/plataforma/cliente";
 import type { Product } from "@prisma/client";
 
 export default function ProductoSection({ product }: { product: Product }) {
@@ -18,7 +19,7 @@ export default function ProductoSection({ product }: { product: Product }) {
           <p className="precio mt-6 text-4xl">{formatPrecio(product.precio)}</p>
           {leerEscalones(product.escalones).length > 0 && (
             <p className="mt-2 text-sm font-semibold text-[var(--destacado)]">
-              Promo: {textoPromos(leerEscalones(product.escalones))}
+              Promo: {textoPromos(leerEscalones(product.escalones), unidadDe(product))}
             </p>
           )}
           {sinStock ? (

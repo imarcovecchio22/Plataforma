@@ -76,7 +76,7 @@ describe("tienda sin productos cargados", () => {
   });
 
   it("textosDelProducto sin producto", () => {
-    expect(textosDelProducto(null)).toEqual({ nombre: "", precio: "a confirmar", promos: "" });
+    expect(textosDelProducto(null)).toMatchObject({ nombre: "", precio: "a confirmar", promos: "" });
   });
 });
 

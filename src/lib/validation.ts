@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { esUrlPublicaHttps } from "@/lib/urls";
 import { parsearPalabrasClave } from "@/lib/instagram/reglas";
-import { cliente } from "@/plataforma/cliente";
+import { cliente, unidadDe } from "@/plataforma/cliente";
 import { FORMATO_SLUG } from "@/lib/slug";
 import { errorEscalones } from "@/lib/precios";
 
@@ -215,11 +215,27 @@ export const productoSchema = z
       .default(""),
     activo: z.boolean(),
     orden: z.coerce.number().int("El orden va sin decimales").min(-100_000).max(100_000),
+    // Unidad propia (vacía = la del cliente) y lo que va al lado del precio (vacío = el del cliente)
+    unidadSingular: z.string().trim().max(30, "La unidad puede tener hasta 30 caracteres").default(""),
+    unidadPlural: z.string().trim().max(30, "La unidad puede tener hasta 30 caracteres").default(""),
+    unidadGenero: z.enum(["masculino", "femenino"]).default("masculino"),
+    aclaracionPrecio: z.string().trim().max(80, "La aclaración puede tener hasta 80 caracteres").default(""),
   })
   .superRefine((p, ctx) => {
-    const error = errorEscalones(p.precio, p.escalones);
+    if (Boolean(p.unidadSingular) !== Boolean(p.unidadPlural)) {
+      ctx.addIssue({ code: "custom", path: ["unidadPlural"], message: "Completá la unidad en singular y en plural (o dejá las dos vacías)" });
+      return;
+    }
+    const error = errorEscalones(p.precio, p.escalones, unidadDe(p));
     if (error) ctx.addIssue({ code: "custom", path: ["escalones"], message: error });
   })
-  .transform((p) => ({ ...p, escalones: [...p.escalones].sort((a, b) => a.desde - b.desde) }));
+  .transform((p) => ({
+    ...p,
+    escalones: [...p.escalones].sort((a, b) => a.desde - b.desde),
+    unidadSingular: p.unidadSingular || null,
+    unidadPlural: p.unidadPlural || null,
+    unidadGenero: p.unidadSingular ? p.unidadGenero : null,
+    aclaracionPrecio: p.aclaracionPrecio || null,
+  }));
 
 export type ProductoInput = z.infer<typeof productoSchema>;

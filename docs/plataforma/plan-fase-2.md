@@ -105,6 +105,18 @@ creados antes de migrar). El checkout sigue siendo de un producto pero ya escrib
 descuenta stock por ítem; admin de pedidos y aviso de Telegram muestran los ítems.
 
 ### Paso 5: carrito y checkout con varios productos
+Se hace en cuatro partes: **5a** unidad por producto, **5b** API de checkout con varios ítems,
+**5c** carrito (guardado, "Agregar al carrito", ícono y `/carrito`), **5d** página de checkout
+con varios ítems.
+
+- **5a ✅ (2026-09-28):** `Product` suma `unidadSingular`, `unidadPlural`, `unidadGenero` y
+  `aclaracionPrecio` (migración `20260928210806_producto_unidad_y_aclaracion`, columnas opcionales:
+  vacías = las del cliente). `unidadDe(producto)` y los helpers de precios y cantidades reciben la
+  unidad; la usan la ficha, el selector, el listado, la home, el checkout, el chat, los posts de
+  promo y los registros. El admin de productos suma los campos. Melera (sin unidad propia) no
+  cambia; el selector concuerda con el género ("cuántas piezas").
+
+Plan original del paso 5:
 Carrito (pregunta 3). La API de checkout recibe ítems, valida stock de cada uno, calcula todo en el
 servidor (promos por producto) y arma la preferencia de MP con un ítem por producto. El descuento
 de stock al pagarse sigue siendo atómico para todos los ítems.

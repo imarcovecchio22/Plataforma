@@ -25,6 +25,12 @@ model Product {
   activo      Boolean  @default(true)
   // Orden en la tienda, de menor a mayor: el primero activo es el destacado de la home
   orden       Int      @default(0)
+  // Unidad de venta de este producto (vacía = la del cliente, config.unidad)
+  unidadSingular   String?
+  unidadPlural     String?
+  unidadGenero     String? // "masculino" | "femenino"
+  // Va al lado del precio (ej. "el frasco de 500 g"); vacía = config.textos.aclaracionPrecio
+  aclaracionPrecio String?
   descripcion String
   precio      Int
   // Promos por cantidad: [{ desde: 5, precio: 6000 }, ...] (precio por frasco desde esa cantidad)

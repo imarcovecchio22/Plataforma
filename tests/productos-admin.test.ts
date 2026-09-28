@@ -14,7 +14,7 @@ import { slugDe } from "@/lib/slug";
 
 const MIEL = {
   id: "p1", nombre: "Miel", slug: "miel", descripcion: "", precio: 6500, stock: 10, escalones: [],
-  imagenUrl: null, activo: true, orden: 10,
+  imagenUrl: null, activo: true, orden: 10, unidadSingular: null, unidadPlural: null, unidadGenero: null, aclaracionPrecio: null,
 };
 const valores = (cambios: Record<string, unknown> = {}) => ({
   nombre: "Miel", slug: "miel", descripcion: "", precio: 6500, stock: 10, escalones: [], imagenUrl: "", activo: true, orden: 10,

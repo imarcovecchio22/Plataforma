@@ -3,7 +3,7 @@ import FotoProducto from "@/components/FotoProducto";
 import { formatPrecio } from "@/lib/utils";
 import { textoPromos, type Escalon } from "@/lib/precios";
 import type { Product } from "@prisma/client";
-import { cliente } from "@/plataforma/cliente";
+import { cliente, unidadDe } from "@/plataforma/cliente";
 
 export default function Hero({ product, escalones = [] }: { product: Product; escalones?: Escalon[] }) {
   return (
@@ -28,10 +28,10 @@ export default function Hero({ product, escalones = [] }: { product: Product; es
         </p>
         <p className={`flex items-baseline gap-2.5 ${escalones.length ? "mb-1" : "mb-[1.6rem]"}`}>
           <span className="precio text-[2.3rem]">{formatPrecio(product.precio)}</span>
-          <span className="texto-suave">{cliente.textos.aclaracionPrecio}</span>
+          <span className="texto-suave">{product.aclaracionPrecio || cliente.textos.aclaracionPrecio}</span>
         </p>
         {escalones.length > 0 && (
-          <p className="mb-[1.6rem] text-sm font-semibold text-[var(--destacado)]">Promo: {textoPromos(escalones)}</p>
+          <p className="mb-[1.6rem] text-sm font-semibold text-[var(--destacado)]">Promo: {textoPromos(escalones, unidadDe(product))}</p>
         )}
         <div className="flex flex-wrap items-center gap-x-[1.4rem] gap-y-3">
           <span className="wrap-focus">

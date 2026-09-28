@@ -3,7 +3,7 @@ import { logEvent } from "@/lib/logs";
 import { clientIp, demasiadosIntentos } from "@/lib/security";
 import { getMainProduct } from "@/lib/product";
 import { textosDelProducto } from "@/lib/precios";
-import { cliente, hostCliente } from "@/plataforma/cliente";
+import { cliente, hostCliente, type Unidad } from "@/plataforma/cliente";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -21,14 +21,14 @@ const VENTANA_MINUTOS = 10;
  * Instrucciones del asistente: la marca y sus datos salen de la config del cliente; el precio
  * y las promos, de la base (se editan en /admin/stock).
  */
-function buildSystemPrompt(precio: string, promos: string) {
+function buildSystemPrompt(precio: string, promos: string, unidad: Unidad) {
   const { ia } = cliente;
   const datos = ia.chat.datos.map((d) => `- ${d.replace(/\$SITIO/g, hostCliente)}`).join("\n");
   return `Sos el asistente virtual de ${cliente.nombre}, ${ia.descripcion}. Respondés preguntas de clientes de forma amigable, breve y en español rioplatense informal (tuteás). Solo respondés preguntas relacionadas con ${ia.tema}. Si te preguntan algo que no tiene que ver, redirigís amablemente.
 
 Información que conocés:
 - Producto: ${ia.chat.producto}, ${precio}${promos ? `
-- Promos por cantidad (el precio baja para cada ${cliente.unidad.singular}): ${promos}. Se aplican solas en la web al elegir la cantidad.` : ""}
+- Promos por cantidad (el precio baja para cada ${unidad.singular}): ${promos}. Se aplican solas en la web al elegir la cantidad.` : ""}
 ${datos}
 - Instagram: @${cliente.instagram}
 - Sitio web: ${hostCliente}
@@ -88,7 +88,7 @@ export async function POST(req: Request) {
   await logEvent("chat", "Mensaje al chat", { detalle: { ip } });
 
   const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-  const { precio, promos } = textosDelProducto(await getMainProduct());
+  const { precio, promos, unidad } = textosDelProducto(await getMainProduct());
 
   const contents = messages.map((m) => ({
     role: m.role === "assistant" ? ("model" as const) : ("user" as const),
@@ -102,7 +102,7 @@ export async function POST(req: Request) {
         const geminiStream = await ai.models.generateContentStream({
           model: MODEL,
           contents,
-          config: { systemInstruction: buildSystemPrompt(precio, promos) },
+          config: { systemInstruction: buildSystemPrompt(precio, promos, unidad) },
         });
 
         for await (const chunk of geminiStream) {

@@ -5,7 +5,7 @@ import { useState } from "react";
 import { formatPrecio } from "@/lib/utils";
 import type { Escalon } from "@/lib/precios";
 import { slugDe } from "@/lib/slug";
-import { cantidadConUnidad, cliente, masBarato } from "@/plataforma/cliente";
+import { cantidadConUnidad, masBaratoDe, unidadDe } from "@/plataforma/cliente";
 
 export type ProductoValores = {
   nombre: string;
@@ -17,6 +17,10 @@ export type ProductoValores = {
   imagenUrl: string;
   activo: boolean;
   orden: number;
+  unidadSingular: string;
+  unidadPlural: string;
+  unidadGenero: "masculino" | "femenino";
+  aclaracionPrecio: string;
 };
 
 /** Formulario para crear (o editar, si recibe productoId) un producto. */
@@ -41,6 +45,10 @@ export default function ProductoForm({
     imagenUrl: "",
     activo: true,
     orden: ordenSugerido,
+    unidadSingular: "",
+    unidadPlural: "",
+    unidadGenero: "masculino",
+    aclaracionPrecio: "",
   };
   const [valores, setValores] = useState<ProductoValores>(inicial ?? vacio);
   // Al crear, el slug sigue al nombre hasta que se lo edite a mano
@@ -58,6 +66,9 @@ export default function ProductoForm({
   function setNombre(nombre: string) {
     setValores((v) => ({ ...v, nombre, ...(slugAMano ? {} : { slug: nombre.trim() ? slugDe(nombre) : "" }) }));
   }
+
+  // La unidad con la que se muestran las promos (la propia, o la del cliente si está vacía)
+  const unidad = unidadDe(valores);
 
   function setEscalon(i: number, campo: keyof Escalon, valor: number) {
     set("escalones", valores.escalones.map((e, j) => (j === i ? { ...e, [campo]: valor } : e)));
@@ -138,24 +149,47 @@ export default function ProductoForm({
         <input id={`${idBase}-imagen`} className="input-field" value={valores.imagenUrl} onChange={(e) => set("imagenUrl", e.target.value)} placeholder="https://…" maxLength={500} />
       </div>
 
+      <div className="grid gap-4 sm:grid-cols-4">
+        <div>
+          <label className="label-field" htmlFor={`${idBase}-singular`}>Unidad (singular)</label>
+          <input id={`${idBase}-singular`} className="input-field" value={valores.unidadSingular} onChange={(e) => set("unidadSingular", e.target.value)} placeholder="ej. pieza" maxLength={30} />
+        </div>
+        <div>
+          <label className="label-field" htmlFor={`${idBase}-plural`}>Unidad (plural)</label>
+          <input id={`${idBase}-plural`} className="input-field" value={valores.unidadPlural} onChange={(e) => set("unidadPlural", e.target.value)} placeholder="ej. piezas" maxLength={30} />
+        </div>
+        <div>
+          <label className="label-field" htmlFor={`${idBase}-genero`}>Género</label>
+          <select id={`${idBase}-genero`} className="input-field" value={valores.unidadGenero} onChange={(e) => set("unidadGenero", e.target.value as ProductoValores["unidadGenero"])}>
+            <option value="masculino">cada uno</option>
+            <option value="femenino">cada una</option>
+          </select>
+        </div>
+        <div>
+          <label className="label-field" htmlFor={`${idBase}-aclaracion`}>Junto al precio</label>
+          <input id={`${idBase}-aclaracion`} className="input-field" value={valores.aclaracionPrecio} onChange={(e) => set("aclaracionPrecio", e.target.value)} placeholder="ej. la pieza de 12 cm" maxLength={80} />
+        </div>
+      </div>
+      <p className="-mt-2 text-xs text-stone-500">Vacíos: la unidad y el texto de la marca.</p>
+
       <div className="border-t border-marca-100 pt-4">
         <p className="label-field">Promos por cantidad</p>
         <p className="mb-3 text-xs text-stone-500">
-          Desde cierta cantidad, cada {cliente.unidad.singular} sale {masBarato}. Se aplican solas en la web, el chat y las respuestas de Instagram ($PROMOS).
+          Desde cierta cantidad, cada {unidad.singular} sale {masBaratoDe(unidad)}. Se aplican solas en la web, el chat y las respuestas de Instagram ($PROMOS).
         </p>
         <div className="space-y-3">
           {valores.escalones.map((e, i) => (
             <div key={i} className="flex flex-wrap items-end gap-3">
               <div className="w-32">
-                <label className="label-field" htmlFor={`${idBase}-desde-${i}`}>Desde ({cliente.unidad.plural})</label>
+                <label className="label-field" htmlFor={`${idBase}-desde-${i}`}>Desde ({unidad.plural})</label>
                 <input id={`${idBase}-desde-${i}`} type="number" min={2} step={1} className="input-field" value={e.desde} onChange={(ev) => setEscalon(i, "desde", Number(ev.target.value))} />
               </div>
               <div className="w-40">
-                <label className="label-field" htmlFor={`${idBase}-precio-${i}`}>Precio por {cliente.unidad.singular}</label>
+                <label className="label-field" htmlFor={`${idBase}-precio-${i}`}>Precio por {unidad.singular}</label>
                 <input id={`${idBase}-precio-${i}`} type="number" min={1} step={1} className="input-field" value={e.precio} onChange={(ev) => setEscalon(i, "precio", Number(ev.target.value))} />
               </div>
               <p className="pb-2.5 text-sm text-stone-600">
-                {cantidadConUnidad(e.desde)} = <strong>{formatPrecio(e.desde * e.precio)}</strong>
+                {cantidadConUnidad(e.desde, unidad)} = <strong>{formatPrecio(e.desde * e.precio)}</strong>
                 {e.precio < valores.precio && <> (ahorran {formatPrecio((valores.precio - e.precio) * e.desde)})</>}
               </p>
               <button type="button" onClick={() => set("escalones", valores.escalones.filter((_, j) => j !== i))} className="mb-1.5 rounded-full border border-stone-300 px-3 py-1.5 text-sm text-stone-600 hover:bg-stone-50">

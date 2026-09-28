@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { formatPrecio } from "@/lib/utils";
 import { leerEscalones, textoPromos } from "@/lib/precios";
+import { unidadDe } from "@/plataforma/cliente";
 import ProductoForm from "@/components/admin/ProductoForm";
 import ProductoActions from "@/components/admin/ProductoActions";
 
@@ -26,7 +27,7 @@ export default async function AdminProductosPage() {
 
       <section className="space-y-4">
         {productos.map((p) => {
-          const promos = textoPromos(leerEscalones(p.escalones));
+          const promos = textoPromos(leerEscalones(p.escalones), unidadDe(p));
           return (
             <article key={p.id} className={`rounded-xl border bg-white p-5 shadow-soft ${p.activo ? "border-marca-100" : "border-stone-200 opacity-80"}`}>
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-stone-500">
@@ -55,6 +56,10 @@ export default async function AdminProductosPage() {
                     imagenUrl: p.imagenUrl ?? "",
                     activo: p.activo,
                     orden: p.orden,
+                    unidadSingular: p.unidadSingular ?? "",
+                    unidadPlural: p.unidadPlural ?? "",
+                    unidadGenero: p.unidadGenero === "femenino" ? "femenino" : "masculino",
+                    aclaracionPrecio: p.aclaracionPrecio ?? "",
                   }}
                 />
               </div>

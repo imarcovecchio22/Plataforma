@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { formatPrecio } from "@/lib/utils";
 import { totalPedido, type Escalon } from "@/lib/precios";
-import { cantidadConUnidad, cliente } from "@/plataforma/cliente";
+import { cantidadConUnidad, cliente, type Unidad } from "@/plataforma/cliente";
 
 export default function QuantitySelector({
   slug,
@@ -12,6 +12,7 @@ export default function QuantitySelector({
   origen,
   precio,
   escalones = [],
+  unidad = cliente.unidad,
 }: {
   /** El producto que se compra (el checkout lo busca por slug). */
   slug: string;
@@ -19,6 +20,8 @@ export default function QuantitySelector({
   origen?: string;
   precio: number;
   escalones?: Escalon[];
+  /** La unidad del producto (sin ella, la del cliente). */
+  unidad?: Unidad;
 }) {
   const [cantidad, setCantidad] = useState(1);
   const router = useRouter();
@@ -54,7 +57,7 @@ export default function QuantitySelector({
   return (
     <div className="space-y-5">
       {atajos.length > 1 && (
-        <div className="flex flex-wrap gap-2" role="group" aria-label={`Elegí cuántos ${cliente.unidad.plural}`}>
+        <div className="flex flex-wrap gap-2" role="group" aria-label={`Elegí ${unidad.genero === "femenino" ? "cuántas" : "cuántos"} ${unidad.plural}`}>
           {atajos.map((n) => {
             const t = totalPedido(precio, escalones, n);
             const elegido = n === cantidad;
@@ -71,7 +74,7 @@ export default function QuantitySelector({
                 }`}
               >
                 <span className="block text-sm font-semibold text-[var(--texto)]">
-                  {cantidadConUnidad(n)}
+                  {cantidadConUnidad(n, unidad)}
                 </span>
                 <span className="block text-xs texto-suave">
                   {formatPrecio(t.total)}
@@ -112,7 +115,7 @@ export default function QuantitySelector({
         </span>
       </div>
       <p className="texto-suave text-sm">
-        {cantidad > 1 && <>{formatPrecio(unitario)} cada {cliente.unidad.singular}{ahorro > 0 && <> · ahorrás {formatPrecio(ahorro)}</>} · </>}
+        {cantidad > 1 && <>{formatPrecio(unitario)} cada {unidad.singular}{ahorro > 0 && <> · ahorrás {formatPrecio(ahorro)}</>} · </>}
         {stock} unidades disponibles
       </p>
     </div>

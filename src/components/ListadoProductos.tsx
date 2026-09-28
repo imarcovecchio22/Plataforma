@@ -3,6 +3,7 @@ import type { Product } from "@prisma/client";
 import FotoProducto from "@/components/FotoProducto";
 import { formatPrecio } from "@/lib/utils";
 import { leerEscalones, textoPromos } from "@/lib/precios";
+import { unidadDe } from "@/plataforma/cliente";
 
 /** Tarjetas de productos con link a su ficha (/productos y la home cuando hay más de uno). */
 export default function ListadoProductos({ productos, origen }: { productos: Product[]; origen?: string }) {
@@ -10,7 +11,7 @@ export default function ListadoProductos({ productos, origen }: { productos: Pro
   return (
     <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {productos.map((p) => {
-        const promos = textoPromos(leerEscalones(p.escalones));
+        const promos = textoPromos(leerEscalones(p.escalones), unidadDe(p));
         return (
           <li key={p.id}>
             <Link href={`/producto/${p.slug}${sufijo}`} className="tarjeta flex h-full flex-col gap-4 p-5">
