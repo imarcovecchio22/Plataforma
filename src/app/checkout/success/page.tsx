@@ -26,11 +26,11 @@ export default async function CheckoutSuccessPage({
 
   return (
     <>
-      <main className="contenedor-panal flex-1 flex flex-col items-center py-20 text-center">
+      <main className="contenedor-publico flex-1 flex flex-col items-center py-20 text-center">
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-900/50 text-3xl text-emerald-300">
           ✓
         </div>
-        <h1 className="mt-6 font-serif text-3xl font-semibold text-[var(--ink)] sm:text-4xl">
+        <h1 className="mt-6 font-serif text-3xl font-semibold text-[var(--texto)] sm:text-4xl">
           ¡Gracias por tu compra!
         </h1>
         <p className="mt-3 max-w-md texto-suave">
@@ -39,19 +39,19 @@ export default async function CheckoutSuccessPage({
         </p>
 
         {order && (
-          <div className="mt-8 w-full max-w-sm tarjeta-panal p-6 text-left">
+          <div className="mt-8 w-full max-w-sm tarjeta p-6 text-left">
             <p className="text-sm texto-suave">Pedido</p>
-            <p className="font-semibold text-[var(--ink)]">#{order.numero}</p>
+            <p className="font-semibold text-[var(--texto)]">#{order.numero}</p>
             <div className="mt-3 flex items-center justify-between text-sm">
               <span className="texto-suave">Total</span>
-              <span className="font-semibold text-[var(--ink)]">
+              <span className="font-semibold text-[var(--texto)]">
                 {formatPrecio(order.total)}
               </span>
             </div>
           </div>
         )}
 
-        <Link href="/" className="btn-panal mt-8">
+        <Link href="/" className="btn mt-8">
           Volver al inicio
         </Link>
       </main>

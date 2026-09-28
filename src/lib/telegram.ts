@@ -1,3 +1,5 @@
+import { cliente } from "@/plataforma/cliente";
+
 /**
  * Extrae el token ("<id numérico>:<secreto>") aunque la variable tenga texto de más
  * (comillas, prefijo "bot", el mensaje entero de BotFather, etc.).
@@ -6,7 +8,7 @@ export function parseBotToken(raw?: string) {
   return raw?.match(/\d{6,}:[A-Za-z0-9_-]{30,}/)?.[0];
 }
 
-/** Chat de Melera (el único que puede recibir avisos y tocar botones). */
+/** Chat del cliente (el único que puede recibir avisos y tocar botones). */
 export function telegramChatId() {
   return process.env.TELEGRAM_CHAT_ID?.trim().replace(/^["']|["']$/g, "") || undefined;
 }
@@ -44,7 +46,7 @@ export async function telegramApi<T = unknown>(
 }
 
 /**
- * Manda un mensaje al chat de Melera con el bot de Telegram (sin pasar por Make).
+ * Manda un mensaje al chat del cliente con el bot de Telegram (sin pasar por Make).
  * Devuelve false si faltan TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID (no manda nada);
  * si Telegram responde con error, lanza para que quien llama lo registre.
  */
@@ -63,7 +65,7 @@ export async function sendTelegramMessage(text: string) {
 export type BotonTelegram = { text: string; callback_data: string };
 
 /**
- * Manda una foto al chat de Melera, con botones opcionales. `photo` puede ser una URL
+ * Manda una foto al chat del cliente, con botones opcionales. `photo` puede ser una URL
  * (Telegram la descarga) o los bytes de la imagen (se suben como archivo: así Telegram no
  * depende de poder entrar al sitio, por ejemplo si Vercel le muestra un desafío anti-bots).
  */
@@ -90,7 +92,7 @@ export async function sendTelegramPhoto(opciones: {
       if (v !== undefined) payload.append(k, typeof v === "object" ? JSON.stringify(v) : String(v));
     }
     const bytes = new Uint8Array(opciones.photo); // copia sobre un ArrayBuffer propio (lo pide Blob)
-    payload.append("photo", new Blob([bytes], { type: "image/jpeg" }), opciones.nombreArchivo ?? "melera.jpg");
+    payload.append("photo", new Blob([bytes], { type: "image/jpeg" }), opciones.nombreArchivo ?? `${cliente.slug}.jpg`);
   }
 
   const result = await telegramApi<{ message_id: number }>("sendPhoto", payload, 30000);
@@ -114,13 +116,13 @@ export async function answerTelegramCallback(callbackQueryId: string, text: stri
 
 /**
  * URL pública del sitio (links al admin e imágenes que piden Telegram y Meta).
- * Si NEXT_PUBLIC_BASE_URL viene vacía o mal armada, usa el dominio de producción.
+ * Si NEXT_PUBLIC_BASE_URL viene vacía o mal armada, usa el dominio de producción del cliente.
  */
 export function siteUrl() {
   const candidatas = [
     process.env.NEXT_PUBLIC_BASE_URL,
     process.env.VERCEL_PROJECT_PRODUCTION_URL && `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`,
-    "https://melera.vercel.app",
+    cliente.dominio,
   ];
   const url = candidatas.map((c) => c?.trim()).find((c) => c && /^https?:\/\/[^/\s]+/.test(c));
   return url!.replace(/\/+$/, "");

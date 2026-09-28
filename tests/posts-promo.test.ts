@@ -1,14 +1,12 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { createRequire } from "module";
+import * as g from "@/plataforma/imagenes/plantillas";
 import { postIGSchema } from "@/lib/validation";
 import { promosParaPlantilla } from "@/lib/precios";
 import { armarPrompt } from "@/lib/instagram/copy";
 
-const require = createRequire(import.meta.url);
 beforeAll(() => {
   process.env.IMAGE_SIGNING_SECRET = "secreto-de-prueba";
 });
-const g = require("../melera-templates/generate.js");
 
 const ESC = [{ desde: 5, precio: 6000 }, { desde: 10, precio: 5500 }];
 

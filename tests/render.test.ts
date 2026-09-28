@@ -1,8 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { createRequire } from "module";
 
-const require = createRequire(import.meta.url);
-const { pedidoPermitido } = require("../melera-templates/render.js");
+import { pedidoPermitido } from "@/plataforma/imagenes/render";
 
 const pedido = (url: string, tipo: string) => ({ url: () => url, resourceType: () => tipo });
 

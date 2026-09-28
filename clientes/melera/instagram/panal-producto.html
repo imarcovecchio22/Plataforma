@@ -1,0 +1,103 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=1080"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet"><style>
+/* Estilo "panal": el lenguaje visual de la web (panal, luz, abeja con jarrón). */
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%}
+body{font-family:Poppins,sans-serif;overflow:hidden;background:#120702;color:#F7EBD3}
+.post{position:relative;width:100%;height:100%;overflow:hidden}
+.fondo,.abeja{position:absolute;inset:0;pointer-events:none}
+.fondo svg{display:block}
+.contenido{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:72px 80px 76px}
+/* ---------- marca: el logo sobre una celda crema con luz (como el círculo del estilo orgánico) ---------- */
+.marca{display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.sello{position:relative;width:150px;height:173px;flex-shrink:0;filter:drop-shadow(0 0 18px rgba(255,186,84,.55)) drop-shadow(0 0 4px rgba(255,214,140,.5))}
+.sello span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:radial-gradient(circle at 38% 32%,#FBECC8 0,#F4E4C1 45%,#E0BC7A 100%)}
+.sello img{width:74%;height:auto;display:block}
+.usuario{font-size:30px;font-weight:500;color:#DCC7A0;letter-spacing:.01em}
+/* ---------- texto ---------- */
+.velo{position:relative;isolation:isolate}
+.velo-chico{position:relative;isolation:isolate}
+.velo-chico::before{content:"";position:absolute;inset:-90% -26% -90% -26%;z-index:-1;background:radial-gradient(closest-side,rgba(14,6,1,.94),rgba(14,6,1,.72) 55%,rgba(14,6,1,0))}
+.velo::before{content:"";position:absolute;inset:-30% -32% -32% -32%;z-index:-1;background:radial-gradient(closest-side,rgba(14,6,1,.93),rgba(14,6,1,.74) 58%,rgba(14,6,1,0))}
+h1{font-family:Fraunces,Georgia,serif;font-weight:500;letter-spacing:-.022em;line-height:1.02;text-wrap:balance}
+h1 em,h1 i{font-style:italic;font-weight:400;color:#FFD27A;padding-right:.06em}
+.suave{color:#DCC7A0}
+.eyebrow{font-size:28px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:#FFD27A}
+.hexbtn{display:inline-flex;align-items:center;justify-content:center;min-height:84px;padding:0 58px;background:#EAA21C;color:#2A1405;font-weight:600;font-size:32px;--cut:24px;clip-path:polygon(var(--cut) 0,calc(100% - var(--cut)) 0,100% 50%,calc(100% - var(--cut)) 100%,var(--cut) 100%,0 50%)}
+/* ---------- historia (9:16): libres los 250 px de arriba y los 330 px de abajo ---------- */
+@media (max-aspect-ratio:10/16){
+ .contenido{padding:250px 84px 330px}
+ .sello{width:164px;height:189px}
+}
+
+.foto{position:relative;flex:1 1 0;min-height:0;display:flex;align-items:center;justify-content:center;margin:24px 0}
+.foto::before{content:"";position:absolute;left:50%;top:50%;width:min(900px,120%);height:118%;transform:translate(-50%,-50%);background:radial-gradient(closest-side,rgba(255,190,90,.55),rgba(255,150,40,.18) 55%,rgba(255,150,40,0))}
+.foto img{position:relative;display:block;width:560px;height:100%;max-height:640px;object-fit:contain;filter:drop-shadow(0 26px 34px rgba(8,3,0,.6)) drop-shadow(0 4px 10px rgba(8,3,0,.4))}
+.texto{flex-shrink:0;display:flex;flex-direction:column;gap:18px}
+.texto h1{font-size:96px}
+.detalle{font-size:34px;line-height:1.45}
+.fila{display:flex;align-items:center;justify-content:space-between;gap:30px;margin-top:10px}
+.precio{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:104px;line-height:1;color:#FFD27A;letter-spacing:-.01em;white-space:nowrap}
+.sitio{min-height:76px;padding:0 44px;font-size:30px;--cut:22px;flex-shrink:0}
+@media (max-aspect-ratio:10/16){
+ .foto img{width:680px;max-height:760px}
+ .texto h1{font-size:112px}
+ .texto{gap:22px}
+}
+</style></head>
+<body><div class="post"><div class="fondo"></div><div class="abeja" data-lugares='[[0.80,0.20,-26,44,-1],[0.19,0.20,26,44,1],[0.86,0.42,-4,52,-1],[0.14,0.42,4,52,1],[0.89,0.40,-2,50,-1],[0.11,0.40,2,50,1],[0.86,0.60,-4,50,-1]]'></div>
+<div class="contenido"><div class="marca"><div class="sello no-abeja"><span><img src="{{logo_src}}" alt="Melera"></span></div><div class="usuario velo-chico no-abeja">@melera.miel</div></div>
+<div class="foto"><img class="no-abeja" src="{{imagen_url}}" alt=""></div>
+<div class="texto velo">
+<h1 class="fit no-abeja">{{nombre_producto}}</h1>
+<div class="detalle suave fit no-abeja" data-lista="{{caracteristicas}}"></div>
+<div class="fila"><div class="precio fit-ancho no-abeja">{{precio}}</div><div class="hexbtn sitio no-abeja">melera.vercel.app</div></div>
+</div>
+</div></div>
+<!--SCRIPT:panal-fondo.js-->
+<script>
+(function(){
+  var W=innerWidth,H=innerHeight,semilla="{{semilla}}";
+  document.querySelector('.fondo').innerHTML=MeleraPanal.panal(W,H,semilla);
+  // "a|b|c" -> "a · b · c"
+  document.querySelectorAll('[data-lista]').forEach(function(el){
+    var partes=el.getAttribute('data-lista').split('|').map(function(s){return s.trim()}).filter(Boolean);
+    el.textContent=partes.join(' · '); if(!partes.length) el.remove();
+  });
+  document.querySelectorAll('[data-vacio]').forEach(function(el){ if(!el.textContent.trim()) el.remove(); });
+  // achica los textos largos hasta que todo entre (la foto cede espacio primero, por CSS)
+  // a lo ancho solo se miran los textos que no cortan línea (número, precio): la cursiva sobresale un poco y no cuenta
+  // (no se usa scrollHeight: el velo detrás del texto se extiende a propósito más allá del bloque)
+  function entra(){
+    var c=document.querySelector('.contenido'),cs=getComputedStyle(c),r=c.getBoundingClientRect();
+    var fondo=r.bottom-parseFloat(cs.paddingBottom),hijos=c.children,prev=r.top+parseFloat(cs.paddingTop)-1;
+    for(var i=0;i<hijos.length;i++){var h=hijos[i].getBoundingClientRect();if(h.top<prev-1||h.bottom>fondo+1)return false;prev=h.bottom;}
+    return !Array.prototype.some.call(document.querySelectorAll('.fit-ancho'),function(el){return el.scrollWidth>el.clientWidth+1});}
+  function achicar(){var g=0;while(!entra()&&g++<60){document.querySelectorAll('.fit').forEach(function(el){var fs=parseFloat(getComputedStyle(el).fontSize);el.style.fontSize=(fs*0.95)+'px'})}}
+  // la abeja va en el primer lugar candidato donde no toca texto, precio ni foto
+  function ubicarAbeja(){
+    // zonas a no tapar: el contorno real de cada texto (no el ancho de su caja) y de la foto
+    var tapar=[];Array.prototype.forEach.call(document.querySelectorAll('.no-abeja'),function(el){
+      var rects;if(el.children.length===0&&el.textContent.trim()){var rg=document.createRange();rg.selectNodeContents(el);rects=rg.getClientRects();}else rects=[el.getBoundingClientRect()];
+      if(el.tagName==='IMG'&&el.naturalWidth){var r0=el.getBoundingClientRect(),k=Math.min(r0.width/el.naturalWidth,r0.height/el.naturalHeight),w=el.naturalWidth*k,h=el.naturalHeight*k;
+        rects=[{left:r0.left+(r0.width-w)/2,top:r0.top+(r0.height-h)/2,right:r0.left+(r0.width+w)/2,bottom:r0.top+(r0.height+h)/2,width:w}];}
+      Array.prototype.forEach.call(rects,function(r){if(r.width)tapar.push({l:r.left-28,t:r.top-28,r:r.right+28,b:r.bottom+28})});});
+    var cand=JSON.parse(document.querySelector('.abeja').getAttribute('data-lugares'));
+    function caja(x,y,dx,dy){var b={l:x-80,t:y-75,r:x+80,b:y+110};
+      for(var k=1;k<=4;k++){var gx=x+dx*k,gy=y+110+dy*k;b.l=Math.min(b.l,gx-14);b.r=Math.max(b.r,gx+14);b.b=Math.max(b.b,gy+14);}
+      return b;}
+    function choca(b){
+      if(b.l<10||b.r>W-10||b.t<10||b.b>H-10) return true;
+      return tapar.some(function(z){return !(b.r<z.l||b.l>z.r||b.b<z.t||b.t>z.b)});}
+    for(var i=0;i<cand.length;i++){var c=cand[i],x=c[0]*W,y=c[1]*H,dx=c[2],dy=c[3];
+      if(!choca(caja(x,y,dx,dy))){var gotas=[];for(var k=1;k<=4;k++)gotas.push([Math.round(x+dx*k),Math.round(y+110+dy*k)]);
+        document.querySelector('.abeja').innerHTML=MeleraPanal.abeja({x:Math.round(x),y:Math.round(y),mirando:c[4]||-1,gotas:gotas});return;}}
+    // si no hay lugar libre, mejor sin abeja que tapando algo
+  }
+  // render.js espera esta promesa antes de sacar la captura
+  var foto=document.querySelector('.foto img');
+  window.__plantillaLista=Promise.all([document.fonts.ready,foto&&foto.decode?foto.decode().catch(function(){}):null]).then(function(){
+    // si la foto no cargó, que no quede el ícono de imagen rota
+    if(foto&&!(foto.complete&&foto.naturalWidth)) foto.style.visibility='hidden';
+    achicar();ubicarAbeja();});
+})();
+</script></body></html>

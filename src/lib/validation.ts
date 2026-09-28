@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { esUrlPublicaHttps } from "@/lib/urls";
 import { parsearPalabrasClave } from "@/lib/instagram/reglas";
+import { cliente } from "@/plataforma/cliente";
 
 export const checkoutSchema = z.object({
   nombre: z.string().trim().min(1, "Ingresá tu nombre"),
@@ -93,7 +94,10 @@ export const postIGSchema = z
     tipo: z.enum(["presentacion", "producto", "dato", "promo"], {
       errorMap: () => ({ message: "Elegí el tipo de post" }),
     }),
-    estilo: z.enum(["organico", "geo", "panal"], { errorMap: () => ({ message: "Elegí el estilo" }) }),
+    // Uno de los estilos que declara el cliente (config.estilosInstagram)
+    estilo: z
+      .string({ errorMap: () => ({ message: "Elegí el estilo" }) })
+      .refine((e) => cliente.estilosInstagram.some((d) => d.id === e), "Elegí el estilo"),
     tema: z
       .string()
       .trim()
@@ -159,3 +163,22 @@ export const autoRespuestaSchema = z.object({
 });
 
 export type AutoRespuestaInput = z.infer<typeof autoRespuestaSchema>;
+
+// ── Preguntas frecuentes de /consultas ──
+
+export const preguntaFrecuenteSchema = z.object({
+  pregunta: z
+    .string()
+    .trim()
+    .min(3, "Escribí la pregunta (mínimo 3 caracteres)")
+    .max(200, "La pregunta puede tener hasta 200 caracteres"),
+  respuesta: z
+    .string()
+    .trim()
+    .min(3, "Escribí la respuesta (mínimo 3 caracteres)")
+    .max(1500, "La respuesta puede tener hasta 1500 caracteres"),
+  orden: z.coerce.number().int("El orden tiene que ser un número entero").min(-1000).max(10000),
+  activa: z.boolean(),
+});
+
+export type PreguntaFrecuenteInput = z.infer<typeof preguntaFrecuenteSchema>;

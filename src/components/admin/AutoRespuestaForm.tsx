@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { cliente, deLaUnidad } from "@/plataforma/cliente";
 
 export type AutoRespuestaValores = {
   nombre: string;
@@ -94,7 +95,7 @@ export default function AutoRespuestaForm({
         </div>
         <div>
           <label className="label-field" htmlFor={`${idBase}-claves`}>Palabras clave (separadas por coma)</label>
-          <input id={`${idBase}-claves`} className="input-field" value={valores.palabrasClave} onChange={(e) => set("palabrasClave", e.target.value)} placeholder="miel, precio, comprar" required />
+          <input id={`${idBase}-claves`} className="input-field" value={valores.palabrasClave} onChange={(e) => set("palabrasClave", e.target.value)} placeholder={cliente.textos.ejemplosAdmin.palabrasClave} required />
         </div>
       </div>
 
@@ -124,7 +125,7 @@ export default function AutoRespuestaForm({
         <label className="label-field" htmlFor={`${idBase}-respuesta`}>Respuesta</label>
         <textarea id={`${idBase}-respuesta`} className="input-field min-h-[100px]" value={valores.respuesta} onChange={(e) => set("respuesta", e.target.value)} maxLength={640} required />
         <p className="mt-1 text-xs text-stone-500">
-          $PRECIO se reemplaza por el precio actual del frasco y $PROMOS por las promos por cantidad. Hasta 640 caracteres ({valores.respuesta.length}).
+          $PRECIO se reemplaza por el precio actual {deLaUnidad} y $PROMOS por las promos por cantidad. Hasta 640 caracteres ({valores.respuesta.length}).
         </p>
       </div>
 
@@ -132,15 +133,15 @@ export default function AutoRespuestaForm({
         <p className="label-field">Botones con link (hasta 3)</p>
         {valores.botones.map((b, i) => (
           <div key={i} className="grid gap-2 sm:grid-cols-[1fr_2fr_auto]">
-            <input aria-label={`Título del botón ${i + 1}`} className="input-field" value={b.titulo} onChange={(e) => setBoton(i, "titulo", e.target.value)} placeholder="🍯 Quiero comprar (hasta 20)" />
-            <input aria-label={`Link del botón ${i + 1}`} className="input-field" value={b.url} onChange={(e) => setBoton(i, "url", e.target.value)} placeholder="https://melera.vercel.app/producto?origen=instagram" />
+            <input aria-label={`Título del botón ${i + 1}`} className="input-field" value={b.titulo} onChange={(e) => setBoton(i, "titulo", e.target.value)} placeholder={`${cliente.textos.ejemplosAdmin.tituloBoton} (hasta 20)`} />
+            <input aria-label={`Link del botón ${i + 1}`} className="input-field" value={b.url} onChange={(e) => setBoton(i, "url", e.target.value)} placeholder={`${cliente.dominio}/producto?origen=instagram`} />
             <button type="button" onClick={() => set("botones", valores.botones.filter((_, j) => j !== i))} className="rounded-full border border-stone-300 px-3 py-1.5 text-sm text-stone-600 hover:bg-stone-50">
               Quitar
             </button>
           </div>
         ))}
         {valores.botones.length < 3 && (
-          <button type="button" onClick={() => set("botones", [...valores.botones, { titulo: "", url: "" }])} className="rounded-full border border-miel-500 px-3 py-1.5 text-sm font-semibold text-miel-700 hover:bg-miel-50">
+          <button type="button" onClick={() => set("botones", [...valores.botones, { titulo: "", url: "" }])} className="rounded-full border border-marca-500 px-3 py-1.5 text-sm font-semibold text-marca-700 hover:bg-marca-50">
             + Agregar botón
           </button>
         )}
@@ -149,7 +150,7 @@ export default function AutoRespuestaForm({
       {permiteComentarios && (
         <div>
           <label className="label-field" htmlFor={`${idBase}-publica`}>Respuesta pública al comentario (opcional)</label>
-          <input id={`${idBase}-publica`} className="input-field" value={valores.respuestaPublicaComentario} onChange={(e) => set("respuestaPublicaComentario", e.target.value)} placeholder="¡Te mandamos un DM! 🐝" maxLength={300} />
+          <input id={`${idBase}-publica`} className="input-field" value={valores.respuestaPublicaComentario} onChange={(e) => set("respuestaPublicaComentario", e.target.value)} placeholder={`¡Te mandamos un DM! ${cliente.textos.emoji}`} maxLength={300} />
         </div>
       )}
 

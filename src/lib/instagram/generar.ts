@@ -7,11 +7,9 @@ import { leerEscalones, promosParaPlantilla, textoPromos } from "@/lib/precios";
 import { formatPrecio } from "@/lib/utils";
 import { sendTelegramMessage, sendTelegramPhoto, siteUrl } from "@/lib/telegram";
 import { generarCopy, type CopyIG } from "@/lib/instagram/copy";
-import { botonesPost, hoyArgentina } from "@/lib/instagram/botones";
-
-// Módulo CommonJS compartido con las plantillas (melera-templates/generate.js)
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { buildImageUrls } = require("../../../melera-templates/generate");
+import { botonesPost, hoyLocal } from "@/lib/instagram/botones";
+import { cantidadConUnidad, cliente } from "@/plataforma/cliente";
+import { buildImageUrls, estiloUsaSemilla } from "@/plataforma/imagenes/plantillas";
 
 // Cuántos posts se generan por corrida (cada uno tarda ~10-20 s; la función tiene 60 s).
 export const MAX_POR_CORRIDA = 3;
@@ -22,8 +20,8 @@ export function datosPlantilla(post: PostIG, copy: CopyIG, promo?: { promos: str
     tipo: post.tipo,
     estilo: post.estilo,
     fecha: post.fecha.toISOString().slice(0, 10),
-    // estilo panal: el panal del fondo se genera a partir del id del post (mismo post, misma imagen)
-    ...(post.estilo === "panal" ? { semilla: String(post.id) } : {}),
+    // estilos con semilla (ej. panal): la imagen sale del id del post (mismo post, misma imagen)
+    ...(estiloUsaSemilla(post.estilo) ? { semilla: String(post.id) } : {}),
     tagline: copy.tagline,
     titulo: copy.titulo,
     subtitulo: copy.subtitulo,
@@ -70,12 +68,13 @@ async function generarUno(post: PostIG) {
     let promo: { promos: string; imagenUrl: string; texto: string } | undefined;
     if (post.tipo === "promo") {
       const producto = await getMainProduct();
+      if (!producto) throw new Error("No hay producto cargado en Precio y stock");
       const escalones = leerEscalones(producto.escalones);
       if (!escalones.length) throw new Error("No hay promos cargadas en Precio y stock");
       promo = {
         promos: promosParaPlantilla(producto.precio, escalones),
-        imagenUrl: `${siteUrl()}/producto-miel-500g.png`,
-        texto: `1 frasco a ${formatPrecio(producto.precio)} · ${textoPromos(escalones)}`,
+        imagenUrl: `${siteUrl()}${cliente.imagenes.producto.src}`,
+        texto: `${cantidadConUnidad(1)} a ${formatPrecio(producto.precio)} · ${textoPromos(escalones)}`,
       };
     }
 
@@ -139,7 +138,7 @@ async function generarUno(post: PostIG) {
  * hasta MAX_POR_CORRIDA por vez, en paralelo.
  */
 export async function generarPendientes(opciones: { ids?: number[] } = {}) {
-  const hoy = new Date(`${hoyArgentina()}T00:00:00.000Z`);
+  const hoy = new Date(`${hoyLocal()}T00:00:00.000Z`);
   const posts = await prisma.postIG.findMany({
     where: {
       estado: "pendiente",

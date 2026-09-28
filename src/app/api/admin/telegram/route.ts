@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { parseBotToken, sendTelegramMessage } from "@/lib/telegram";
 import { errorMessage } from "@/lib/logs";
+import { cliente } from "@/plataforma/cliente";
 
 // Diagnóstico de los avisos por Telegram (protegido por el middleware de /api/admin).
 function formatoToken(raw?: string) {
@@ -34,7 +35,7 @@ export async function POST() {
     return NextResponse.json({ ok: false, ...info, error: "Faltan variables del bot" }, { status: 500 });
   }
   try {
-    await sendTelegramMessage("✅ Prueba de avisos de la web de Melera");
+    await sendTelegramMessage(`✅ Prueba de avisos de la web de ${cliente.nombre}`);
     return NextResponse.json({ ok: true, ...info });
   } catch (error) {
     return NextResponse.json({ ok: false, ...info, error: errorMessage(error) }, { status: 502 });

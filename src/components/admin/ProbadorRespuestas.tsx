@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { cliente } from "@/plataforma/cliente";
 import {
   armarTextoRespuesta,
   elegirRegla,
@@ -37,7 +38,7 @@ export default function ProbadorRespuestas({ reglas, precio, promos = "" }: { re
           className="input-field"
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
-          placeholder="Ej: Hola! cuánto sale la miel?"
+          placeholder={`Ej: ${cliente.textos.ejemplosAdmin.mensajeProbador}`}
         />
         <select aria-label="Canal" className="input-field" value={canal} onChange={(e) => setCanal(e.target.value as CanalEvento)}>
           <option value="dm">Como DM</option>

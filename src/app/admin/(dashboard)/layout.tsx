@@ -13,9 +13,9 @@ export default async function AdminDashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-miel-50/40">
+    <div className="min-h-screen bg-marca-50/40">
       <AdminNav />
-      <main className="container-melera py-8">{children}</main>
+      <main className="contenedor py-8">{children}</main>
     </div>
   );
 }

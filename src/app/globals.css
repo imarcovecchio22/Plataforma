@@ -1,348 +1,43 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* Paleta del panal (prototipo aprobado). Solo la usan las páginas públicas (.tema-panal). */
-:root {
-  --wax-deep: #140803;
-  --wax: #2b1507;
-  --wall: #4e2d10;
-  --amber: #b8650a;
-  --honey: #eaa21c;
-  --glow: #ffd27a;
-  --cream: #f4e4c1;
-  --ink: #f7ebd3;
-  --ink-soft: #dcc7a0;
-  --on-honey: #2a1405;
-}
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+/* Tema del cliente (variables y clases de las páginas públicas): lo copia scripts/preparar-cliente.ts */
+@import "./tema-cliente.css";
+@import "tailwindcss/utilities";
 
 @layer base {
+  /* Fuentes por defecto; las del tema (next/font en el <body>) las pisan */
+  :root {
+    --fuente-texto: system-ui, sans-serif;
+    --fuente-titulos: Georgia, serif;
+  }
+
   html {
     scroll-behavior: smooth;
   }
 
-  /* Con el panal, el fondo del documento también es oscuro (sin destellos crema al hacer scroll). */
-  :root:has(.tema-panal) {
-    color-scheme: dark;
-    background: var(--wax-deep);
-  }
-  :root:has(.tema-panal) body {
-    background: var(--wax-deep);
-    color: var(--ink);
-  }
-
   body {
-    @apply bg-crema text-marron;
+    @apply bg-claro text-oscuro;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-full bg-miel-500 px-6 py-3 font-semibold text-white shadow-soft transition hover:bg-miel-600 disabled:cursor-not-allowed disabled:opacity-60;
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-marca-500 px-6 py-3 font-semibold text-white shadow-soft transition hover:bg-marca-600 disabled:cursor-not-allowed disabled:opacity-60;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-full border-2 border-miel-500 px-6 py-3 font-semibold text-miel-700 transition hover:bg-miel-50;
+    @apply inline-flex items-center justify-center gap-2 rounded-full border-2 border-marca-500 px-6 py-3 font-semibold text-marca-700 transition hover:bg-marca-50;
   }
 
   .input-field {
-    @apply w-full rounded-lg border border-stone-300 bg-white px-4 py-2.5 text-stone-800 outline-none transition focus:border-miel-400 focus:ring-2 focus:ring-miel-200;
+    @apply w-full rounded-lg border border-stone-300 bg-white px-4 py-2.5 text-stone-800 outline-none transition focus:border-marca-400 focus:ring-2 focus:ring-marca-200;
   }
 
   .label-field {
     @apply mb-1 block text-sm font-medium text-stone-600;
   }
 
-  .container-melera {
+  .contenedor {
     @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
-  }
-
-  /* ── Páginas públicas con el panal ── */
-  .tema-panal {
-    background: var(--wax-deep);
-    color: var(--ink);
-    -webkit-font-smoothing: antialiased;
-    /* El velo del texto y el resplandor de la foto se extienden más allá del borde: sin scroll horizontal */
-    overflow-x: clip;
-  }
-  .tema-panal :focus-visible {
-    outline: 2px solid var(--glow);
-    outline-offset: 3px;
-  }
-
-  /* Ancho y márgenes laterales del prototipo */
-  .contenedor-panal {
-    width: 100%;
-    padding-inline: clamp(20px, 5vw, 64px);
-  }
-
-  /* Botón hexagonal, como una celda */
-  .btn-panal {
-    --cut: 16px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    min-height: 54px;
-    padding: 0 2.1rem;
-    background: var(--honey);
-    color: var(--on-honey);
-    font: 600 1.02rem/1 var(--font-poppins), system-ui, sans-serif;
-    text-decoration: none;
-    border: 0;
-    cursor: pointer;
-    clip-path: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% 50%, calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 50%);
-    transition: background-color 0.18s ease, transform 0.12s ease;
-  }
-  .btn-panal:hover {
-    background: var(--glow);
-  }
-  .btn-panal:active {
-    transform: translateY(1px);
-  }
-  .btn-panal:focus-visible {
-    outline: none;
-    background: var(--glow);
-  }
-  .btn-panal:disabled {
-    cursor: not-allowed;
-    opacity: 0.6;
-  }
-  .btn-panal-sm {
-    --cut: 12px;
-    min-height: 42px;
-    padding: 0 1.35rem;
-    font-size: 0.95rem;
-  }
-  /* El clip-path recorta el outline: el foco se marca con un resplandor en el contenedor */
-  .wrap-focus {
-    display: inline-flex;
-    border-radius: 4px;
-  }
-  .wrap-focus:focus-within {
-    filter: drop-shadow(0 0 5px var(--glow)) drop-shadow(0 0 1px var(--cream));
-  }
-
-  /* Enlace con subrayado de miel (acción secundaria) */
-  .btn-ghost {
-    display: inline-flex;
-    align-items: center;
-    min-height: 54px;
-    padding: 0 0.4rem;
-    color: var(--ink);
-    font-weight: 500;
-    text-decoration: underline;
-    text-decoration-color: rgba(234, 162, 28, 0.6);
-    text-underline-offset: 0.35em;
-    text-decoration-thickness: 2px;
-    border-radius: 6px;
-  }
-  .btn-ghost:hover {
-    text-decoration-color: var(--glow);
-  }
-
-  .link-panal {
-    color: var(--ink-soft);
-    text-decoration: none;
-    font-weight: 500;
-    padding: 0.4rem 0.2rem;
-    border-radius: 6px;
-  }
-  .link-panal:hover {
-    color: var(--ink);
-  }
-
-  .titulo-panal {
-    color: var(--ink);
-    font-family: var(--font-fraunces), Georgia, serif;
-    font-weight: 500;
-    font-size: clamp(1.8rem, 3.4vw, 2.7rem);
-    line-height: 1.1;
-    letter-spacing: -0.015em;
-    text-wrap: balance;
-  }
-  .texto-suave {
-    color: var(--ink-soft);
-  }
-
-  /* Formularios sobre fondo oscuro */
-  .campo-panal {
-    width: 100%;
-    border-radius: 10px;
-    border: 1px solid rgba(234, 162, 28, 0.35);
-    background: rgba(14, 6, 2, 0.75);
-    color: var(--ink);
-    padding: 0.7rem 1rem;
-    outline: none;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
-  }
-  .campo-panal::placeholder {
-    color: rgba(220, 199, 160, 0.55);
-  }
-  .campo-panal:focus {
-    border-color: var(--honey);
-    box-shadow: 0 0 0 3px rgba(234, 162, 28, 0.25);
-  }
-  .etiqueta-panal {
-    display: block;
-    margin-bottom: 0.35rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--ink-soft);
-  }
-  /* Logo real sobre una celda crema con luz detrás (Header y Footer) */
-  .logo-celda {
-    display: inline-flex;
-    flex: none;
-    /* La sombra va en el contenedor: el clip-path de la celda la recortaría */
-    filter: drop-shadow(0 0 7px rgba(255, 186, 84, 0.55)) drop-shadow(0 0 2px rgba(255, 214, 140, 0.5));
-  }
-  .logo-celda-fondo {
-    display: flex;
-    width: 100%;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
-    clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
-    background: radial-gradient(circle at 38% 32%, #fbecc8 0, #f4e4c1 45%, #e0bc7a 100%);
-  }
-  .logo-celda-img {
-    width: 82%;
-    height: auto;
-  }
-
-  /* Contenido por encima del canvas del panal */
-  .tema-panal > header,
-  .tema-panal > main,
-  .tema-panal > footer {
-    position: relative;
-    z-index: 1;
-  }
-
-  /* Botón "Saltar" de la entrada (igual al prototipo) */
-  .boton-saltar {
-    position: fixed;
-    z-index: 60;
-    right: max(18px, env(safe-area-inset-right, 0px));
-    top: calc(18px + env(safe-area-inset-top, 0px));
-    background: rgba(59, 31, 8, 0.1);
-    color: #3b1f08;
-    border: 1.5px solid rgba(59, 31, 8, 0.45);
-    font: 500 0.9rem var(--font-poppins), system-ui, sans-serif;
-    padding: 0.5rem 1rem;
-    border-radius: 999px;
-    cursor: pointer;
-  }
-  .boton-saltar:hover {
-    background: rgba(59, 31, 8, 0.18);
-  }
-  .boton-saltar:focus-visible {
-    outline: 2px solid #3b1f08;
-    outline-offset: 3px;
-  }
-
-  /* Velo de la entrada: el primer cuadro, antes de que cargue el canvas */
-  .velo-entrada {
-    --r: max(36px, 9vmin);
-    display: none;
-    position: fixed;
-    inset: 0;
-    z-index: 55;
-    background: #f4e4c1;
-  }
-  :root[data-entrada] .velo-entrada {
-    display: block;
-    animation: velo-fuera 0.35s ease 4s forwards;
-  }
-  .velo-entrada svg {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: calc(var(--r) * 2.2);
-    height: calc(var(--r) * 2.2);
-    transform: translate(-50%, -50%);
-  }
-  .velo-logo {
-    position: absolute;
-    left: 50%;
-    top: calc(50% + var(--r) * 1.3);
-    height: calc(var(--r) * 2.2);
-    aspect-ratio: 1;
-    transform: translateX(-50%);
-    background: center / contain no-repeat;
-  }
-  @keyframes velo-fuera {
-    to {
-      opacity: 0;
-      visibility: hidden;
-    }
-  }
-
-  /* Velo radial oscuro detrás del texto sobre el panal (contraste AA, como el hero del prototipo) */
-  .velo-texto {
-    position: relative;
-    isolation: isolate;
-  }
-  .velo-texto::before {
-    content: "";
-    position: absolute;
-    inset: -22% -34% -28% -44%;
-    z-index: -1;
-    pointer-events: none;
-    background: radial-gradient(closest-side, rgba(14, 6, 1, 0.8), rgba(14, 6, 1, 0.5) 58%, rgba(14, 6, 1, 0));
-  }
-
-  /* Foto del frasco "apoyada en el panal": resplandor cálido detrás y sombra suave */
-  .foto-frasco {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    isolation: isolate;
-  }
-  .foto-frasco::before {
-    content: "";
-    position: absolute;
-    left: 50%;
-    top: 48%;
-    width: 130%;
-    aspect-ratio: 1;
-    transform: translate(-50%, -50%);
-    z-index: -1;
-    pointer-events: none;
-    background: radial-gradient(closest-side, rgba(255, 196, 92, 0.42), rgba(234, 162, 28, 0.16) 52%, rgba(234, 162, 28, 0));
-  }
-  .foto-frasco img {
-    filter: drop-shadow(0 22px 28px rgba(8, 3, 0, 0.55)) drop-shadow(0 4px 8px rgba(8, 3, 0, 0.35));
-    /* La foto termina con la muñeca cortada en la esquina de abajo a la derecha: esa esquina se desvanece */
-    -webkit-mask-image: radial-gradient(ellipse 48% 36% at 100% 100%, transparent 44%, #000 100%);
-    mask-image: radial-gradient(ellipse 48% 36% at 100% 100%, transparent 44%, #000 100%);
-  }
-
-  .titulo-hero {
-    font-family: var(--font-fraunces), Georgia, serif;
-    font-weight: 500;
-    font-size: clamp(2.3rem, 6.2vw, 5.2rem);
-    line-height: 1.02;
-    letter-spacing: -0.022em;
-    text-wrap: balance;
-  }
-  .precio-panal {
-    font-family: var(--font-fraunces), Georgia, serif;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    color: var(--glow);
-  }
-  .etiqueta-seccion {
-    font-size: 0.8rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--honey);
-  }
-
-  .tarjeta-panal {
-    border-radius: 16px;
-    border: 1px solid rgba(234, 162, 28, 0.22);
-    background: rgba(26, 12, 4, 0.82);
   }
 }

@@ -8,9 +8,9 @@ import { errorEscalones, leerEscalones, textoPromos } from "@/lib/precios";
 const updateSchema = z.object({
   productId: z.string().min(1),
   stock: z.coerce.number().int().min(0),
-  // Precio del frasco en pesos (se usa en la tienda, en /consultas, en el chat y en las respuestas de Instagram)
+  // Precio de una unidad en pesos (se usa en la tienda, en /consultas, en el chat y en las respuestas de Instagram)
   precio: z.coerce.number().int("El precio va sin centavos").min(1, "El precio tiene que ser mayor a 0").max(10_000_000).optional(),
-  // Promos por cantidad: precio por frasco desde cierta cantidad (hasta 3)
+  // Promos por cantidad: precio por unidad desde cierta cantidad (hasta 3)
   escalones: z
     .array(z.object({ desde: z.coerce.number().int().min(2).max(1000), precio: z.coerce.number().int().min(1).max(10_000_000) }))
     .max(3, "Hasta 3 promos")

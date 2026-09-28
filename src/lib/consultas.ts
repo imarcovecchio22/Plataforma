@@ -1,5 +1,6 @@
 import type { Consulta } from "@prisma/client";
 import { sendTelegramMessage, siteUrl } from "@/lib/telegram";
+import { cliente } from "@/plataforma/cliente";
 
 /** Link para responder la consulta: DM de Instagram o mail. */
 export function contactoHref(consulta: Pick<Consulta, "canal" | "instagram" | "email">) {
@@ -7,7 +8,7 @@ export function contactoHref(consulta: Pick<Consulta, "canal" | "instagram" | "e
     return `https://ig.me/m/${consulta.instagram.replace(/^@+/, "")}`;
   }
   if (consulta.email) {
-    return `mailto:${consulta.email}?subject=${encodeURIComponent("Tu consulta a Melera")}`;
+    return `mailto:${consulta.email}?subject=${encodeURIComponent(`Tu consulta a ${cliente.nombre}`)}`;
   }
   return null;
 }

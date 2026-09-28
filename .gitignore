@@ -17,6 +17,14 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# assets del cliente: los copia scripts/preparar-cliente.ts desde clientes/<CLIENTE>/
+/public/
+/src/app/favicon.ico
+/src/app/icon.png
+/src/app/icon.svg
+/src/app/apple-icon.png
+/src/app/tema-cliente.css
+
 # env files
 .env
 .env.local

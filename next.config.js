@@ -1,4 +1,21 @@
 /** @type {import('next').NextConfig} */
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const fs = require("fs");
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const path = require("path");
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { aliasCliente } = require("./scripts/alias-cliente");
+
+// El cliente de este despliegue (clientes/<CLIENTE>). Sin cliente no se levanta nada.
+// La config en sí se valida antes en scripts/preparar-cliente.ts.
+const CLIENTE = process.env.CLIENTE?.trim();
+if (!CLIENTE) {
+  throw new Error("Falta la variable de entorno CLIENTE (ej. CLIENTE=ejemplo).");
+}
+if (!fs.existsSync(path.join(__dirname, "clientes", CLIENTE, "config.ts"))) {
+  throw new Error(`CLIENTE="${CLIENTE}" pero no existe clientes/${CLIENTE}/config.ts.`);
+}
+
 const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "X-Frame-Options", value: "DENY" },
@@ -35,6 +52,9 @@ if (process.env.NODE_ENV === "production") {
 
 const nextConfig = {
   poweredByHeader: false,
+  turbopack: {
+    resolveAlias: aliasCliente(__dirname, CLIENTE),
+  },
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];
   },
@@ -45,12 +65,8 @@ const nextConfig = {
   serverExternalPackages: ["@sparticuz/chromium", "puppeteer-core"],
   outputFileTracingIncludes: {
     // Las claves son globs: los corchetes de [formato]/[token] no coincidirían literalmente
-    "/api/img/**": [
-      "./melera-templates/*.html",
-      "./melera-templates/logo.png",
-      "./melera-templates/panal-fondo.js",
-      "./node_modules/@sparticuz/chromium/bin/**",
-    ],
+    // (las plantillas de Instagram son del cliente de este despliegue)
+    "/api/img/**": [`./clientes/${CLIENTE}/instagram/**`, "./node_modules/@sparticuz/chromium/bin/**"],
   },
 };
 

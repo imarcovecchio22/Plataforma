@@ -18,18 +18,18 @@ export default async function CheckoutPendingPage({
 
   return (
     <>
-      <main className="contenedor-panal flex-1 flex flex-col items-center py-20 text-center">
+      <main className="contenedor-publico flex-1 flex flex-col items-center py-20 text-center">
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-amber-900/50 text-3xl text-amber-300">
           ⏳
         </div>
-        <h1 className="mt-6 font-serif text-3xl font-semibold text-[var(--ink)] sm:text-4xl">
+        <h1 className="mt-6 font-serif text-3xl font-semibold text-[var(--texto)] sm:text-4xl">
           Tu pago está pendiente
         </h1>
         <p className="mt-3 max-w-md texto-suave">
           Estamos esperando la confirmación de MercadoPago. Te avisaremos por
           email en cuanto se acredite el pago.
         </p>
-        <Link href="/" className="btn-panal mt-8">
+        <Link href="/" className="btn mt-8">
           Volver al inicio
         </Link>
       </main>

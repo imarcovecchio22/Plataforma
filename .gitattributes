@@ -1,0 +1,5 @@
+# Las plantillas de Instagram se leen tal cual para armar las imágenes y los snapshots las
+# comparan byte a byte: mismos fines de línea (LF) en cualquier sistema.
+*.html text eol=lf
+clientes/*/instagram/*.js text eol=lf
+tests/**/__snapshots__/** text eol=lf

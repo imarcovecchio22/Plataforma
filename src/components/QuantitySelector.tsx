@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { formatPrecio } from "@/lib/utils";
 import { totalPedido, type Escalon } from "@/lib/precios";
+import { cantidadConUnidad, cliente } from "@/plataforma/cliente";
 
 export default function QuantitySelector({
   stock,
@@ -22,7 +23,7 @@ export default function QuantitySelector({
   const sinStock = stock <= 0;
   // Solo para mostrar: el total que se cobra lo calcula el servidor con los mismos escalones
   const { unitario, total, ahorro } = totalPedido(precio, escalones, cantidad);
-  // Atajos: 1 frasco y cada promo que el stock permita
+  // Atajos: 1 unidad y cada promo que el stock permita
   const atajos = [1, ...escalones.map((e) => e.desde)].filter((n) => n <= stock);
 
   function decrementar() {
@@ -50,7 +51,7 @@ export default function QuantitySelector({
   return (
     <div className="space-y-5">
       {atajos.length > 1 && (
-        <div className="flex flex-wrap gap-2" role="group" aria-label="Elegí cuántos frascos">
+        <div className="flex flex-wrap gap-2" role="group" aria-label={`Elegí cuántos ${cliente.unidad.plural}`}>
           {atajos.map((n) => {
             const t = totalPedido(precio, escalones, n);
             const elegido = n === cantidad;
@@ -62,16 +63,16 @@ export default function QuantitySelector({
                 aria-pressed={elegido}
                 className={`rounded-xl border px-4 py-2 text-left transition ${
                   elegido
-                    ? "border-[var(--honey)] bg-[rgba(234,162,28,0.16)]"
-                    : "border-[rgba(234,162,28,0.35)] bg-[rgba(14,6,2,0.6)] hover:border-[var(--honey)]"
+                    ? "border-[var(--acento)] bg-[rgb(var(--acento-rgb)/0.16)]"
+                    : "border-[rgb(var(--acento-rgb)/0.35)] bg-[var(--fondo-control)] hover:border-[var(--acento)]"
                 }`}
               >
-                <span className="block text-sm font-semibold text-[var(--ink)]">
-                  {n === 1 ? "1 frasco" : `${n} frascos`}
+                <span className="block text-sm font-semibold text-[var(--texto)]">
+                  {cantidadConUnidad(n)}
                 </span>
                 <span className="block text-xs texto-suave">
                   {formatPrecio(t.total)}
-                  {t.ahorro > 0 && <span className="text-[var(--glow)]"> · ahorrás {formatPrecio(t.ahorro)}</span>}
+                  {t.ahorro > 0 && <span className="text-[var(--destacado)]"> · ahorrás {formatPrecio(t.ahorro)}</span>}
                 </span>
               </button>
             );
@@ -80,21 +81,21 @@ export default function QuantitySelector({
       )}
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-        <div className="flex w-fit items-center gap-3 rounded-full border border-[rgba(234,162,28,0.45)] bg-[rgba(14,6,2,0.6)] px-2 py-1">
+        <div className="flex w-fit items-center gap-3 rounded-full border border-[rgb(var(--acento-rgb)/0.45)] bg-[var(--fondo-control)] px-2 py-1">
           <button
             type="button"
             onClick={decrementar}
-            className="flex h-9 w-9 items-center justify-center rounded-full text-lg font-semibold text-[var(--ink)] transition hover:bg-white/10 disabled:opacity-40"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-lg font-semibold text-[var(--texto)] transition hover:bg-white/10 disabled:opacity-40"
             disabled={cantidad <= 1}
             aria-label="Restar cantidad"
           >
             −
           </button>
-          <span className="w-6 text-center font-semibold text-[var(--ink)]" aria-live="polite">{cantidad}</span>
+          <span className="w-6 text-center font-semibold text-[var(--texto)]" aria-live="polite">{cantidad}</span>
           <button
             type="button"
             onClick={incrementar}
-            className="flex h-9 w-9 items-center justify-center rounded-full text-lg font-semibold text-[var(--ink)] transition hover:bg-white/10 disabled:opacity-40"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-lg font-semibold text-[var(--texto)] transition hover:bg-white/10 disabled:opacity-40"
             disabled={cantidad >= stock}
             aria-label="Sumar cantidad"
           >
@@ -102,13 +103,13 @@ export default function QuantitySelector({
           </button>
         </div>
         <span className="wrap-focus w-fit">
-          <button type="button" onClick={comprar} className="btn-panal" data-bee-avoid>
+          <button type="button" onClick={comprar} className="btn" data-fondo-evita>
             Comprar · {formatPrecio(total)}
           </button>
         </span>
       </div>
       <p className="texto-suave text-sm">
-        {cantidad > 1 && <>{formatPrecio(unitario)} cada frasco{ahorro > 0 && <> · ahorrás {formatPrecio(ahorro)}</>} · </>}
+        {cantidad > 1 && <>{formatPrecio(unitario)} cada {cliente.unidad.singular}{ahorro > 0 && <> · ahorrás {formatPrecio(ahorro)}</>} · </>}
         {stock} unidades disponibles
       </p>
     </div>

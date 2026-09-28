@@ -1,0 +1,337 @@
+/*
+ * Tema de Melera: el panal (prototipo aprobado, clientes/melera/docs/panal-prototipo.html).
+ * scripts/preparar-cliente.ts lo copia a src/app/tema-cliente.css y globals.css lo importa.
+ *
+ * Contrato de tema (lo usan los componentes públicos de la plataforma; todo tema lo define):
+ * - Variables: --texto, --texto-suave, --destacado, --acento, --acento-rgb, --fondo-seccion,
+ *   --degrade-seccion, --fondo-control y --texto-pie.
+ *   Las fuentes (--fuente-texto y --fuente-titulos) las define next/font: ver tema/fuentes.ts.
+ * - Clases: .tema-publico, .contenedor-publico, .btn, .btn-sm, .wrap-focus, .btn-ghost,
+ *   .link-nav, .titulo, .titulo-hero, .texto-suave, .campo, .etiqueta, .velo-texto,
+ *   .foto-producto, .precio, .etiqueta-seccion y .tarjeta.
+ * El resto (.logo-celda, .velo-entrada, .boton-saltar…) es propio del panal.
+ */
+
+:root {
+  /* Paleta del panal */
+  --wax-deep: #140803;
+  --wax: #2b1507;
+  --wall: #4e2d10;
+  --amber: #b8650a;
+  --cream: #f4e4c1;
+  --on-honey: #2a1405;
+
+  /* Contrato de tema */
+  --texto: #f7ebd3;
+  --texto-suave: #dcc7a0;
+  --destacado: #ffd27a;
+  --acento: #eaa21c;
+  --acento-rgb: 234 162 28;
+  --fondo-seccion: rgba(18, 7, 2, 0.93);
+  /* "Quiénes somos": del panal a --fondo-seccion */
+  --degrade-seccion: linear-gradient(to bottom, rgba(18, 7, 2, 0) 0, rgba(18, 7, 2, 0.84) 26%, rgba(18, 7, 2, 0.93));
+  --fondo-control: rgba(14, 6, 2, 0.6);
+  --texto-pie: #a99270;
+}
+
+@layer base {
+  /* Con el panal, el fondo del documento también es oscuro (sin destellos crema al hacer scroll). */
+  :root:has(.tema-publico) {
+    color-scheme: dark;
+    background: var(--wax-deep);
+  }
+  :root:has(.tema-publico) body {
+    background: var(--wax-deep);
+    color: var(--texto);
+  }
+}
+
+@layer components {
+  .tema-publico {
+    background: var(--wax-deep);
+    color: var(--texto);
+    -webkit-font-smoothing: antialiased;
+    /* El velo del texto y el resplandor de la foto se extienden más allá del borde: sin scroll horizontal */
+    overflow-x: clip;
+  }
+  .tema-publico :focus-visible {
+    outline: 2px solid var(--destacado);
+    outline-offset: 3px;
+  }
+
+  /* Ancho y márgenes laterales del prototipo */
+  .contenedor-publico {
+    width: 100%;
+    padding-inline: clamp(20px, 5vw, 64px);
+  }
+
+  /* Botón hexagonal, como una celda */
+  .btn {
+    --cut: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 54px;
+    padding: 0 2.1rem;
+    background: var(--acento);
+    color: var(--on-honey);
+    font: 600 1.02rem/1 var(--fuente-texto), system-ui, sans-serif;
+    text-decoration: none;
+    border: 0;
+    cursor: pointer;
+    clip-path: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% 50%, calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 50%);
+    transition: background-color 0.18s ease, transform 0.12s ease;
+  }
+  .btn:hover {
+    background: var(--destacado);
+  }
+  .btn:active {
+    transform: translateY(1px);
+  }
+  .btn:focus-visible {
+    outline: none;
+    background: var(--destacado);
+  }
+  .btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  .btn-sm {
+    --cut: 12px;
+    min-height: 42px;
+    padding: 0 1.35rem;
+    font-size: 0.95rem;
+  }
+  /* El clip-path recorta el outline: el foco se marca con un resplandor en el contenedor */
+  .wrap-focus {
+    display: inline-flex;
+    border-radius: 4px;
+  }
+  .wrap-focus:focus-within {
+    filter: drop-shadow(0 0 5px var(--destacado)) drop-shadow(0 0 1px var(--cream));
+  }
+
+  /* Enlace con subrayado de miel (acción secundaria) */
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    min-height: 54px;
+    padding: 0 0.4rem;
+    color: var(--texto);
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-color: rgba(234, 162, 28, 0.6);
+    text-underline-offset: 0.35em;
+    text-decoration-thickness: 2px;
+    border-radius: 6px;
+  }
+  .btn-ghost:hover {
+    text-decoration-color: var(--destacado);
+  }
+
+  .link-nav {
+    color: var(--texto-suave);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.4rem 0.2rem;
+    border-radius: 6px;
+  }
+  .link-nav:hover {
+    color: var(--texto);
+  }
+
+  .titulo {
+    color: var(--texto);
+    font-family: var(--fuente-titulos), Georgia, serif;
+    font-weight: 500;
+    font-size: clamp(1.8rem, 3.4vw, 2.7rem);
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+  .texto-suave {
+    color: var(--texto-suave);
+  }
+
+  /* Formularios sobre fondo oscuro */
+  .campo {
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid rgba(234, 162, 28, 0.35);
+    background: rgba(14, 6, 2, 0.75);
+    color: var(--texto);
+    padding: 0.7rem 1rem;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .campo::placeholder {
+    color: rgba(220, 199, 160, 0.55);
+  }
+  .campo:focus {
+    border-color: var(--acento);
+    box-shadow: 0 0 0 3px rgba(234, 162, 28, 0.25);
+  }
+  .etiqueta {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--texto-suave);
+  }
+  /* Logo real sobre una celda crema con luz detrás (Header y Footer) */
+  .logo-celda {
+    display: inline-flex;
+    flex: none;
+    /* La sombra va en el contenedor: el clip-path de la celda la recortaría */
+    filter: drop-shadow(0 0 7px rgba(255, 186, 84, 0.55)) drop-shadow(0 0 2px rgba(255, 214, 140, 0.5));
+  }
+  .logo-celda-fondo {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+    background: radial-gradient(circle at 38% 32%, #fbecc8 0, #f4e4c1 45%, #e0bc7a 100%);
+  }
+  .logo-celda-img {
+    width: 82%;
+    height: auto;
+  }
+
+  /* Contenido por encima del canvas del panal */
+  .tema-publico > header,
+  .tema-publico > main,
+  .tema-publico > footer {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Botón "Saltar" de la entrada (igual al prototipo) */
+  .boton-saltar {
+    position: fixed;
+    z-index: 60;
+    right: max(18px, env(safe-area-inset-right, 0px));
+    top: calc(18px + env(safe-area-inset-top, 0px));
+    background: rgba(59, 31, 8, 0.1);
+    color: #3b1f08;
+    border: 1.5px solid rgba(59, 31, 8, 0.45);
+    font: 500 0.9rem var(--fuente-texto), system-ui, sans-serif;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .boton-saltar:hover {
+    background: rgba(59, 31, 8, 0.18);
+  }
+  .boton-saltar:focus-visible {
+    outline: 2px solid #3b1f08;
+    outline-offset: 3px;
+  }
+
+  /* Velo de la entrada: el primer cuadro, antes de que cargue el canvas */
+  .velo-entrada {
+    --r: max(36px, 9vmin);
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    background: #f4e4c1;
+  }
+  :root[data-entrada] .velo-entrada {
+    display: block;
+    animation: velo-fuera 0.35s ease 4s forwards;
+  }
+  .velo-entrada svg {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: calc(var(--r) * 2.2);
+    height: calc(var(--r) * 2.2);
+    transform: translate(-50%, -50%);
+  }
+  .velo-logo {
+    position: absolute;
+    left: 50%;
+    top: calc(50% + var(--r) * 1.3);
+    height: calc(var(--r) * 2.2);
+    aspect-ratio: 1;
+    transform: translateX(-50%);
+    background: center / contain no-repeat;
+  }
+  @keyframes velo-fuera {
+    to {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  /* Velo radial oscuro detrás del texto sobre el panal (contraste AA, como el hero del prototipo) */
+  .velo-texto {
+    position: relative;
+    isolation: isolate;
+  }
+  .velo-texto::before {
+    content: "";
+    position: absolute;
+    inset: -22% -34% -28% -44%;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(closest-side, rgba(14, 6, 1, 0.8), rgba(14, 6, 1, 0.5) 58%, rgba(14, 6, 1, 0));
+  }
+
+  /* Foto del frasco "apoyada en el panal": resplandor cálido detrás y sombra suave */
+  .foto-producto {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    isolation: isolate;
+  }
+  .foto-producto::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 48%;
+    width: 130%;
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(closest-side, rgba(255, 196, 92, 0.42), rgba(234, 162, 28, 0.16) 52%, rgba(234, 162, 28, 0));
+  }
+  .foto-producto img {
+    filter: drop-shadow(0 22px 28px rgba(8, 3, 0, 0.55)) drop-shadow(0 4px 8px rgba(8, 3, 0, 0.35));
+    /* La foto termina con la muñeca cortada en la esquina de abajo a la derecha: esa esquina se desvanece */
+    -webkit-mask-image: radial-gradient(ellipse 48% 36% at 100% 100%, transparent 44%, #000 100%);
+    mask-image: radial-gradient(ellipse 48% 36% at 100% 100%, transparent 44%, #000 100%);
+  }
+
+  .titulo-hero {
+    font-family: var(--fuente-titulos), Georgia, serif;
+    font-weight: 500;
+    font-size: clamp(2.3rem, 6.2vw, 5.2rem);
+    line-height: 1.02;
+    letter-spacing: -0.022em;
+    text-wrap: balance;
+  }
+  .precio {
+    font-family: var(--fuente-titulos), Georgia, serif;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--destacado);
+  }
+  .etiqueta-seccion {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--acento);
+  }
+
+  .tarjeta {
+    border-radius: 16px;
+    border: 1px solid rgba(234, 162, 28, 0.22);
+    background: rgba(26, 12, 4, 0.82);
+  }
+}

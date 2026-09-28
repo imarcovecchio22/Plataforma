@@ -5,6 +5,7 @@ import { checkoutSchema } from "@/lib/validation";
 import { getMainProduct } from "@/lib/product";
 import { leerEscalones, totalPedido } from "@/lib/precios";
 import { errorMessage, logEvent } from "@/lib/logs";
+import { cliente } from "@/plataforma/cliente";
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
@@ -22,6 +23,9 @@ export async function POST(req: NextRequest) {
 
   const data = parsed.data;
   const product = await getMainProduct();
+  if (!product) {
+    return NextResponse.json({ error: "No hay productos a la venta" }, { status: 404 });
+  }
 
   if (data.cantidad > product.stock) {
     await logEvent("pedido", `Compra rechazada por falta de stock (pidió ${data.cantidad}, hay ${product.stock})`, {
@@ -76,7 +80,7 @@ export async function POST(req: NextRequest) {
             title: product.nombre,
             quantity: data.cantidad,
             unit_price: unitario,
-            currency_id: "ARS",
+            currency_id: cliente.region.moneda,
           },
         ],
         payer: {

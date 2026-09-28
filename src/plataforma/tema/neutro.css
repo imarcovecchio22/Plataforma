@@ -1,0 +1,178 @@
+/*
+ * Tema neutro de la plataforma: el que usa un cliente sin clientes/<slug>/tema.css.
+ * Fondo claro, sin animaciones, fuentes del sistema (o las del tema, si las trae) y el color de
+ * la marca de la config (--marca-*, que define el layout raíz a partir de config.colores).
+ * Implementa el contrato de tema completo (ver clientes/melera/tema.css).
+ */
+
+:root {
+  --texto: rgb(var(--oscuro));
+  --texto-suave: #57534e;
+  --destacado: rgb(var(--marca-700));
+  --acento: rgb(var(--marca-500));
+  --acento-rgb: var(--marca-500);
+  --fondo-seccion: #f5f5f4;
+  --degrade-seccion: linear-gradient(to bottom, #fafaf9, #f5f5f4);
+  --fondo-control: #ffffff;
+  --texto-pie: #57534e;
+}
+
+@layer base {
+  :root:has(.tema-publico) body {
+    background: #fafaf9;
+    color: var(--texto);
+  }
+}
+
+@layer components {
+  .tema-publico {
+    background: #fafaf9;
+    color: var(--texto);
+    -webkit-font-smoothing: antialiased;
+  }
+  .tema-publico :focus-visible {
+    outline: 2px solid var(--destacado);
+    outline-offset: 3px;
+  }
+
+  .contenedor-publico {
+    width: 100%;
+    padding-inline: clamp(16px, 5vw, 64px);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 48px;
+    padding: 0 1.6rem;
+    border: 0;
+    border-radius: 10px;
+    background: rgb(var(--marca-700));
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+  }
+  .btn:hover {
+    background: rgb(var(--marca-800));
+  }
+  .btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  .btn-sm {
+    min-height: 40px;
+    padding: 0 1.1rem;
+    font-size: 0.95rem;
+  }
+  .wrap-focus {
+    display: inline-flex;
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 0 0.4rem;
+    color: var(--texto);
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-color: rgb(var(--acento-rgb) / 0.6);
+    text-underline-offset: 0.35em;
+    text-decoration-thickness: 2px;
+    border-radius: 6px;
+  }
+  .btn-ghost:hover {
+    text-decoration-color: var(--destacado);
+  }
+
+  .link-nav {
+    color: var(--texto-suave);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.4rem 0.2rem;
+    border-radius: 6px;
+  }
+  .link-nav:hover {
+    color: var(--texto);
+  }
+
+  .titulo {
+    color: var(--texto);
+    font-family: var(--fuente-titulos);
+    font-weight: 600;
+    font-size: clamp(1.7rem, 3.2vw, 2.5rem);
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+  .titulo-hero {
+    font-family: var(--fuente-titulos);
+    font-weight: 600;
+    font-size: clamp(2.2rem, 5.5vw, 4.4rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  .texto-suave {
+    color: var(--texto-suave);
+  }
+
+  .campo {
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid #d6d3d1;
+    background: #fff;
+    color: var(--texto);
+    padding: 0.7rem 1rem;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .campo::placeholder {
+    color: #a8a29e;
+  }
+  .campo:focus {
+    border-color: var(--acento);
+    box-shadow: 0 0 0 3px rgb(var(--acento-rgb) / 0.25);
+  }
+  .etiqueta {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--texto-suave);
+  }
+
+  .velo-texto {
+    position: relative;
+  }
+
+  .foto-producto {
+    display: flex;
+    justify-content: center;
+  }
+  .foto-producto img {
+    filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.12));
+  }
+
+  .precio {
+    font-family: var(--fuente-titulos);
+    font-weight: 700;
+    color: var(--destacado);
+  }
+  .etiqueta-seccion {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--destacado);
+  }
+
+  .tarjeta {
+    border-radius: 16px;
+    border: 1px solid #e7e5e4;
+    background: #fff;
+  }
+}

@@ -11,8 +11,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
-    // Plantillas de Instagram (scripts sueltos de Node, no son parte de la app)
-    "melera-templates/**",
+    // Plantillas de Instagram de cada cliente (HTML y scripts que se insertan en ellas)
+    "clientes/*/instagram/**",
   ]),
 ]);
 

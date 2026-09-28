@@ -1,0 +1,110 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=1080"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%}
+body{font-family:Poppins,sans-serif;overflow:hidden;background:var(--bg);color:var(--fg)}
+.post{position:relative;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;padding:150px 90px 0;text-align:center;overflow:hidden}
+.bgfx{position:absolute;inset:0;pointer-events:none}
+/* ---------- marca ---------- */
+.brand{position:relative;display:flex;align-items:center;gap:14px;font-family:Fraunces,serif;font-weight:600;font-size:34px;letter-spacing:.04em;color:var(--brand)}
+.brand i{width:26px;height:30px;background:var(--acc);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
+/* ---------- cuerpo ---------- */
+.body{position:relative;flex:1;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;padding:40px 0}
+.eyebrow{font-weight:500;font-size:28px;letter-spacing:.3em;text-transform:uppercase;color:var(--acc)}
+.title{font-family:Fraunces,serif;font-weight:600;font-size:124px;line-height:1;letter-spacing:-.015em;max-width:820px}
+.title em,.title i{font-style:italic;font-weight:400;color:var(--acc)}
+.text{font-size:36px;line-height:1.5;max-width:820px;color:var(--soft)}
+.rule{width:110px;height:3px;border-radius:2px;background:var(--acc)}
+.cta{display:inline-block;font-weight:600;font-size:30px;letter-spacing:.03em;padding:20px 46px;border-radius:999px;background:var(--acc);color:var(--ctafg)}
+/* dato */
+.num{font-family:Fraunces,serif;font-weight:700;font-size:250px;line-height:.9;color:var(--acc);letter-spacing:-.03em}
+/* producto */
+.photo{width:600px;height:600px;background:var(--photo-bg) center/cover no-repeat;flex-shrink:0}
+.pname{font-family:Fraunces,serif;font-weight:600;font-size:72px;line-height:1.05}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;max-width:880px}
+.chips span{font-size:26px;font-weight:500;padding:10px 24px;border-radius:999px;border:2px solid var(--acc);color:var(--fg)}
+.price{font-family:Fraunces,serif;font-weight:700;font-size:96px;color:var(--acc);line-height:1}
+/* ---------- pie ---------- */
+.foot{position:relative;width:calc(100% + 180px);height:100px;display:flex;align-items:center;justify-content:center;gap:16px;font-size:28px;font-weight:500;letter-spacing:.06em;background:var(--footbg);color:var(--footfg);flex-shrink:0}
+.foot b{width:9px;height:9px;border-radius:50%;background:var(--footdot)}
+/* ---------- story (9:16): más aire, zona segura ---------- */
+@media (max-aspect-ratio:10/16){
+ .post{padding-top:260px}
+ .body{gap:44px}
+ .title{font-size:136px}
+ .photo{width:720px;height:720px}
+ .foot{height:120px;margin-bottom:170px;width:auto;border-radius:999px;padding:0 60px}
+}
+
+:root{--bg:#fff3dc;--fg:#3b1f0a;--soft:#5a3517;--acc:#c97f08;--brand:#3b1f0a;--ctafg:#fff3dc;--footbg:#3b1f0a;--footfg:#fff3dc;--footdot:#e9a63a;--photo-bg:url('https://melera.vercel.app/producto-miel-500g.png')}
+.cta{background:#3b1f0a}
+.bgfx .hex{position:absolute;inset:0;opacity:.16}
+.bgfx .hexbig{position:absolute;width:520px;height:600px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:#e9a63a;opacity:.18}
+.bgfx .h1{right:-170px;top:-120px}
+.bgfx .h2{left:-230px;bottom:40px;width:420px;height:485px;opacity:.12}
+.title em,.title i{color:#8b4513}
+.num{color:#c97f08}
+.photo{clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);width:560px;height:646px}
+.chips span{border-color:#c97f08}
+@media (max-aspect-ratio:10/16){.photo{width:640px;height:739px}}
+.brand{flex-direction:column;gap:12px;font-size:28px}
+.brand .logo{height:150px;width:auto;display:block}
+@media (max-aspect-ratio:10/16){.brand .logo{height:190px}}
+/* feed (4:5): logo más chico y la foto cede espacio si no entra todo */
+@media (min-aspect-ratio:10/16){
+ .body{min-height:0}
+ .brand .logo{height:120px}
+ .photo{flex:0 1 646px;height:auto;width:auto;aspect-ratio:560/646;min-height:0}
+}
+/* story: la foto también cede espacio para no pisar la zona segura de abajo */
+@media (max-aspect-ratio:10/16){
+ .body{min-height:0}
+ .photo{flex:0 1 739px;height:auto;width:auto;aspect-ratio:640/739;min-height:0}
+}
+/* la cursiva de Fraunces se come el espacio siguiente */
+.title em,.title i,.pname em,.pname i{padding-right:.06em}
+
+/* ---------- promo ---------- */
+.promos{display:flex;flex-direction:column;gap:14px;width:100%;max-width:760px}
+.promo{display:grid;grid-template-columns:1fr auto;align-items:baseline;column-gap:24px;padding:16px 30px;border-radius:22px;border:2px solid var(--acc);text-align:left}
+.promo-cant{font-size:38px;font-weight:600}
+.promo-precio{font-family:Fraunces,serif;font-weight:700;font-size:52px;color:var(--acc);line-height:1}
+.promo-extra{grid-column:1/-1;font-size:26px;font-weight:500;color:var(--soft)}
+.promo:not(.promo-ahorro){border-style:dashed;opacity:.85}
+.promo:not(.promo-ahorro) .promo-precio{font-size:40px}
+.promo-titulo{font-family:Fraunces,serif;font-weight:600;font-size:92px;line-height:1.02;letter-spacing:-.015em;max-width:860px}
+.promo-titulo em,.promo-titulo i{font-style:italic;font-weight:400;color:var(--acc);padding-right:.06em}
+.body .photo{flex:0 1 380px!important;width:auto!important;height:auto!important}
+@media (max-aspect-ratio:10/16){.promo-titulo{font-size:104px}.promo{padding:20px 34px}.promo-cant{font-size:42px}.promo-precio{font-size:58px}}
+</style></head>
+<body><div class="post"><div class="bgfx"><svg class="hex" width="100%" height="100%"><defs><pattern id="h" width="90" height="155.88" patternUnits="userSpaceOnUse"><path d="M45 0 L90 25.98 L90 77.94 L45 103.92 L0 77.94 L0 25.98 Z M45 103.92 L45 155.88 M0 25.98 L-45 0 M90 25.98 L135 0" fill="none" stroke="#c97f08" stroke-width="2"/></pattern></defs><rect width="100%" height="100%" fill="url(#h)"/></svg><div class="hexbig h1"></div><div class="hexbig h2"></div></div>
+<div class="brand"><img class="logo" src="data:image/png;base64,LOGO" alt="Melera"><span>@melera.miel</span></div>
+<div class="body">
+<div class="photo"></div>
+<div class="eyebrow fit">llevá más, pagá menos</div>
+<div class="promo-titulo fit">Más miel, <em>mejor precio</em></div>
+<div class="promos fit" data-promos="1 frasco|$ 6.500|;5 frascos|$ 30.000|$ 6.000 c/u · ahorrás $ 2.500;10 frascos|$ 55.000|$ 5.500 c/u · ahorrás $ 10.000"></div>
+<div class="cta fit">Pedila en la web</div>
+</div>
+<div class="foot"><b></b>melera.vercel.app<b></b></div>
+</div><script>
+// promos: "1 frasco|$ 6.500|;5 frascos|$ 30.000|ahorrás $ 2.500" -> filas
+document.querySelectorAll('[data-promos]').forEach(function(el){
+  el.getAttribute('data-promos').split(';').map(function(f){return f.split('|')}).filter(function(p){return p[0]&&p[1]}).forEach(function(p){
+    var fila=document.createElement('div');fila.className='promo'+(p[2]?' promo-ahorro':'');
+    var a=document.createElement('span');a.className='promo-cant';a.textContent=p[0].trim();
+    var b=document.createElement('span');b.className='promo-precio';b.textContent=p[1].trim();
+    fila.appendChild(a);fila.appendChild(b);
+    if(p[2]){var c=document.createElement('span');c.className='promo-extra';c.textContent=p[2].trim();fila.appendChild(c);}
+    el.appendChild(fila);});
+});
+
+// caracteristicas: "Pura|Natural|500 g" -> chips
+document.querySelectorAll('[data-list]').forEach(el=>{
+  el.getAttribute('data-list').split('|').map(s=>s.trim()).filter(Boolean)
+    .forEach(t=>{const s=document.createElement('span');s.textContent=t;el.appendChild(s)})});
+// achica textos largos hasta que entren
+function fit(){const body=document.querySelector('.body');let guard=0;
+  while(body.scrollHeight>body.clientHeight+2 && guard++<40){
+    document.querySelectorAll('.fit').forEach(el=>{const fs=parseFloat(getComputedStyle(el).fontSize);el.style.fontSize=(fs*0.94)+'px'})}}
+document.fonts.ready.then(function(){fit();var ph=document.querySelector('.photo');if(ph&&ph.getBoundingClientRect().height<200){ph.style.display='none';}});
+</script></body></html>

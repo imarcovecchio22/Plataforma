@@ -1,6 +1,36 @@
-# Melera
+# Plataforma: tienda + Instagram en piloto automático
 
-Tienda online de miel artesanal — landing, ficha de producto, checkout con MercadoPago, sección de consultas, avisos por Telegram y panel de administración de pedidos, stock, consultas y logs. También maneja la publicación en Instagram de punta a punta (cronograma, textos con Gemini, imágenes, aprobación por Telegram y publicación con la API de Meta), sin Make ni Buffer.
+Plataforma para emprendimientos: **tienda propia** (landing, productos, checkout con Mercado Pago, stock y pedidos), **Instagram en piloto automático** (cronograma, textos con Gemini, imágenes generadas con Chromium, aprobación desde Telegram y publicación con la Graph API de Meta) y **respuestas automáticas de DMs** que llevan a la compra, con un panel de administración para gestionar todo (pedidos, stock, consultas, posts, autorespuestas y logs). Todo propio, sin Make, Buffer ni ManyChat.
+
+Cada cliente es **una instancia desplegada** de este mismo repo, con su propia base y sus propias credenciales. La variable de entorno `CLIENTE` elige qué cliente carga el despliegue; su identidad (marca, tema visual, textos, plantillas de Instagram, tono para Gemini) vive en `clientes/<slug>/`, los datos del negocio en su base y los secretos en sus variables de entorno. Las funcionalidades opcionales (autorespuestas, chat con IA, cotizador) se prenden por cliente.
+
+El primer cliente es **Melera** (miel artesanal), de donde salió el código; el segundo va a ser **3DRinoMaker** (impresiones 3D). La fase 1 (Melera como cliente de la plataforma, sin cambiar lo que se ve) está terminada; las próximas son multiproducto y zonas de envío, y después Rino. Detalle en [`CLAUDE.md`](CLAUDE.md) y [`docs/plataforma/`](docs/plataforma/). Las secciones de más abajo todavía describen el funcionamiento con Melera como ejemplo.
+
+## Clientes
+
+```
+clientes/<slug>/
+  config.ts        identidad, validada con zod (src/plataforma/cliente/esquema.ts): nombre, dominio,
+                   Instagram, SEO, colores, imágenes, módulos, estilos de Instagram, textos para Gemini,
+                   unidad de venta, textos de la tienda y región
+  seed.ts          datos iniciales del negocio (producto, preguntas frecuentes, respuestas automáticas)
+  public/          imágenes que se sirven tal cual (logo, foto del producto, imagen para compartir)
+  app/             favicons (icon.png, apple-icon.png…)
+  tema.css         opcional: variables y clases del contrato de tema (si no, el tema neutro)
+  tema/index.tsx   opcional: entrada, fondo animado, logo y fuentes del tema (si no, los neutros)
+  instagram/       plantillas <estilo>-<tipo>.html de cada estilo declarado, logo.png y scripts
+```
+
+- `CLIENTE=<slug>` elige el cliente. Antes de `dev` y `build`, `scripts/preparar-cliente.ts` valida la config, las imágenes y las plantillas (**el build falla si algo está mal**) y copia `public/`, los favicons y el tema a su lugar (esos archivos generados no van a git).
+- `clientes/melera/` es Melera (tema del panal). `clientes/ejemplo/` es una tienda de ejemplo sin tema propio: sirve para probar sin Melera (`CLIENTE=ejemplo npm run dev`).
+
+### Crear un cliente nuevo
+
+1. Copiar `clientes/ejemplo/` a `clientes/<slug>/` y cambiar `slug` en `config.ts` (tiene que ser igual al nombre de la carpeta).
+2. Completar la config: marca, colores, imágenes (en `public/`), textos, módulos y estilos de Instagram (con sus plantillas en `instagram/`).
+3. Opcional: tema propio (`tema.css` y `tema/index.tsx`); si no, se usa el neutro con los colores de la config.
+4. Base nueva: `npx prisma migrate deploy` y `CLIENTE=<slug> npm run db:seed` (con los datos de `seed.ts`).
+5. `CLIENTE=<slug> npm run dev` y revisar; `npm test` tiene que seguir pasando.
 
 ## Stack
 
@@ -20,7 +50,7 @@ Tienda online de miel artesanal — landing, ficha de producto, checkout con Mer
 - Avisos por Telegram de pedidos pagados y consultas nuevas, directo desde la web al bot (`src/lib/telegram.ts`, sin Make). Diagnóstico en `GET/POST /api/admin/telegram` (dice si el bot está configurado y manda un mensaje de prueba)
 - Panel `/admin` protegido: pedidos (estado, detalle, origen), stock, consultas (link directo a ig.me / mailto, marcar respondida, archivar) y **logs**. Fechas en hora de Argentina
 - `/admin/logs`: registro de eventos de la web (pedidos, pagos, consultas, avisos de Telegram, logins y cambios del admin, imágenes de Instagram) con filtros en la URL: `?nivel=error`, `?tipo=pago`, `?q=texto`, `?pagina=2`. Se guarda 90 días. Para registrar algo nuevo: `logEvent(tipo, mensaje, { nivel, detalle })` de `src/lib/logs.ts` (nunca lanza error)
-- `/api/generate` + `/api/img/...`: imágenes de feed y story para Instagram, renderizadas con Chromium en Vercel (plantillas en `melera-templates/`)
+- `/api/generate` + `/api/img/...`: imágenes de feed y story para Instagram, renderizadas con Chromium en Vercel (plantillas en `clientes/melera/instagram/`)
 - **Instagram** (`/admin/instagram`): cronograma de posts en la base. Todos los días (Vercel Cron, 9–10 h Argentina) se generan los pendientes y llegan a Telegram con 4 botones (Feed, Historia, Feed + Historia, Descartar). Al tocar uno se publica directo con la Graph API de Meta. Ver "Instagram" más abajo
 - **Respuestas automáticas de Instagram** (`/admin/autorespuestas`, reemplazan a ManyChat): reglas por palabra clave para DMs, con botones de link, Probador y registro de los mensajes recibidos. En producción desde el 2026-09-24 (ManyChat suspendido). Los comentarios están programados pero necesitan acceso avanzado de Meta (App Review), pendiente. Ver "Respuestas automáticas" más abajo
 - `/privacidad`: política de privacidad (Meta la pide para pasar la app a Live)
@@ -45,6 +75,7 @@ npm run dev                  # http://localhost:3000
 
 | Variable | Descripción |
 |---|---|
+| `CLIENTE` | Cliente de este despliegue: carpeta `clientes/<CLIENTE>` (ej. `melera`). Sin ella no arranca ni compila |
 | `DATABASE_URL` | Connection string de PostgreSQL (Neon en producción) |
 | `MP_ACCESS_TOKEN` | Access token de MercadoPago (server-side) |
 | `MP_PUBLIC_KEY` | Public key de MercadoPago (client-side) |
@@ -53,17 +84,17 @@ npm run dev                  # http://localhost:3000
 | `NEXTAUTH_URL` | URL base del sitio (usada en la sesión) |
 | `NEXT_PUBLIC_BASE_URL` | URL pública del sitio, usada en los redirects de MercadoPago |
 | `TELEGRAM_BOT_TOKEN` | Token del bot de Telegram que avisa pedidos pagados y consultas nuevas (opcional; sin él no se avisa) |
-| `TELEGRAM_CHAT_ID` | Chat donde llegan esos avisos (`6219737981`, el mismo de la automatización de Instagram) |
+| `TELEGRAM_CHAT_ID` | Id del chat de Telegram donde llegan esos avisos (el mismo de la automatización de Instagram) |
 | `GEMINI_API_KEY` | API key de Gemini para el chat de atención (widget flotante) |
 | `GENERATE_WEBHOOK_SECRET` | Secreto que Make manda en `x-webhook-secret` a `/api/generate`; también firma las URLs de `/api/img` |
 | `IMAGE_SIGNING_SECRET` | Opcional: secreto propio para firmar las URLs de `/api/img` (si no está, usa `GENERATE_WEBHOOK_SECRET`) |
 | `META_PAGE_TOKEN` | Token de la página de Facebook vinculada a Instagram (publica feed e historias). Vence cada ~60 días |
-| `META_IG_USER_ID` | Id de la cuenta de Instagram (`17841431194977725`) |
+| `META_IG_USER_ID` | Id numérico de la cuenta de Instagram del cliente |
 | `TELEGRAM_WEBHOOK_SECRET` | Clave que Telegram manda en cada toque de botón (16+ caracteres: letras, números, `_` o `-`) |
 | `CRON_SECRET` | Clave con la que Vercel Cron llama a `/api/cron/instagram` y `/api/cron/instagram-token` |
 | `IG_APP_ID` / `IG_APP_SECRET` | App de Instagram (Instagram Login) de las respuestas automáticas. El secreto valida la firma del webhook |
 | `IG_WEBHOOK_VERIFY_TOKEN` | Texto al azar que se carga también en Meta al configurar el webhook |
-| `IG_ACCESS_TOKEN` / `IG_USER_ID` | Token de larga duración e id de @melera.miel para responder. Después se renueva solo y vive en la tabla `InstagramToken` |
+| `IG_ACCESS_TOKEN` / `IG_USER_ID` | Token de larga duración e id de la cuenta de Instagram del cliente para responder. Después se renueva solo y vive en la tabla `InstagramToken` |
 | `IG_DRY_RUN` | `true` = hace todo menos publicar en Instagram (para probar) |
 | `GEMINI_COPY_MODEL` | Opcional: modelo de Gemini para los textos (por defecto `gemini-flash-lite-latest`) |
 
@@ -91,14 +122,14 @@ Ver `.env.example` para el detalle completo.
 - **Cargar posts:** `/admin/instagram` (fecha, tipo, estilo, tema; en productos también nombre, precio y foto). Cada post pasa por `pendiente → generando → esperando_aprobacion → publicando → publicado` (o `descartado` / `error`). Cada cambio de estado es atómico, así que no hay doble publicación.
 - **Generación:** `/api/cron/instagram` (Vercel Cron, `vercel.json`) toma hasta 3 pendientes por corrida. También avisa por Telegram si el token de Meta vence en 7 días o menos. Desde el admin se puede generar al momento.
 - **Aprobación:** Telegram llama a `/api/telegram/webhook` (clave secreta, solo el chat de Melera). Para que los botones lleguen a esta web hay que tocar una vez **"Conectar el bot a esta web"** en `/admin/instagram`.
-- **Estilos:** `organico` (fondo oscuro), `geo` (fondo crema) y `panal` (como la web: panal con luz cálida y abeja con jarrón; el panal sale del id del post). Plantillas y reglas en [`melera-templates/README.md`](melera-templates/README.md).
+- **Estilos:** `organico` (fondo oscuro), `geo` (fondo crema) y `panal` (como la web: panal con luz cálida y abeja con jarrón; el panal sale del id del post). Plantillas y reglas en [`clientes/melera/instagram/README.md`](clientes/melera/instagram/README.md).
 - **Imágenes a Telegram:** la web descarga las dos imágenes al generarlas y se las **sube** a Telegram como archivo (no le pasa la URL), así Telegram no depende de poder entrar al sitio. Meta, al publicar, sí usa la URL.
 - **Código:** `src/lib/instagram/`. Los errores quedan en `/admin/logs?tipo=instagram` y llegan por Telegram.
 - **Previews:** el cron solo corre en producción. Para probar los botones en una preview, activar *Protection Bypass for Automation* en Vercel y usar `IG_DRY_RUN=true`. Ojo: las imágenes se dibujan en el dominio de producción (`siteUrl()`), así que un **estilo nuevo** recién se puede probar después de desplegarlo.
 
 ## Diseño del panal (páginas públicas)
 
-- **Referencia:** el prototipo aprobado `docs/melera-panal-prototipo.html`. Los valores ajustables (radio de huida, velocidades, gotas, luz, parallax, duración de la entrada) están en `src/components/panal/config.ts`.
+- **Referencia:** el prototipo aprobado `clientes/melera/docs/panal-prototipo.html`. Los valores ajustables (radio de huida, velocidades, gotas, luz, parallax, duración de la entrada) están en `src/components/panal/config.ts`.
 - **Dónde va:** `/`, `/producto`, `/consultas` y `/privacidad` comparten el layout `src/app/(publico)/layout.tsx` (Header, Footer, fondo de panal y abeja). `/checkout` tiene su layout con la misma paleta, fondo oscuro liso y sin animación. El admin no cambia.
 - **Código:** `components/panal/dibujo.ts` (capas y entrada), `abeja.ts` (abeja y gotas), `motor.ts` (un solo `requestAnimationFrame`, pausa con la pestaña oculta, DPR hasta 2), `Panal.tsx` (se carga con `dynamic(ssr: false)`). Los botones que la abeja esquiva llevan `data-bee-avoid`.
 - **Entrada:** solo en la home, una vez por sesión (`sessionStorage`), con "Saltar" y Esc. Para que no parpadee, un script mínimo marca `<html data-entrada>` antes de pintar y un velo CSS muestra el primer cuadro hasta que carga el canvas.

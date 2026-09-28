@@ -1,33 +1,26 @@
 import type { Config } from "tailwindcss";
 
+const TONOS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
+const color = (variable: string) => `rgb(var(--${variable}) / <alpha-value>)`;
+
 const config: Config = {
-  content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
+  // El código genérico y el del cliente de este despliegue (su tema tiene componentes propios)
+  content: ["./src/**/*.{js,ts,jsx,tsx,mdx}", `./clientes/${process.env.CLIENTE?.trim() || "*"}/**/*.{ts,tsx}`],
   theme: {
     extend: {
+      // Colores del cliente (config.colores): variables CSS que define el layout raíz
       colors: {
-        miel: {
-          50: "#fdf3e3",
-          100: "#fae3be",
-          200: "#f2cc85",
-          300: "#edb855",
-          400: "#eaa52c",
-          500: "#e8970a",
-          600: "#c97f08",
-          700: "#8b4513",
-          800: "#6b3410",
-          900: "#4a230b",
-        },
-        crema: "#fff3dc",
-        beige: "#f5e6c8",
-        marron: "#3b1f0a",
-        ambar: "#e8970a",
+        marca: Object.fromEntries(TONOS.map((t) => [t, color(`marca-${t}`)])),
+        claro: color("claro"),
+        oscuro: color("oscuro"),
       },
       fontFamily: {
-        sans: ["var(--font-poppins)", "system-ui", "sans-serif"],
-        serif: ["var(--font-fraunces)", "Georgia", "serif"],
+        // Las definen las fuentes del tema (o globals.css, con las del sistema)
+        sans: ["var(--fuente-texto)", "system-ui", "sans-serif"],
+        serif: ["var(--fuente-titulos)", "Georgia", "serif"],
       },
       boxShadow: {
-        soft: "0 10px 40px -12px rgba(120, 80, 20, 0.25)",
+        soft: "0 10px 40px -12px rgb(var(--sombra) / 0.25)",
       },
     },
   },

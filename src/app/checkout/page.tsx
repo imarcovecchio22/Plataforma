@@ -1,5 +1,6 @@
 import ChatWidget from "@/components/ChatWidget";
 import CheckoutForm from "@/components/CheckoutForm";
+import SinProductos from "@/components/SinProductos";
 import { getMainProduct } from "@/lib/product";
 import { leerEscalones } from "@/lib/precios";
 
@@ -12,6 +13,7 @@ export default async function CheckoutPage({
 }) {
   const searchParams = await searchParamsPromise;
   const product = await getMainProduct();
+  if (!product) return <SinProductos />;
   const origen = Array.isArray(searchParams.origen) ? searchParams.origen[0] : searchParams.origen;
   const cantidadInicial = Math.max(
     1,
@@ -20,8 +22,8 @@ export default async function CheckoutPage({
 
   return (
     <>
-      <main className="contenedor-panal flex-1 py-12 sm:py-16">
-        <h1 className="mb-8 font-serif text-3xl font-semibold text-[var(--ink)] sm:text-4xl">
+      <main className="contenedor-publico flex-1 py-12 sm:py-16">
+        <h1 className="mb-8 font-serif text-3xl font-semibold text-[var(--texto)] sm:text-4xl">
           Finalizar compra
         </h1>
         <CheckoutForm

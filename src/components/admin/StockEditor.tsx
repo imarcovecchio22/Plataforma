@@ -5,6 +5,7 @@ import { useState } from "react";
 import type { Product } from "@prisma/client";
 import { formatPrecio } from "@/lib/utils";
 import { leerEscalones, type Escalon } from "@/lib/precios";
+import { cantidadConUnidad, cliente, deLaUnidad, masBarato } from "@/plataforma/cliente";
 
 export default function StockEditor({ product }: { product: Product }) {
   const [stock, setStock] = useState(product.stock);
@@ -45,9 +46,9 @@ export default function StockEditor({ product }: { product: Product }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-xl border border-miel-100 bg-white p-6 shadow-soft">
-      <h2 className="font-semibold text-marron">{product.nombre}</h2>
-      <p className="mt-1 text-sm text-stone-500">Precio del frasco y unidades disponibles</p>
+    <form onSubmit={handleSubmit} className="rounded-xl border border-marca-100 bg-white p-6 shadow-soft">
+      <h2 className="font-semibold text-oscuro">{product.nombre}</h2>
+      <p className="mt-1 text-sm text-stone-500">Precio {deLaUnidad} y unidades disponibles</p>
 
       <div className="mt-4 flex flex-wrap items-end gap-3">
         <div className="min-w-[140px] flex-1">
@@ -75,24 +76,24 @@ export default function StockEditor({ product }: { product: Product }) {
         </div>
       </div>
 
-      <div className="mt-6 border-t border-miel-100 pt-5">
-        <h3 className="font-semibold text-marron">Promos por cantidad</h3>
+      <div className="mt-6 border-t border-marca-100 pt-5">
+        <h3 className="font-semibold text-oscuro">Promos por cantidad</h3>
         <p className="mt-1 text-sm text-stone-500">
-          Desde cierta cantidad, cada frasco sale más barato. Se aplican solas en la web, el chat y las respuestas de Instagram ($PROMOS).
+          Desde cierta cantidad, cada {cliente.unidad.singular} sale {masBarato}. Se aplican solas en la web, el chat y las respuestas de Instagram ($PROMOS).
         </p>
         <div className="mt-3 space-y-3">
           {escalones.map((e, i) => (
             <div key={i} className="flex flex-wrap items-end gap-3">
               <div className="w-32">
-                <label className="label-field" htmlFor={`desde-${i}`}>Desde (frascos)</label>
+                <label className="label-field" htmlFor={`desde-${i}`}>Desde ({cliente.unidad.plural})</label>
                 <input id={`desde-${i}`} type="number" min={2} step={1} className="input-field" value={e.desde} onChange={(ev) => setEscalon(i, "desde", Number(ev.target.value))} />
               </div>
               <div className="w-40">
-                <label className="label-field" htmlFor={`precio-${i}`}>Precio por frasco</label>
+                <label className="label-field" htmlFor={`precio-${i}`}>Precio por {cliente.unidad.singular}</label>
                 <input id={`precio-${i}`} type="number" min={1} step={1} className="input-field" value={e.precio} onChange={(ev) => setEscalon(i, "precio", Number(ev.target.value))} />
               </div>
               <p className="pb-2.5 text-sm text-stone-600">
-                {e.desde} frascos = <strong>{formatPrecio(e.desde * e.precio)}</strong>
+                {cantidadConUnidad(e.desde)} = <strong>{formatPrecio(e.desde * e.precio)}</strong>
                 {e.precio < precio && <> (ahorran {formatPrecio((precio - e.precio) * e.desde)})</>}
               </p>
               <button type="button" onClick={() => setEscalones((l) => l.filter((_, j) => j !== i))} className="mb-1.5 rounded-full border border-stone-300 px-3 py-1.5 text-sm text-stone-600 hover:bg-stone-50">
@@ -104,7 +105,7 @@ export default function StockEditor({ product }: { product: Product }) {
             <button
               type="button"
               onClick={() => setEscalones((l) => [...l, { desde: (l.at(-1)?.desde ?? 1) + 5, precio: Math.max(1, (l.at(-1)?.precio ?? precio) - 500) }])}
-              className="rounded-full border border-miel-500 px-3 py-1.5 text-sm font-semibold text-miel-700 hover:bg-miel-50"
+              className="rounded-full border border-marca-500 px-3 py-1.5 text-sm font-semibold text-marca-700 hover:bg-marca-50"
             >
               + Agregar promo
             </button>
