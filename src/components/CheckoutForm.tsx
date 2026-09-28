@@ -6,7 +6,7 @@ import { totalPedido, type Escalon } from "@/lib/precios";
 import { cadaUno, cantidadConUnidad } from "@/plataforma/cliente";
 
 type Props = {
-  producto: { nombre: string; precio: number; escalones: Escalon[] };
+  producto: { slug: string; nombre: string; precio: number; escalones: Escalon[] };
   cantidadInicial: number;
   origen?: string;
 };
@@ -27,6 +27,7 @@ export default function CheckoutForm({ producto, cantidadInicial, origen }: Prop
     const formData = new FormData(e.currentTarget);
     const payload = Object.fromEntries(formData.entries());
     payload.cantidad = String(cantidad);
+    payload.producto = producto.slug;
     if (origen) payload.origen = origen;
 
     try {

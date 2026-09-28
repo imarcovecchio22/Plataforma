@@ -10,7 +10,7 @@ export default function ProductoSection({ product }: { product: Product }) {
   return (
     <section id="producto" className="contenedor-publico scroll-mt-4 bg-[var(--fondo-seccion)] py-[clamp(56px,8vw,96px)]">
       <div className="grid max-w-[1100px] items-center gap-10 lg:grid-cols-2 lg:gap-16">
-        <FotoProducto sizes="(min-width: 1024px) 288px, 224px" imgClassName="h-auto w-56 sm:w-72" />
+        <FotoProducto producto={product} sizes="(min-width: 1024px) 288px, 224px" imgClassName="h-auto w-56 sm:w-72" />
         <div>
           <span className="etiqueta-seccion">Nuestro producto</span>
           <h2 className="titulo mt-2">{product.nombre}</h2>
@@ -27,7 +27,7 @@ export default function ProductoSection({ product }: { product: Product }) {
             </p>
           ) : (
             <span className="wrap-focus mt-6">
-              <Link href="/producto" className="btn" data-fondo-evita>
+              <Link href={`/producto/${product.slug}`} className="btn" data-fondo-evita>
                 Comprar ahora
               </Link>
             </span>

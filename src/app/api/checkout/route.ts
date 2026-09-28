@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getPreferenceClient } from "@/lib/mercadopago";
 import { checkoutSchema } from "@/lib/validation";
-import { getMainProduct } from "@/lib/product";
+import { getMainProduct, getProductoPorSlug } from "@/lib/product";
 import { leerEscalones, totalPedido } from "@/lib/precios";
 import { errorMessage, logEvent } from "@/lib/logs";
 import { cliente } from "@/plataforma/cliente";
@@ -22,9 +22,11 @@ export async function POST(req: NextRequest) {
   }
 
   const data = parsed.data;
-  const product = await getMainProduct();
+  // El producto que se compra: el del slug; sin slug (formularios viejos), el destacado
+  const product = data.producto ? await getProductoPorSlug(data.producto) : await getMainProduct();
   if (!product) {
-    return NextResponse.json({ error: "No hay productos a la venta" }, { status: 404 });
+    const error = data.producto ? "Ese producto ya no está a la venta" : "No hay productos a la venta";
+    return NextResponse.json({ error }, { status: 404 });
   }
 
   if (data.cantidad > product.stock) {

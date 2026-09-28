@@ -9,8 +9,14 @@ vi.mock("@cliente/config", async () => await import("../clientes/ejemplo/config"
 vi.mock("@cliente/tema", async () => await import("@/plataforma/tema/neutro"));
 vi.mock("next/font/google", () => ({}));
 vi.mock("next/navigation", () => ({ usePathname: () => "/", useRouter: () => ({ push: () => {}, refresh: () => {} }), useSearchParams: () => new URLSearchParams() }));
+const PRODUCTO_EJEMPLO = vi.hoisted(() => ({
+  id: "p", nombre: "Producto de ejemplo", slug: "producto-de-ejemplo", descripcion: "Descripción de ejemplo.",
+  precio: 5000, stock: 10, escalones: [{ desde: 3, precio: 4500 }], imagenUrl: null, activo: true, orden: 10,
+}));
 vi.mock("@/lib/product", () => ({
-  getMainProduct: async () => ({ id: "p", nombre: "Producto de ejemplo", descripcion: "Descripción de ejemplo.", precio: 5000, stock: 10, escalones: [{ desde: 3, precio: 4500 }] }),
+  getMainProduct: async () => PRODUCTO_EJEMPLO,
+  getProductosActivos: async () => [PRODUCTO_EJEMPLO],
+  getProductoPorSlug: async () => PRODUCTO_EJEMPLO,
 }));
 vi.mock("@/lib/prisma", () => ({ prisma: { preguntaFrecuente: { findMany: async () => [] } } }));
 

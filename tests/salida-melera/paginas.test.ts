@@ -33,6 +33,9 @@ vi.mock("next/headers", () => ({
 const PRODUCTO = {
   id: "prod-1",
   nombre: "Miel Artesanal 500g",
+  slug: "miel-artesanal-500g",
+  activo: true,
+  orden: 10,
   descripcion:
     "Miel pura de abejas, producida por Apícola Mercedes (Tomás Jofré, Buenos Aires). Envasada en frasco de vidrio de 500g.",
   precio: 6500,
@@ -83,7 +86,11 @@ const db = vi.hoisted(() => ({
 }));
 vi.mock("@/lib/prisma", () => ({ prisma: db }));
 
-vi.mock("@/lib/product", () => ({ getMainProduct: async () => PRODUCTO }));
+vi.mock("@/lib/product", () => ({
+  getMainProduct: async () => PRODUCTO,
+  getProductosActivos: async () => [PRODUCTO],
+  getProductoPorSlug: async (slug: string) => (slug === PRODUCTO.slug ? PRODUCTO : null),
+}));
 vi.mock("@/lib/auth", () => ({ getSession: async () => ({ usuario: "admin" }) }));
 vi.mock("@/lib/orders", () => ({ applyPaymentStatus: async () => null }));
 vi.mock("@/lib/instagram/meta", async (original) => ({
@@ -210,7 +217,7 @@ beforeAll(() => {
       },
     ] as never;
   db.eventLog.count = async () => 1;
-  db.product.findMany = async () => [{ ...PRODUCTO, slug: "miel-artesanal-500g", activo: true, orden: 10, _count: { orders: 3 } }] as never;
+  db.product.findMany = async () => [{ ...PRODUCTO, _count: { orders: 3 } }] as never;
   // Las preguntas frecuentes de Melera, como quedan en la base después del seed
   db.preguntaFrecuente.findMany = async () =>
     seedMelera.preguntas.map((p, i) => ({ id: i + 1, ...p, activa: true })) as never;

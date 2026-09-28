@@ -1,7 +1,8 @@
 import ChatWidget from "@/components/ChatWidget";
 import CheckoutForm from "@/components/CheckoutForm";
 import SinProductos from "@/components/SinProductos";
-import { getMainProduct } from "@/lib/product";
+import { notFound } from "next/navigation";
+import { getMainProduct, getProductoPorSlug } from "@/lib/product";
 import { leerEscalones } from "@/lib/precios";
 
 export const dynamic = "force-dynamic";
@@ -9,11 +10,15 @@ export const dynamic = "force-dynamic";
 export default async function CheckoutPage({
   searchParams: searchParamsPromise,
 }: {
-  searchParams: Promise<{ cantidad?: string; origen?: string | string[] }>;
+  searchParams: Promise<{ producto?: string; cantidad?: string; origen?: string | string[] }>;
 }) {
   const searchParams = await searchParamsPromise;
-  const product = await getMainProduct();
-  if (!product) return <SinProductos />;
+  // El producto que se compra: el de ?producto=<slug>; sin él (links viejos), el destacado
+  const product = searchParams.producto ? await getProductoPorSlug(searchParams.producto) : await getMainProduct();
+  if (!product) {
+    if (searchParams.producto) notFound();
+    return <SinProductos />;
+  }
   const origen = Array.isArray(searchParams.origen) ? searchParams.origen[0] : searchParams.origen;
   const cantidadInicial = Math.max(
     1,
@@ -27,7 +32,7 @@ export default async function CheckoutPage({
           Finalizar compra
         </h1>
         <CheckoutForm
-          producto={{ nombre: product.nombre, precio: product.precio, escalones: leerEscalones(product.escalones) }}
+          producto={{ slug: product.slug, nombre: product.nombre, precio: product.precio, escalones: leerEscalones(product.escalones) }}
           cantidadInicial={cantidadInicial}
           origen={origen}
         />

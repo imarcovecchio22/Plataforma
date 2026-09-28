@@ -18,6 +18,8 @@ export const checkoutSchema = z.object({
   provincia: z.string().trim().refine((p) => p === "CABA", "Por ahora enviamos solo dentro de CABA"),
   codigoPostal: z.string().trim().min(1, "Ingresá el código postal"),
   cantidad: z.coerce.number().int().min(1, "La cantidad mínima es 1"),
+  // Slug del producto que se compra (sin él, el destacado)
+  producto: z.string().trim().max(80).optional().default(""),
   origen: z.string().trim().max(50).optional().default(""),
 });
 

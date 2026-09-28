@@ -8,3 +8,13 @@ import { prisma } from "@/lib/prisma";
 export async function getMainProduct() {
   return prisma.product.findFirst({ where: { activo: true }, orderBy: [{ orden: "asc" }, { createdAt: "asc" }] });
 }
+
+/** Los productos que se muestran en la tienda: activos, por orden. */
+export async function getProductosActivos() {
+  return prisma.product.findMany({ where: { activo: true }, orderBy: [{ orden: "asc" }, { createdAt: "asc" }] });
+}
+
+/** Un producto activo por su slug (null si no existe o está inactivo). */
+export async function getProductoPorSlug(slug: string) {
+  return prisma.product.findFirst({ where: { slug, activo: true } });
+}

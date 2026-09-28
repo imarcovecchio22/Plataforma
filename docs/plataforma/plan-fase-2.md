@@ -75,7 +75,18 @@ Plan original:
 stock, foto, activo, orden). Reemplaza a "Precio y stock" (`/admin/stock` redirige). La foto: según
 la pregunta 8.
 
-### Paso 3: listado y ficha por slug
+### Paso 3: listado y ficha por slug ✅ (2026-09-28)
+Hecho: `/productos` (tarjetas con foto, precio, promo y "sin stock"), `/producto/<slug>` (ficha, 404
+si no existe o está inactivo, con título propio) y `/producto` sin slug (un producto: su ficha;
+varios: redirige al listado conservando `?origen=`). Home: el destacado como antes (sus botones van
+a su ficha) y "Más productos" debajo si hay varios. La foto del producto (link) se usa donde está;
+sin foto, la de la marca. Agregado: la ficha pasa el slug al checkout (`?producto=<slug>`) y el
+checkout (página y API) compra ese producto; sin slug, el destacado (links viejos). Snapshots de
+Melera: solo cambian los links de los dos botones "Comprar ahora" de la home. Probado con la app y
+un segundo producto.
+Pendiente (decisión 7, pasos 4-5): la unidad y la aclaración junto al precio ("el frasco de 500 g")
+siguen siendo del cliente, no del producto.
+Plan original:
 `/productos` (listado) y `/producto/[slug]` (ficha). `/producto` sin slug: pregunta 5. Home: el
 producto destacado como hoy y, si hay más de uno, el listado debajo. Con un solo producto, Melera
 queda igual.

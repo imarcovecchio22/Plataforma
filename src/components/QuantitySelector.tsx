@@ -7,11 +7,14 @@ import { totalPedido, type Escalon } from "@/lib/precios";
 import { cantidadConUnidad, cliente } from "@/plataforma/cliente";
 
 export default function QuantitySelector({
+  slug,
   stock,
   origen,
   precio,
   escalones = [],
 }: {
+  /** El producto que se compra (el checkout lo busca por slug). */
+  slug: string;
   stock: number;
   origen?: string;
   precio: number;
@@ -35,7 +38,7 @@ export default function QuantitySelector({
   }
 
   function comprar() {
-    const params = new URLSearchParams({ cantidad: String(cantidad) });
+    const params = new URLSearchParams({ producto: slug, cantidad: String(cantidad) });
     if (origen) params.set("origen", origen);
     router.push(`/checkout?${params}`);
   }

@@ -6,7 +6,7 @@ import { NextRequest } from "next/server";
 import { renderToStaticMarkup } from "react-dom/server";
 
 // Base recién creada: no hay ningún producto
-vi.mock("@/lib/product", () => ({ getMainProduct: async () => null }));
+vi.mock("@/lib/product", () => ({ getMainProduct: async () => null, getProductosActivos: async () => [], getProductoPorSlug: async () => null }));
 vi.mock("@/lib/prisma", () => ({ prisma: { product: { findMany: async () => [] } } }));
 vi.mock("next/navigation", () => ({ usePathname: () => "/", useRouter: () => ({ push: () => {}, refresh: () => {} }) }));
 vi.mock("@/lib/logs", () => ({ logEvent: vi.fn(async () => {}), errorMessage: (e: unknown) => String(e) }));
