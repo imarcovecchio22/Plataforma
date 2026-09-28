@@ -1,7 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useState } from "react";
+import { agregarAlCarrito, guardarCarrito, leerCarrito } from "@/lib/carrito";
 import { formatPrecio } from "@/lib/utils";
 import { totalPedido, type Escalon } from "@/lib/precios";
 import { cantidadConUnidad, cliente, type Unidad } from "@/plataforma/cliente";
@@ -13,6 +15,7 @@ export default function QuantitySelector({
   precio,
   escalones = [],
   unidad = cliente.unidad,
+  conCarrito = false,
 }: {
   /** El producto que se compra (el checkout lo busca por slug). */
   slug: string;
@@ -22,8 +25,11 @@ export default function QuantitySelector({
   escalones?: Escalon[];
   /** La unidad del producto (sin ella, la del cliente). */
   unidad?: Unidad;
+  /** Con varios productos en la tienda: "Agregar al carrito" en vez de ir directo al checkout. */
+  conCarrito?: boolean;
 }) {
   const [cantidad, setCantidad] = useState(1);
+  const [agregado, setAgregado] = useState(false);
   const router = useRouter();
 
   const sinStock = stock <= 0;
@@ -38,6 +44,11 @@ export default function QuantitySelector({
 
   function incrementar() {
     setCantidad((c) => Math.min(stock, c + 1));
+  }
+
+  function agregar() {
+    guardarCarrito(agregarAlCarrito(leerCarrito(), slug, cantidad));
+    setAgregado(true);
   }
 
   function comprar() {
@@ -109,11 +120,19 @@ export default function QuantitySelector({
           </button>
         </div>
         <span className="wrap-focus w-fit">
-          <button type="button" onClick={comprar} className="btn" data-fondo-evita>
-            Comprar · {formatPrecio(total)}
+          <button type="button" onClick={conCarrito ? agregar : comprar} className="btn" data-fondo-evita>
+            {conCarrito ? "Agregar al carrito" : "Comprar"} · {formatPrecio(total)}
           </button>
         </span>
       </div>
+      {agregado && (
+        <p className="text-sm text-[var(--texto)]" role="status">
+          Listo, está en el carrito.{" "}
+          <Link href="/carrito" className="font-semibold text-[var(--destacado)] underline underline-offset-4">
+            Ver carrito
+          </Link>
+        </p>
+      )}
       <p className="texto-suave text-sm">
         {cantidad > 1 && <>{formatPrecio(unitario)} cada {unidad.singular}{ahorro > 0 && <> · ahorrás {formatPrecio(ahorro)}</>} · </>}
         {stock} unidades disponibles

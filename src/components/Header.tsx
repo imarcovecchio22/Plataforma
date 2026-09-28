@@ -1,5 +1,6 @@
 import Link from "next/link";
 import tema from "@cliente/tema";
+import CarritoIcono from "@/components/CarritoIcono";
 import { cliente } from "@/plataforma/cliente";
 
 export default function Header() {
@@ -23,6 +24,7 @@ export default function Header() {
         <Link href="/consultas" className="link-nav hidden sm:inline">
           Consultas
         </Link>
+        <CarritoIcono />
         <span className="wrap-focus">
           <Link href="/producto" className="btn btn-sm" data-fondo-evita>
             Comprar

@@ -119,6 +119,12 @@ con varios ítems.
   repetir) y sigue aceptando `producto` + `cantidad`. Busca todos los productos de una vez, valida
   que estén a la venta y el stock de cada uno (el error dice de cuál), calcula cada ítem con sus
   promos y manda a Mercado Pago un ítem por producto. Con un producto, mismos mensajes que antes.
+- **5c ✅ (2026-09-28):** carrito en el navegador (`src/lib/carrito.ts`: solo slug y cantidad, clave
+  `<slug del cliente>-carrito`, en memoria si el navegador no deja guardar, avisa a otras pestañas).
+  Con más de un producto activo, la ficha dice "Agregar al carrito"; con uno, "Comprar" directo
+  como siempre. Ícono en el Header solo si el carrito tiene algo (Melera nunca lo ve).
+  `/carrito`: líneas con la promo y la unidad de cada producto, tope de stock, quitar, total, y
+  saca lo que ya no está a la venta. Probado en Chrome de punta a punta.
 
 Plan original del paso 5:
 Carrito (pregunta 3). La API de checkout recibe ítems, valida stock de cada uno, calcula todo en el

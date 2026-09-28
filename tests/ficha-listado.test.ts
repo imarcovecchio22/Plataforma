@@ -13,6 +13,7 @@ vi.mock("@/lib/product", () => ({
   getProductosActivos: async () => catalogo.productos,
   getProductoPorSlug: async (slug: string) => catalogo.productos.find((p) => (p as { slug: string }).slug === slug) ?? null,
   getProductosPorSlugs: async (slugs: string[]) => catalogo.productos.filter((p) => slugs.includes((p as { slug: string }).slug)),
+  contarProductosActivos: async () => catalogo.productos.length,
 }));
 vi.mock("next/navigation", () => ({
   usePathname: () => "/",

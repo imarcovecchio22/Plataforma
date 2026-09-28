@@ -23,3 +23,8 @@ export async function getProductoPorSlug(slug: string) {
 export async function getProductosPorSlugs(slugs: string[]) {
   return prisma.product.findMany({ where: { slug: { in: slugs }, activo: true } });
 }
+
+/** Cuántos productos hay a la venta (con más de uno, la tienda usa el carrito). */
+export async function contarProductosActivos() {
+  return prisma.product.count({ where: { activo: true } });
+}

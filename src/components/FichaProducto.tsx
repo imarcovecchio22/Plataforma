@@ -7,7 +7,16 @@ import { leerEscalones, textoPromos } from "@/lib/precios";
 import { cliente, unidadDe } from "@/plataforma/cliente";
 
 /** La ficha de un producto: /producto/<slug> (y /producto cuando hay uno solo). */
-export default function FichaProducto({ product, origen }: { product: Product; origen?: string }) {
+export default function FichaProducto({
+  product,
+  origen,
+  conCarrito = false,
+}: {
+  product: Product;
+  origen?: string;
+  /** Hay más de un producto a la venta: se agrega al carrito en vez de comprar directo. */
+  conCarrito?: boolean;
+}) {
   const escalones = leerEscalones(product.escalones);
   const unidad = unidadDe(product);
 
@@ -40,6 +49,7 @@ export default function FichaProducto({ product, origen }: { product: Product; o
                 precio={product.precio}
                 escalones={escalones}
                 unidad={unidad}
+                conCarrito={conCarrito}
               />
             </div>
           </div>
