@@ -1,11 +1,12 @@
 import { headers } from "next/headers";
 import type { EstadoPostIG, PostIG } from "@prisma/client";
+import { leerEscalones } from "@/lib/precios";
 import { prisma } from "@/lib/prisma";
-import { formatFecha } from "@/lib/utils";
+import { formatFecha, formatPrecio } from "@/lib/utils";
 import { telegramApi, telegramConfigurado } from "@/lib/telegram";
 import { estadoToken, modoPrueba } from "@/lib/instagram/meta";
 import { DESTINO_LABEL, hoyLocal } from "@/lib/instagram/botones";
-import PostIGForm, { type PostIGValores } from "@/components/admin/PostIGForm";
+import PostIGForm, { type PostIGValores, type ProductoParaPost } from "@/components/admin/PostIGForm";
 import PostIGActions from "@/components/admin/PostIGActions";
 import InstagramControls from "@/components/admin/InstagramControls";
 import { exigirModulo } from "@/plataforma/cliente/modulos";
@@ -43,6 +44,7 @@ function valoresDe(post: PostIG): PostIGValores {
     precio: post.precio ?? "",
     presentacion: post.presentacion ?? "",
     imagenUrl: post.imagenUrl ?? "",
+    productoId: post.productoId ?? "",
   };
 }
 
@@ -71,10 +73,23 @@ async function estadoConexiones() {
 
 export default async function AdminInstagramPage() {
   exigirModulo("instagram");
-  const [posts, conexiones] = await Promise.all([
-    prisma.postIG.findMany({ orderBy: [{ fecha: "desc" }, { id: "desc" }], take: 200 }),
+  const [posts, catalogo, conexiones] = await Promise.all([
+    prisma.postIG.findMany({
+      orderBy: [{ fecha: "desc" }, { id: "desc" }],
+      take: 200,
+      include: { producto: { select: { nombre: true } } },
+    }),
+    prisma.product.findMany({ orderBy: [{ orden: "asc" }, { createdAt: "asc" }] }),
     estadoConexiones(),
   ]);
+  const productos: ProductoParaPost[] = catalogo.map((p) => ({
+    id: p.id,
+    nombre: p.nombre,
+    precio: formatPrecio(p.precio),
+    conFoto: Boolean(p.imagenUrl),
+    conPromos: leerEscalones(p.escalones).length > 0,
+    activo: p.activo,
+  }));
   const { token, webhookUrl, botConectadoAqui, botPendientes, botUltimoError } = conexiones;
   const hoy = hoyLocal();
 
@@ -120,7 +135,7 @@ export default async function AdminInstagramPage() {
 
       <section className="rounded-xl border border-marca-100 bg-white p-5 shadow-soft">
         <h2 className="mb-4 font-serif text-xl font-semibold text-oscuro">Cargar un post</h2>
-        <PostIGForm fechaHoy={hoy} />
+        <PostIGForm fechaHoy={hoy} productos={productos} />
       </section>
 
       {SECCIONES.map((seccion) => {
@@ -163,9 +178,16 @@ export default async function AdminInstagramPage() {
                         {post.publicadoEn && <span>{formatFecha(post.publicadoEn)}</span>}
                       </div>
                       <p className="break-words text-stone-700">{post.tema}</p>
-                      {post.tipo === "producto" && (
+                      {post.tipo === "producto" && !post.productoId && (
                         <p className="text-sm text-stone-500">
                           {post.nombreProducto} · {post.precio}
+                        </p>
+                      )}
+                      {post.producto && (
+                        <p className="text-sm text-stone-500">
+                          {post.tipo === "promo" ? "Promos de " : ""}
+                          {post.producto.nombre}
+                          {post.tipo === "producto" && post.precio ? ` · ${post.precio} (última generación)` : ""}
                         </p>
                       )}
                       {post.error && (
@@ -176,7 +198,7 @@ export default async function AdminInstagramPage() {
                         <details>
                           <summary className="cursor-pointer text-sm text-marca-700">Editar</summary>
                           <div className="mt-3">
-                            <PostIGForm fechaHoy={hoy} postId={post.id} inicial={valoresDe(post)} />
+                            <PostIGForm fechaHoy={hoy} productos={productos} postId={post.id} inicial={valoresDe(post)} />
                           </div>
                         </details>
                       )}

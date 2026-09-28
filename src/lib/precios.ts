@@ -1,5 +1,5 @@
 import { formatPrecio } from "@/lib/utils";
-import { cantidadConUnidad, cliente } from "@/plataforma/cliente";
+import { cantidadConUnidad, cliente, unidadDe, type Unidad } from "@/plataforma/cliente";
 
 /**
  * Precio por escalón (promos por cantidad): desde cierta cantidad de unidades (frascos, piezas…),
@@ -39,22 +39,22 @@ export function totalPedido(precioBase: number, escalones: Escalon[], cantidad: 
 }
 
 /** "5 frascos a $30.000 · 10 frascos a $55.000" (para textos, el chat y las respuestas automáticas). */
-export function textoPromos(escalones: Escalon[]) {
-  return escalones.map((e) => `${cantidadConUnidad(e.desde)} a ${formatPrecio(e.desde * e.precio)}`).join(" · ");
+export function textoPromos(escalones: Escalon[], u: Unidad = cliente.unidad) {
+  return escalones.map((e) => `${cantidadConUnidad(e.desde, u)} a ${formatPrecio(e.desde * e.precio)}`).join(" · ");
 }
 
 /**
  * Revisa que los escalones tengan sentido: cantidades distintas (desde 2 unidades) y cada
  * escalón más barato que el precio base y que el escalón anterior. Devuelve el error o null.
  */
-export function errorEscalones(precioBase: number, escalones: Escalon[]) {
+export function errorEscalones(precioBase: number, escalones: Escalon[], u: Unidad = cliente.unidad) {
   let anterior = { desde: 1, precio: precioBase };
   for (const e of [...escalones].sort((a, b) => a.desde - b.desde)) {
-    if (!Number.isInteger(e.desde) || e.desde < 2) return `Cada promo tiene que ser desde 2 ${cliente.unidad.plural} o más`;
-    if (e.desde === anterior.desde) return `Hay dos promos desde ${cantidadConUnidad(e.desde)}`;
+    if (!Number.isInteger(e.desde) || e.desde < 2) return `Cada promo tiene que ser desde 2 ${u.plural} o más`;
+    if (e.desde === anterior.desde) return `Hay dos promos desde ${cantidadConUnidad(e.desde, u)}`;
     if (!Number.isInteger(e.precio) || e.precio <= 0) return "El precio de cada promo tiene que ser mayor a 0";
     if (e.precio >= anterior.precio)
-      return `La promo desde ${cantidadConUnidad(e.desde)} tiene que ser más barata que ${formatPrecio(anterior.precio)} por ${cliente.unidad.singular}`;
+      return `La promo desde ${cantidadConUnidad(e.desde, u)} tiene que ser más barata que ${formatPrecio(anterior.precio)} por ${u.singular}`;
     anterior = e;
   }
   return null;
@@ -64,11 +64,11 @@ export function errorEscalones(precioBase: number, escalones: Escalon[]) {
  * Promos para la plantilla de Instagram tipo "promo", con los precios de la base al momento
  * de generar: "1 frasco|$ 6.500|;5 frascos|$ 30.000|$ 6.000 c/u · ahorrás $ 2.500;..."
  */
-export function promosParaPlantilla(precioBase: number, escalones: Escalon[]) {
-  const filas = [`${cantidadConUnidad(1)}|${formatPrecio(precioBase)}|`];
+export function promosParaPlantilla(precioBase: number, escalones: Escalon[], u: Unidad = cliente.unidad) {
+  const filas = [`${cantidadConUnidad(1, u)}|${formatPrecio(precioBase)}|`];
   for (const e of escalones) {
     const t = totalPedido(precioBase, escalones, e.desde);
-    filas.push(`${cantidadConUnidad(e.desde)}|${formatPrecio(t.total)}|${formatPrecio(t.unitario)} c/u · ahorrás ${formatPrecio(t.ahorro)}`);
+    filas.push(`${cantidadConUnidad(e.desde, u)}|${formatPrecio(t.total)}|${formatPrecio(t.unitario)} c/u · ahorrás ${formatPrecio(t.ahorro)}`);
   }
   return filas.join(";");
 }
@@ -81,11 +81,22 @@ export const PRECIO_SIN_PRODUCTO = "a confirmar";
  * de las preguntas frecuentes, el chat y las respuestas automáticas). Sin producto: precio "a
  * confirmar" y sin promos.
  */
-export function textosDelProducto(producto: { nombre: string; precio: number; escalones: unknown } | null) {
-  if (!producto) return { nombre: "", precio: PRECIO_SIN_PRODUCTO, promos: "" };
+export function textosDelProducto(
+  producto: {
+    nombre: string;
+    precio: number;
+    escalones: unknown;
+    unidadSingular?: string | null;
+    unidadPlural?: string | null;
+    unidadGenero?: string | null;
+  } | null
+) {
+  if (!producto) return { nombre: "", precio: PRECIO_SIN_PRODUCTO, promos: "", unidad: cliente.unidad };
+  const unidad = unidadDe(producto);
   return {
     nombre: producto.nombre,
     precio: formatPrecio(producto.precio),
-    promos: textoPromos(leerEscalones(producto.escalones)),
+    promos: textoPromos(leerEscalones(producto.escalones), unidad),
+    unidad,
   };
 }

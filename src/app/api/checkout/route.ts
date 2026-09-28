@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getPreferenceClient } from "@/lib/mercadopago";
 import { checkoutSchema } from "@/lib/validation";
-import { getMainProduct } from "@/lib/product";
+import { getMainProduct, getProductosPorSlugs } from "@/lib/product";
+import { getZonasActivas } from "@/lib/zonas";
+import type { Product } from "@prisma/client";
 import { leerEscalones, totalPedido } from "@/lib/precios";
 import { errorMessage, logEvent } from "@/lib/logs";
 import { cliente } from "@/plataforma/cliente";
@@ -22,23 +24,51 @@ export async function POST(req: NextRequest) {
   }
 
   const data = parsed.data;
-  const product = await getMainProduct();
-  if (!product) {
-    return NextResponse.json({ error: "No hay productos a la venta" }, { status: 404 });
+
+  // Lo que se compra: los ítems del carrito o, con el formulario de un producto, ese producto (por
+  // slug; sin slug, el destacado).
+  const pedidos = data.items ?? [{ producto: data.producto, cantidad: data.cantidad }];
+  const resueltos = await resolverProductos(pedidos.map((p) => p.producto));
+  const faltante = pedidos.find((p) => !resueltos.get(p.producto));
+  if (faltante) {
+    const error = faltante.producto ? "Ese producto ya no está a la venta" : "No hay productos a la venta";
+    return NextResponse.json({ error }, { status: 404 });
   }
 
-  if (data.cantidad > product.stock) {
-    await logEvent("pedido", `Compra rechazada por falta de stock (pidió ${data.cantidad}, hay ${product.stock})`, {
+  const lineas = pedidos.map((p) => ({ product: resueltos.get(p.producto)!, cantidad: p.cantidad }));
+  const sinStock = lineas.find((l) => l.cantidad > l.product.stock);
+  if (sinStock) {
+    const { product, cantidad } = sinStock;
+    const deQue = lineas.length > 1 ? ` de ${product.nombre}` : "";
+    await logEvent("pedido", `Compra rechazada por falta de stock${deQue} (pidió ${cantidad}, hay ${product.stock})`, {
       nivel: "warn",
     });
     return NextResponse.json(
-      { error: "No hay stock suficiente para esa cantidad" },
+      { error: lineas.length > 1 ? `No hay stock suficiente de ${product.nombre} para esa cantidad` : "No hay stock suficiente para esa cantidad" },
       { status: 400 }
     );
   }
 
-  // Precio por escalón (promos por cantidad), siempre calculado acá con los datos de la base
-  const { unitario, total } = totalPedido(product.precio, leerEscalones(product.escalones), data.cantidad);
+  // Precio por escalón (promos por cantidad) de cada producto, siempre calculado acá con los datos de la base
+  const items = lineas.map(({ product, cantidad }) => {
+    const { unitario, total: subtotal } = totalPedido(product.precio, leerEscalones(product.escalones), cantidad);
+    return { productId: product.id, nombre: product.nombre, precioUnitario: unitario, cantidad, subtotal };
+  });
+
+  // Zona de envío: la elegida, o la única que haya. Su costo (si no es "a coordinar") se suma al total.
+  const zonas = await getZonasActivas();
+  const zona = data.zona ? zonas.find((z) => z.id === data.zona) : zonas.length === 1 ? zonas[0] : undefined;
+  if (!zona) {
+    const error =
+      zonas.length === 0
+        ? "Todavía no hay zonas de envío. Escribinos desde consultas y lo coordinamos."
+        : data.zona
+          ? "Esa zona de envío ya no está disponible"
+          : "Elegí la zona de envío";
+    return NextResponse.json({ error }, { status: 400 });
+  }
+  const costoEnvio = zona.costo ?? 0;
+  const total = items.reduce((suma, i) => suma + i.subtotal, 0) + costoEnvio;
 
   const order = await prisma.order.create({
     data: {
@@ -50,10 +80,12 @@ export async function POST(req: NextRequest) {
       numero_dir: data.numero_dir,
       pisoDepto: data.pisoDepto || null,
       localidad: data.localidad,
-      provincia: data.provincia,
+      // El nombre de la zona (lo que muestran el admin y el aviso de Telegram)
+      provincia: zona.nombre,
+      zonaEnvioId: zona.id,
+      costoEnvio,
       codigoPostal: data.codigoPostal,
-      productId: product.id,
-      cantidad: data.cantidad,
+      items: { create: items },
       total,
       estado: "pendiente",
       origen: data.origen || null,
@@ -63,7 +95,8 @@ export async function POST(req: NextRequest) {
   await logEvent("pedido", `Pedido #${order.numero} creado, esperando el pago`, {
     detalle: {
       cliente: `${order.nombre} ${order.apellido}`,
-      cantidad: order.cantidad,
+      items: items.map((i) => ({ producto: i.nombre, cantidad: i.cantidad })),
+      envio: { zona: zona.nombre, costo: zona.costo },
       total: order.total,
       origen: order.origen,
     },
@@ -75,13 +108,17 @@ export async function POST(req: NextRequest) {
     const preference = await getPreferenceClient().create({
       body: {
         items: [
-          {
-            id: product.id,
-            title: product.nombre,
-            quantity: data.cantidad,
-            unit_price: unitario,
+          ...items.map((i) => ({
+            id: i.productId,
+            title: i.nombre,
+            quantity: i.cantidad,
+            unit_price: i.precioUnitario,
             currency_id: cliente.region.moneda,
-          },
+          })),
+          // El envío va como un ítem más (solo si tiene costo)
+          ...(costoEnvio > 0
+            ? [{ id: `envio-${zona.id}`, title: `Envío (${zona.nombre})`, quantity: 1, unit_price: costoEnvio, currency_id: cliente.region.moneda }]
+            : []),
         ],
         payer: {
           name: data.nombre,
@@ -127,4 +164,16 @@ export async function POST(req: NextRequest) {
       { status: 502 }
     );
   }
+}
+
+/** Producto de cada slug pedido ("" = el destacado); los que no están a la venta no vienen. */
+async function resolverProductos(slugs: string[]) {
+  const resueltos = new Map<string, Product>();
+  const conSlug = slugs.filter(Boolean);
+  if (conSlug.length) for (const p of await getProductosPorSlugs(conSlug)) resueltos.set(p.slug, p);
+  if (slugs.includes("")) {
+    const destacado = await getMainProduct();
+    if (destacado) resueltos.set("", destacado);
+  }
+  return resueltos;
 }

@@ -48,7 +48,6 @@ export default definirCliente({
       producto: "Miel Artesanal 500g, frasco de vidrio",
       datos: [
         "Elaboración: producida por Apícola Mercedes en Tomás Jofré, Bs As. 100% artesanal, sin aditivos, sin procesos industriales, sin azúcar agregada, sin conservantes. Las abejas recolectan néctar de flores silvestres de la zona.",
-        "Envíos: por ahora solo dentro de CABA. Después de la compra, alguien del equipo de Melera le escribe para coordinar el envío. Pronto se suman más zonas; si la persona está fuera de CABA, que escriba en $SITIO/consultas y le avisamos.",
         "Pago: online con Mercado Pago, al finalizar la compra en la web.",
         "Consultas (retiro, compras mayoristas o cualquier otra duda): en $SITIO/consultas, y le respondemos por Instagram o por email. No hay WhatsApp de contacto.",
       ],

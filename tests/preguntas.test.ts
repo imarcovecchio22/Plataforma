@@ -17,8 +17,9 @@ const logs = vi.hoisted(() => ({ logEvent: vi.fn(async () => {}) }));
 vi.mock("@/lib/logs", () => ({ ...logs, errorMessage: (e: unknown) => String(e) }));
 
 vi.mock("@/lib/product", () => ({
-  getMainProduct: async () => ({ id: "p", nombre: "Miel Artesanal 500g", descripcion: "", precio: 6500, stock: 5, escalones: [] }),
+  getProductosActivos: async () => [{ id: "p", nombre: "Miel Artesanal 500g", descripcion: "", precio: 6500, stock: 5, escalones: [] }],
 }));
+vi.mock("@/lib/zonas", async () => (await import("./zonas-de-prueba")).mockZonas("melera"));
 
 import { armarRespuesta, partesRespuesta } from "@/lib/preguntas";
 import { preguntaFrecuenteSchema } from "@/lib/validation";
@@ -28,7 +29,10 @@ import { DELETE as borrar, PATCH as editar } from "@/app/api/admin/preguntas/[id
 import ConsultasPage from "@/app/(publico)/consultas/page";
 import seedMelera from "../clientes/melera/seed";
 
-const DATOS = { nombre: "Miel Artesanal 500g", precio: "$ 6.500", promos: "5 frascos a $ 30.000" };
+const DATOS = {
+  nombre: "Miel Artesanal 500g", precio: "$ 6.500", promos: "5 frascos a $ 30.000",
+  catalogo: "Miel Artesanal 500g ($ 6.500)", zonas: "CABA (a coordinar después de la compra)",
+};
 
 describe("armarRespuesta", () => {
   it("reemplaza $PRODUCTO, $PRECIO y $PROMOS", () => {
@@ -47,6 +51,13 @@ describe("armarRespuesta", () => {
       "El frasco de Miel Artesanal 500g sale $ 6.500. Llevando más sale menos: 5 frascos a $ 30.000."
     );
     expect(armarRespuesta(precio, { ...DATOS, promos: "" })).toBe("El frasco de Miel Artesanal 500g sale $ 6.500.");
+  });
+
+  it("la de envíos de Melera usa las zonas de la base", () => {
+    const envios = seedMelera.preguntas.find((p) => p.pregunta.includes("envíos"))!.respuesta;
+    expect(armarRespuesta(envios, DATOS)).toBe(
+      "Por ahora enviamos a CABA (a coordinar después de la compra). Pronto vamos a sumar más zonas: si estás en otro lugar, [escribinos acá abajo](#escribinos) y te avisamos."
+    );
   });
 });
 

@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { getMainProduct } from "@/lib/product";
-import { textosDelProducto } from "@/lib/precios";
+import { datosParaTextos } from "@/lib/datos-textos";
 import { armarRespuesta } from "@/lib/preguntas";
 import RespuestaFrecuente from "@/components/RespuestaFrecuente";
 import PreguntaForm from "@/components/admin/PreguntaForm";
@@ -9,11 +8,10 @@ import PreguntaActions from "@/components/admin/PreguntaActions";
 export const dynamic = "force-dynamic";
 
 export default async function AdminPreguntasPage() {
-  const [preguntas, product] = await Promise.all([
+  const [preguntas, datos] = await Promise.all([
     prisma.preguntaFrecuente.findMany({ orderBy: [{ orden: "asc" }, { id: "asc" }] }),
-    getMainProduct(),
+    datosParaTextos(),
   ]);
-  const datos = textosDelProducto(product);
   const ordenSugerido = preguntas.length ? Math.max(...preguntas.map((p) => p.orden)) + 10 : 10;
 
   return (

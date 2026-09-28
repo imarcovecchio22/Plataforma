@@ -1,23 +1,35 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useState } from "react";
+import { agregarAlCarrito, guardarCarrito, leerCarrito } from "@/lib/carrito";
 import { formatPrecio } from "@/lib/utils";
 import { totalPedido, type Escalon } from "@/lib/precios";
-import { cantidadConUnidad, cliente } from "@/plataforma/cliente";
+import { cantidadConUnidad, cliente, type Unidad } from "@/plataforma/cliente";
 
 export default function QuantitySelector({
+  slug,
   stock,
   origen,
   precio,
   escalones = [],
+  unidad = cliente.unidad,
+  conCarrito = false,
 }: {
+  /** El producto que se compra (el checkout lo busca por slug). */
+  slug: string;
   stock: number;
   origen?: string;
   precio: number;
   escalones?: Escalon[];
+  /** La unidad del producto (sin ella, la del cliente). */
+  unidad?: Unidad;
+  /** Con varios productos en la tienda: "Agregar al carrito" en vez de ir directo al checkout. */
+  conCarrito?: boolean;
 }) {
   const [cantidad, setCantidad] = useState(1);
+  const [agregado, setAgregado] = useState(false);
   const router = useRouter();
 
   const sinStock = stock <= 0;
@@ -34,8 +46,13 @@ export default function QuantitySelector({
     setCantidad((c) => Math.min(stock, c + 1));
   }
 
+  function agregar() {
+    guardarCarrito(agregarAlCarrito(leerCarrito(), slug, cantidad));
+    setAgregado(true);
+  }
+
   function comprar() {
-    const params = new URLSearchParams({ cantidad: String(cantidad) });
+    const params = new URLSearchParams({ producto: slug, cantidad: String(cantidad) });
     if (origen) params.set("origen", origen);
     router.push(`/checkout?${params}`);
   }
@@ -51,7 +68,7 @@ export default function QuantitySelector({
   return (
     <div className="space-y-5">
       {atajos.length > 1 && (
-        <div className="flex flex-wrap gap-2" role="group" aria-label={`Elegí cuántos ${cliente.unidad.plural}`}>
+        <div className="flex flex-wrap gap-2" role="group" aria-label={`Elegí ${unidad.genero === "femenino" ? "cuántas" : "cuántos"} ${unidad.plural}`}>
           {atajos.map((n) => {
             const t = totalPedido(precio, escalones, n);
             const elegido = n === cantidad;
@@ -68,7 +85,7 @@ export default function QuantitySelector({
                 }`}
               >
                 <span className="block text-sm font-semibold text-[var(--texto)]">
-                  {cantidadConUnidad(n)}
+                  {cantidadConUnidad(n, unidad)}
                 </span>
                 <span className="block text-xs texto-suave">
                   {formatPrecio(t.total)}
@@ -103,13 +120,21 @@ export default function QuantitySelector({
           </button>
         </div>
         <span className="wrap-focus w-fit">
-          <button type="button" onClick={comprar} className="btn" data-fondo-evita>
-            Comprar · {formatPrecio(total)}
+          <button type="button" onClick={conCarrito ? agregar : comprar} className="btn" data-fondo-evita>
+            {conCarrito ? "Agregar al carrito" : "Comprar"} · {formatPrecio(total)}
           </button>
         </span>
       </div>
+      {agregado && (
+        <p className="text-sm text-[var(--texto)]" role="status">
+          Listo, está en el carrito.{" "}
+          <Link href="/carrito" className="font-semibold text-[var(--destacado)] underline underline-offset-4">
+            Ver carrito
+          </Link>
+        </p>
+      )}
       <p className="texto-suave text-sm">
-        {cantidad > 1 && <>{formatPrecio(unitario)} cada {cliente.unidad.singular}{ahorro > 0 && <> · ahorrás {formatPrecio(ahorro)}</>} · </>}
+        {cantidad > 1 && <>{formatPrecio(unitario)} cada {unidad.singular}{ahorro > 0 && <> · ahorrás {formatPrecio(ahorro)}</>} · </>}
         {stock} unidades disponibles
       </p>
     </div>

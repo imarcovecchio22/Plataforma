@@ -143,6 +143,7 @@ describe("generación de posts de Melera", () => {
     precio: null,
     presentacion: null,
     imagenUrl: null,
+    productoId: null,
     estado: "pendiente",
     copy: null,
     caption: null,

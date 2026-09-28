@@ -3,7 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import RespuestaFrecuente from "@/components/RespuestaFrecuente";
-import { armarRespuesta, type DatosProducto } from "@/lib/preguntas";
+import { armarRespuesta } from "@/lib/preguntas";
+import type { DatosTextos } from "@/lib/variables";
 
 export type PreguntaValores = { pregunta: string; respuesta: string; orden: number; activa: boolean };
 
@@ -18,7 +19,7 @@ export default function PreguntaForm({
   preguntaId?: number;
   inicial?: PreguntaValores;
   ordenSugerido?: number;
-  datos: DatosProducto;
+  datos: DatosTextos;
   onListo?: () => void;
 }) {
   const vacio: PreguntaValores = { pregunta: "", respuesta: "", orden: ordenSugerido, activa: true };
@@ -76,7 +77,8 @@ export default function PreguntaForm({
         <label className="label-field" htmlFor={`${idBase}-respuesta`}>Respuesta</label>
         <textarea id={`${idBase}-respuesta`} className="input-field min-h-28" value={valores.respuesta} onChange={(e) => set("respuesta", e.target.value)} maxLength={1500} required />
         <p className="mt-1 text-xs text-stone-500">
-          $PRODUCTO, $PRECIO y $PROMOS se reemplazan por los datos actuales del producto. Lo que va entre [[ y ]] se
+          $PRODUCTO, $PRECIO y $PROMOS se reemplazan por los datos actuales del producto destacado (el primero),
+          $CATALOGO por todos los productos con su precio y $ZONAS por las zonas de envío. Lo que va entre [[ y ]] se
           muestra solo si hay promos por cantidad. Para un link: [texto](#escribinos), [texto](/producto) o
           [texto](https://…). Hasta 1500 caracteres ({valores.respuesta.length}).
         </p>

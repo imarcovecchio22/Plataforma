@@ -10,8 +10,8 @@ import path from "path";
 const RAIZ = path.resolve(__dirname, "..");
 const PALABRAS = /melera|miel|frasco|panal|abeja|colmena|apícola|jofré|\bCABA\b|🐝|🍯/i;
 
-// Pendientes de la fase 2 (zonas de envío configurables): hoy se envía solo dentro de CABA.
-const PENDIENTES_FASE_2 = ["src/components/CheckoutForm.tsx", "src/lib/validation.ts"];
+// Pendientes declarados (hoy ninguno: el "solo CABA" pasó a las zonas de envío de la fase 2).
+const PENDIENTES_FASE_2: string[] = [];
 
 // Generados por scripts/preparar-cliente.ts con los archivos del cliente (están en .gitignore)
 const GENERADOS = ["src/app/tema-cliente.css"];
@@ -49,11 +49,7 @@ describe("sin rastros de Melera en la plataforma", () => {
     expect(hallazgos).toEqual([]);
   });
 
-  it("los pendientes de la fase 2 siguen siendo solo el envío a CABA", () => {
-    for (const archivo of PENDIENTES_FASE_2) {
-      const codigo = lineasDeCodigo(fs.readFileSync(path.join(RAIZ, archivo), "utf8")).map(({ l }) => l).join("\n");
-      const palabras = new Set((codigo.match(new RegExp(PALABRAS.source, "gi")) ?? []).map((p) => p.toUpperCase()));
-      expect([...palabras], archivo).toEqual(["CABA"]);
-    }
+  it("no quedan pendientes: CABA ya no está en el código (es una zona de envío en la base)", () => {
+    expect(PENDIENTES_FASE_2).toEqual([]);
   });
 });

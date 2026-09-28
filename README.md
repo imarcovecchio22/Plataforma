@@ -1,10 +1,10 @@
 # Plataforma: tienda + Instagram en piloto automático
 
-Plataforma para emprendimientos: **tienda propia** (landing, productos, checkout con Mercado Pago, stock y pedidos), **Instagram en piloto automático** (cronograma, textos con Gemini, imágenes generadas con Chromium, aprobación desde Telegram y publicación con la Graph API de Meta) y **respuestas automáticas de DMs** que llevan a la compra, con un panel de administración para gestionar todo (pedidos, stock, consultas, posts, autorespuestas y logs). Todo propio, sin Make, Buffer ni ManyChat.
+Plataforma para emprendimientos: **tienda propia** (landing, productos, checkout con Mercado Pago, stock y pedidos), **Instagram en piloto automático** (cronograma, textos con Gemini, imágenes generadas con Chromium, aprobación desde Telegram y publicación con la Graph API de Meta) y **respuestas automáticas de DMs** que llevan a la compra, con un panel de administración para gestionar todo (pedidos, productos, zonas de envío, consultas, posts, autorespuestas y logs). Todo propio, sin Make, Buffer ni ManyChat.
 
 Cada cliente es **una instancia desplegada** de este mismo repo, con su propia base y sus propias credenciales. La variable de entorno `CLIENTE` elige qué cliente carga el despliegue; su identidad (marca, tema visual, textos, plantillas de Instagram, tono para Gemini) vive en `clientes/<slug>/`, los datos del negocio en su base y los secretos en sus variables de entorno. Las funcionalidades opcionales (autorespuestas, chat con IA, cotizador) se prenden por cliente.
 
-El primer cliente es **Melera** (miel artesanal), de donde salió el código; el segundo va a ser **3DRinoMaker** (impresiones 3D). La fase 1 (Melera como cliente de la plataforma, sin cambiar lo que se ve) está terminada; las próximas son multiproducto y zonas de envío, y después Rino. Detalle en [`CLAUDE.md`](CLAUDE.md) y [`docs/plataforma/`](docs/plataforma/). Las secciones de más abajo todavía describen el funcionamiento con Melera como ejemplo.
+El primer cliente es **Melera** (miel artesanal), de donde salió el código; el segundo va a ser **3DRinoMaker** (impresiones 3D). Las fases 1 (Melera como cliente de la plataforma, sin cambiar lo que se ve) y 2 (varios productos con carrito y zonas de envío configurables) están terminadas; la próxima es Rino. Detalle en [`CLAUDE.md`](CLAUDE.md) y [`docs/plataforma/`](docs/plataforma/). Las secciones de más abajo todavía describen el funcionamiento con Melera como ejemplo.
 
 ## Clientes
 
@@ -13,7 +13,7 @@ clientes/<slug>/
   config.ts        identidad, validada con zod (src/plataforma/cliente/esquema.ts): nombre, dominio,
                    Instagram, SEO, colores, imágenes, módulos, estilos de Instagram, textos para Gemini,
                    unidad de venta, textos de la tienda y región
-  seed.ts          datos iniciales del negocio (producto, preguntas frecuentes, respuestas automáticas)
+  seed.ts          datos iniciales del negocio (productos, zonas de envío, preguntas frecuentes, respuestas automáticas)
   public/          imágenes que se sirven tal cual (logo, foto del producto, imagen para compartir)
   app/             favicons (icon.png, apple-icon.png…)
   tema.css         opcional: variables y clases del contrato de tema (si no, el tema neutro)
@@ -42,13 +42,14 @@ clientes/<slug>/
 
 ## Funcionalidades
 
-- Landing con presentación del producto y sección "Quiénes somos"
-- Página de producto y checkout con selector de cantidad
+- Landing con presentación del producto destacado (el primero de Productos), "Quiénes somos" y, si hay más, los demás productos
+- Catálogo: `/productos` (listado) y `/producto/<slug>` (ficha). Con un solo producto, `/producto` muestra su ficha y la tienda no usa carrito (como Melera); con varios, `/producto` manda al listado y se compra con un **carrito** guardado en el navegador (`/carrito`)
+- Checkout con selector de cantidad (un producto) o con los ítems del carrito, promos por cantidad de cada producto y **zona de envío**: las zonas se cargan en `/admin/envios`, con costo fijo (se suma al total y a Mercado Pago como ítem "Envío") o "a coordinar"; con una sola, se elige sola
 - Integración con MercadoPago (Checkout Pro) y webhook de confirmación de pago
 - `/consultas`: preguntas frecuentes (precio real desde la base) + formulario mobile-first para quien llega desde Instagram (botones de la respuesta automática; responder por Instagram o email, anti-spam con honeypot y tiempo mínimo). Cada consulta se guarda y se avisa por Telegram
 - `?origen=` (ej. `instagram` desde los botones de la respuesta automática de los DMs) se guarda en las consultas y en los pedidos que pasan por `/producto` → Comprar → checkout
 - Avisos por Telegram de pedidos pagados y consultas nuevas, directo desde la web al bot (`src/lib/telegram.ts`, sin Make). Diagnóstico en `GET/POST /api/admin/telegram` (dice si el bot está configurado y manda un mensaje de prueba)
-- Panel `/admin` protegido: pedidos (estado, detalle, origen), stock, consultas (link directo a ig.me / mailto, marcar respondida, archivar) y **logs**. Fechas en hora de Argentina
+- Panel `/admin` protegido: pedidos (estado, detalle por ítem y envío, origen), productos (precio, stock, promos, unidad, foto, activo y orden), envíos, consultas (link directo a ig.me / mailto, marcar respondida, archivar) y **logs**. Fechas en hora de Argentina
 - `/admin/logs`: registro de eventos de la web (pedidos, pagos, consultas, avisos de Telegram, logins y cambios del admin, imágenes de Instagram) con filtros en la URL: `?nivel=error`, `?tipo=pago`, `?q=texto`, `?pagina=2`. Se guarda 90 días. Para registrar algo nuevo: `logEvent(tipo, mensaje, { nivel, detalle })` de `src/lib/logs.ts` (nunca lanza error)
 - `/api/generate` + `/api/img/...`: imágenes de feed y story para Instagram, renderizadas con Chromium en Vercel (plantillas en `clientes/melera/instagram/`)
 - **Instagram** (`/admin/instagram`): cronograma de posts en la base. Todos los días (Vercel Cron, 9–10 h Argentina) se generan los pendientes y llegan a Telegram con 4 botones (Feed, Historia, Feed + Historia, Descartar). Al tocar uno se publica directo con la Graph API de Meta. Ver "Instagram" más abajo
@@ -141,7 +142,7 @@ Ver `.env.example` para el detalle completo.
 
 - **Configuración en Meta:** paso a paso en [`docs/instagram-setup.md`](docs/instagram-setup.md), incluido el orden para dejar ManyChat sin respuestas dobles.
 - **Webhook:** `/api/instagram/webhook` valida la firma `X-Hub-Signature-256`, responde 200 enseguida y procesa en segundo plano. Cada mensaje o comentario se registra en `InstagramEvento` por su id (un reintento de Meta no responde dos veces). No repite la misma regla a la misma persona por 2 h (`HORAS_ENTRE_RESPUESTAS`); para pruebas, "Reiniciar límite" en la tabla de mensajes lo libera para esa cuenta.
-- **Coincidencia:** sin tildes, mayúsculas ni signos, por palabra completa ("info" no coincide con "informal"). Gana la regla activa de mayor prioridad. `$PRECIO` en la respuesta se reemplaza por el precio actual del producto.
+- **Coincidencia:** sin tildes, mayúsculas ni signos, por palabra completa ("info" no coincide con "informal"). Gana la regla activa de mayor prioridad. En la respuesta, `$PRODUCTO`, `$PRECIO` y `$PROMOS` se reemplazan por los datos actuales del producto destacado, `$CATALOGO` por todos los productos con su precio y `$ZONAS` por las zonas de envío (las mismas variables sirven en las preguntas frecuentes; ver `src/lib/variables.ts`).
 - **Token:** `/api/cron/instagram-token` (diario) lo renueva cuando le quedan menos de 15 días; si falla, avisa por Telegram. Con 5 errores seguidos al responder también avisa.
 - **Código:** `src/lib/instagram/reglas.ts` (coincidencia, sin servidor: la usa también el Probador), `webhook.ts` (firma y lectura del aviso), `autorespuestas.ts` (procesamiento), `mensajes.ts` y `token.ts` (API de Instagram).
 
@@ -154,7 +155,7 @@ Ver `.env.example` para el detalle completo.
 - Dependencias al día (Next 16, React 19, `mercadopago` 3, vitest 5): `npm audit` sin vulnerabilidades al 2026-09-24.
 
 - Pagos: el paso a "pagado" es atómico (`updateMany` condicionado dentro de la transacción), así que avisos repetidos o simultáneos de Mercado Pago descuentan el stock y avisan una sola vez, y un rechazo tardío no pisa un pago aprobado. Si falla la consulta a Mercado Pago, el webhook responde 500 para que reintente.
-- Pruebas (`npm test`, carpeta `tests/`): además de la lógica de Instagram, las rutas de login (bloqueo), consultas (honeypot y límite), checkout (validación, solo CABA, precio de la base), pagos (idempotencia y concurrencia), el proxy del admin (sesión y CSRF), los crons y el webhook de Mercado Pago.
+- Pruebas (`npm test`, carpeta `tests/`): además de la lógica de Instagram, las rutas de login (bloqueo), consultas (honeypot y límite), checkout (validación, zonas de envío, precio de la base), pagos (idempotencia y concurrencia), el proxy del admin (sesión y CSRF), los crons y el webhook de Mercado Pago.
 
 ### Notas de Next.js 16
 

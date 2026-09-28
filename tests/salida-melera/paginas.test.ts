@@ -33,6 +33,9 @@ vi.mock("next/headers", () => ({
 const PRODUCTO = {
   id: "prod-1",
   nombre: "Miel Artesanal 500g",
+  slug: "miel-artesanal-500g",
+  activo: true,
+  orden: 10,
   descripcion:
     "Miel pura de abejas, producida por Apícola Mercedes (Tomás Jofré, Buenos Aires). Envasada en frasco de vidrio de 500g.",
   precio: 6500,
@@ -61,9 +64,7 @@ const PEDIDO = {
   localidad: "Palermo",
   provincia: "CABA",
   codigoPostal: "1414",
-  productId: "prod-1",
-  product: PRODUCTO,
-  cantidad: 5,
+  items: [{ id: "item-1", productId: "prod-1", nombre: "Miel Artesanal 500g", precioUnitario: 6000, cantidad: 5, subtotal: 30000 }],
   total: 30000,
   estado: "pagado",
   mpPaymentId: "111",
@@ -79,10 +80,15 @@ const db = vi.hoisted(() => ({
   instagramEvento: { findMany: async () => [] },
   eventLog: { deleteMany: async () => ({ count: 0 }), findMany: async () => [], count: async () => 0 },
   preguntaFrecuente: { findMany: async () => [] },
+  product: { findMany: async () => [] },
 }));
 vi.mock("@/lib/prisma", () => ({ prisma: db }));
 
-vi.mock("@/lib/product", () => ({ getMainProduct: async () => PRODUCTO }));
+vi.mock("@/lib/product", () => ({
+  getMainProduct: async () => PRODUCTO,
+  getProductosActivos: async () => [PRODUCTO],
+  getProductoPorSlug: async (slug: string) => (slug === PRODUCTO.slug ? PRODUCTO : null),
+}));
 vi.mock("@/lib/auth", () => ({ getSession: async () => ({ usuario: "admin" }) }));
 vi.mock("@/lib/orders", () => ({ applyPaymentStatus: async () => null }));
 vi.mock("@/lib/instagram/meta", async (original) => ({
@@ -98,6 +104,8 @@ vi.mock("@/lib/telegram", async (original) => ({
   telegramConfigurado: () => false,
 }));
 
+// Las zonas del seed de Melera: con ellas el checkout tiene que verse como antes de las zonas
+vi.mock("@/lib/zonas", async () => (await import("../zonas-de-prueba")).mockZonas("melera"));
 import seedMelera from "../../clientes/melera/seed";
 import RootLayout, { metadata as metadataRaiz } from "@/app/layout";
 import PublicoLayout from "@/app/(publico)/layout";
@@ -114,7 +122,7 @@ import AdminLoginPage from "@/app/admin/login/page";
 import AdminLayout from "@/app/admin/(dashboard)/layout";
 import AdminPedidosPage from "@/app/admin/(dashboard)/pedidos/page";
 import AdminPedidoDetallePage from "@/app/admin/(dashboard)/pedidos/[id]/page";
-import AdminStockPage from "@/app/admin/(dashboard)/stock/page";
+import AdminProductosPage from "@/app/admin/(dashboard)/productos/page";
 import AdminConsultasPage from "@/app/admin/(dashboard)/consultas/page";
 import AdminInstagramPage from "@/app/admin/(dashboard)/instagram/page";
 import AdminAutoRespuestasPage from "@/app/admin/(dashboard)/autorespuestas/page";
@@ -209,6 +217,7 @@ beforeAll(() => {
       },
     ] as never;
   db.eventLog.count = async () => 1;
+  db.product.findMany = async () => [{ ...PRODUCTO, _count: { items: 3 } }] as never;
   // Las preguntas frecuentes de Melera, como quedan en la base después del seed
   db.preguntaFrecuente.findMany = async () =>
     seedMelera.preguntas.map((p, i) => ({ id: i + 1, ...p, activa: true })) as never;
@@ -270,8 +279,8 @@ describe("HTML del admin de Melera", () => {
   it("/admin/pedidos/[id]", async () => {
     expect(html(await AdminPedidoDetallePage({ params: params({ id: "ord-1" }) }))).toMatchSnapshot();
   });
-  it("/admin/stock", async () => {
-    expect(html(await AdminStockPage())).toMatchSnapshot();
+  it("/admin/productos", async () => {
+    expect(html(await AdminProductosPage())).toMatchSnapshot();
   });
   it("/admin/consultas", async () => {
     expect(html(await AdminConsultasPage())).toMatchSnapshot();

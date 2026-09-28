@@ -71,9 +71,10 @@ describe("checkoutSchema", () => {
     expect(checkoutSchema.safeParse({ ...base, cantidad: "1.5" }).success).toBe(false);
   });
 
-  it("por ahora solo acepta envíos dentro de CABA", () => {
-    expect(checkoutSchema.safeParse({ ...base, provincia: "Buenos Aires" }).success).toBe(false);
-    expect(checkoutSchema.safeParse({ ...base, provincia: "" }).success).toBe(false);
+  it("la zona de envío es un id (la valida la API contra las zonas activas)", () => {
+    expect(checkoutSchema.safeParse({ ...base, zona: "3" }).success).toBe(true);
+    expect(checkoutSchema.safeParse({ ...base, zona: "abc" }).success).toBe(false);
+    expect(checkoutSchema.safeParse({ ...base, zona: -1 }).success).toBe(false);
   });
 
   it("limita el largo del origen", () => {

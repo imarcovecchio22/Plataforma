@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import PreguntaForm, { type PreguntaValores } from "@/components/admin/PreguntaForm";
-import type { DatosProducto } from "@/lib/preguntas";
+import type { DatosTextos } from "@/lib/variables";
 
 /** Mostrar/ocultar, editar y borrar una pregunta frecuente. */
 export default function PreguntaActions({
@@ -13,7 +13,7 @@ export default function PreguntaActions({
 }: {
   preguntaId: number;
   valores: PreguntaValores;
-  datos: DatosProducto;
+  datos: DatosTextos;
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

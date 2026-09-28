@@ -14,7 +14,7 @@ export default async function AdminPedidoDetallePage({
   const params = await paramsPromise;
   const pedido = await prisma.order.findUnique({
     where: { id: params.id },
-    include: { product: true },
+    include: { items: true },
   });
 
   if (!pedido) notFound();
@@ -70,10 +70,24 @@ export default async function AdminPedidoDetallePage({
 
         <div className="rounded-xl border border-marca-100 bg-white p-6 shadow-soft sm:col-span-2">
           <h2 className="font-semibold text-oscuro">Detalle del pedido</h2>
-          <div className="mt-3 flex items-center justify-between text-sm text-stone-600">
-            <span>{pedido.product.nombre} × {pedido.cantidad}</span>
-            <span className="font-semibold text-oscuro">{formatPrecio(pedido.total)}</span>
-          </div>
+          {pedido.items.map((item) => (
+            <div key={item.id} className="mt-3 flex items-center justify-between text-sm text-stone-600">
+              <span>{item.nombre} × {item.cantidad}</span>
+              <span className="font-semibold text-oscuro">{formatPrecio(item.subtotal)}</span>
+            </div>
+          ))}
+          {pedido.costoEnvio > 0 && (
+            <div className="mt-3 flex items-center justify-between text-sm text-stone-600">
+              <span>Envío ({pedido.provincia})</span>
+              <span className="font-semibold text-oscuro">{formatPrecio(pedido.costoEnvio)}</span>
+            </div>
+          )}
+          {(pedido.items.length > 1 || pedido.costoEnvio > 0) && (
+            <div className="mt-3 flex items-center justify-between border-t border-marca-100 pt-3 text-sm font-semibold text-oscuro">
+              <span>Total</span>
+              <span>{formatPrecio(pedido.total)}</span>
+            </div>
+          )}
           {pedido.mpPaymentId && (
             <p className="mt-3 text-xs text-stone-400">
               ID de pago MercadoPago: {pedido.mpPaymentId}

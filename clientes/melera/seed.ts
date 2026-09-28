@@ -1,13 +1,24 @@
 import { definirSeed } from "../../src/plataforma/cliente/seed";
 
 export default definirSeed({
-  producto: {
-    nombre: "Miel Artesanal 500g",
-    descripcion:
-      "Miel pura de abejas, producida por Apícola Mercedes (Tomás Jofré, Buenos Aires). Envasada en frasco de vidrio de 500g.",
-    precio: 6500,
-    stock: 50,
-  },
+  productos: [
+    {
+      nombre: "Miel Artesanal 500g",
+      slug: "miel-artesanal-500g",
+      descripcion:
+        "Miel pura de abejas, producida por Apícola Mercedes (Tomás Jofré, Buenos Aires). Envasada en frasco de vidrio de 500g.",
+      precio: 6500,
+      stock: 50,
+    },
+  ],
+  // Lo mismo que decía el checkout antes de las zonas: solo CABA, a coordinar
+  zonas: [
+    {
+      nombre: "CABA",
+      aclaracion: "Por ahora enviamos solo dentro de CABA. Pronto sumamos más zonas.",
+      detalleResumen: "Envío dentro de CABA: después de la compra te escribimos para coordinarlo.",
+    },
+  ],
   preguntas: [
     {
       orden: 10,
@@ -18,7 +29,7 @@ export default definirSeed({
       orden: 20,
       pregunta: "¿Hacen envíos? ¿A qué zonas?",
       respuesta:
-        "Por ahora enviamos solo dentro de CABA, y el envío lo coordinamos con vos después de la compra. Pronto vamos a sumar más zonas: si estás en otro lugar, [escribinos acá abajo](#escribinos) y te avisamos.",
+        "Por ahora enviamos a $ZONAS. Pronto vamos a sumar más zonas: si estás en otro lugar, [escribinos acá abajo](#escribinos) y te avisamos.",
     },
     {
       orden: 30,

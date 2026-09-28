@@ -17,18 +17,33 @@ enum OrderStatus {
 }
 
 model Product {
-  id          String   @id @default(cuid())
-  nombre      String
-  descripcion String
-  precio      Int
+  id               String   @id @default(cuid())
+  nombre           String
+  // Para la URL de la ficha: /producto/<slug>
+  slug             String   @unique
+  // Los inactivos no se muestran en la tienda (el admin los sigue viendo)
+  activo           Boolean  @default(true)
+  // Orden en la tienda, de menor a mayor: el primero activo es el destacado de la home
+  orden            Int      @default(0)
+  // Unidad de venta de este producto (vacía = la del cliente, config.unidad)
+  unidadSingular   String?
+  unidadPlural     String?
+  unidadGenero     String? // "masculino" | "femenino"
+  // Va al lado del precio (ej. "el frasco de 500 g"); vacía = config.textos.aclaracionPrecio
+  aclaracionPrecio String?
+  descripcion      String
+  precio           Int
   // Promos por cantidad: [{ desde: 5, precio: 6000 }, ...] (precio por frasco desde esa cantidad)
-  escalones   Json     @default("[]")
-  stock       Int      @default(0)
-  imagenUrl   String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  escalones        Json     @default("[]")
+  stock            Int      @default(0)
+  imagenUrl        String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
-  orders Order[]
+  items   OrderItem[]
+  postsIG PostIG[]
+
+  @@index([activo, orden])
 }
 
 model Order {
@@ -51,11 +66,13 @@ model Order {
   provincia    String
   codigoPostal String
 
-  // Detalle del pedido
-  productId String
-  product   Product @relation(fields: [productId], references: [id])
-  cantidad  Int
-  total     Int
+  // Detalle del pedido: sus ítems, el envío y el total cobrado (ítems + envío)
+  items       OrderItem[]
+  // Zona elegida (su nombre queda copiado en provincia) y lo que se cobró de envío (0 = a coordinar)
+  zonaEnvioId Int?
+  zonaEnvio   ZonaEnvio?  @relation(fields: [zonaEnvioId], references: [id], onDelete: SetNull)
+  costoEnvio  Int         @default(0)
+  total       Int
 
   estado         OrderStatus @default(pendiente)
   mpPaymentId    String?
@@ -66,6 +83,42 @@ model Order {
 
   @@index([estado])
   @@index([mpPreferenceId])
+}
+
+// Zonas de envío que el comprador elige en el checkout (se editan en /admin/envios).
+model ZonaEnvio {
+  id             Int      @id @default(autoincrement())
+  nombre         String
+  // Costo fijo que se suma al total (y a Mercado Pago); vacío = a coordinar después de la compra
+  costo          Int?
+  // Debajo del selector de zona (ej. "Por ahora enviamos solo dentro de CABA.")
+  aclaracion     String   @default("")
+  // En el resumen de la compra (vacío = un texto según el costo)
+  detalleResumen String   @default("")
+  activa         Boolean  @default(true)
+  orden          Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  pedidos        Order[]
+
+  @@index([activa, orden])
+}
+
+// Un producto dentro de un pedido. Guarda una copia de lo que se vendió (nombre y precios), así
+// el pedido no cambia si después se edita el producto.
+model OrderItem {
+  id             String  @id @default(cuid())
+  orderId        String
+  order          Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId      String
+  product        Product @relation(fields: [productId], references: [id])
+  nombre         String
+  precioUnitario Int // con la promo por cantidad ya aplicada
+  cantidad       Int
+  subtotal       Int
+
+  @@index([orderId])
+  @@index([productId])
 }
 
 enum CanalRespuesta {
@@ -153,13 +206,20 @@ enum DestinoPostIG {
 
 // Cronograma de Instagram (reemplaza la Google Sheet "Cronograma" y los escenarios de Make)
 model PostIG {
-  id     Int          @id @default(autoincrement())
-  fecha  DateTime     @db.Date // día desde el que se puede generar
+  id     Int        @id @default(autoincrement())
+  fecha  DateTime   @db.Date // día desde el que se puede generar
   tipo   TipoPostIG
   estilo String // uno de config.estilosInstagram del cliente (se valida en la app)
   tema   String
 
-  // Solo para tipo producto (datos reales que carga el admin)
+  // Producto del catálogo (tipo producto y promo): al generar, nombre, precio, foto y promos salen de
+  // él. En un post de promo sin producto se usa el destacado; en uno de producto sin producto, los
+  // datos que se cargan a mano abajo.
+  productoId String?
+  producto   Product? @relation(fields: [productoId], references: [id], onDelete: SetNull)
+
+  // Solo para tipo producto (datos reales que carga el admin; con producto del catálogo, lo que se
+  // usó en la última generación)
   nombreProducto String?
   categoria      String?
   precio         String?

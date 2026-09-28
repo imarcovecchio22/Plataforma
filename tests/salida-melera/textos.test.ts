@@ -25,18 +25,21 @@ vi.mock("@google/genai", async (original) => ({
   },
 }));
 
-vi.mock("@/lib/product", () => ({
-  getMainProduct: async () => ({
-    id: "prod-1",
-    nombre: "Miel Artesanal 500g",
-    precio: 6500,
-    stock: 50,
-    escalones: [
-      { desde: 5, precio: 6000 },
-      { desde: 10, precio: 5500 },
-    ],
-  }),
+const PRODUCTO = vi.hoisted(() => ({
+  id: "prod-1",
+  nombre: "Miel Artesanal 500g",
+  precio: 6500,
+  stock: 50,
+  escalones: [
+    { desde: 5, precio: 6000 },
+    { desde: 10, precio: 5500 },
+  ],
 }));
+vi.mock("@/lib/product", () => ({
+  getMainProduct: async () => PRODUCTO,
+  getProductosActivos: async () => [PRODUCTO],
+}));
+vi.mock("@/lib/zonas", async () => (await import("../zonas-de-prueba")).mockZonas("melera"));
 
 const tg = vi.hoisted(() => ({ enviados: [] as string[] }));
 vi.mock("@/lib/telegram", async (original) => ({
@@ -157,7 +160,8 @@ describe("avisos de Telegram de Melera", () => {
 
   it("pedido pagado", async () => {
     db.pedido = {
-      id: "ord-1", numero: 7, estado: "pendiente", productId: "prod-1", cantidad: 5, total: 30000,
+      id: "ord-1", numero: 7, estado: "pendiente", total: 30000,
+      items: [{ productId: "prod-1", nombre: "Miel Artesanal 500g", cantidad: 5, subtotal: 30000 }],
       nombre: "Ana", apellido: "Pérez", localidad: "Palermo", provincia: "CABA", origen: "instagram",
     };
     await applyPaymentStatusFromPayment({ id: 111, status: "approved", external_reference: "ord-1" } as never);

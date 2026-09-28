@@ -1,7 +1,9 @@
 import { z } from "zod";
 import { esUrlPublicaHttps } from "@/lib/urls";
 import { parsearPalabrasClave } from "@/lib/instagram/reglas";
-import { cliente } from "@/plataforma/cliente";
+import { cliente, unidadDe } from "@/plataforma/cliente";
+import { FORMATO_SLUG } from "@/lib/slug";
+import { errorEscalones } from "@/lib/precios";
 
 export const checkoutSchema = z.object({
   nombre: z.string().trim().min(1, "Ingresá tu nombre"),
@@ -12,10 +14,24 @@ export const checkoutSchema = z.object({
   numero_dir: z.string().trim().min(1, "Ingresá el número"),
   pisoDepto: z.string().trim().optional().default(""),
   localidad: z.string().trim().min(1, "Ingresá el barrio"),
-  // Por ahora solo se envía dentro de CABA.
-  provincia: z.string().trim().refine((p) => p === "CABA", "Por ahora enviamos solo dentro de CABA"),
+  // Zona de envío elegida (id de ZonaEnvio); sin ella, si hay una sola zona activa, esa
+  zona: z.coerce.number().int().positive().optional(),
   codigoPostal: z.string().trim().min(1, "Ingresá el código postal"),
-  cantidad: z.coerce.number().int().min(1, "La cantidad mínima es 1"),
+  // Un solo producto (el formulario de siempre): su slug (sin él, el destacado) y la cantidad
+  cantidad: z.coerce.number().int().min(1, "La cantidad mínima es 1").max(1000).default(1),
+  producto: z.string().trim().max(80).optional().default(""),
+  // Varios productos (el carrito): si viene, reemplaza a producto y cantidad
+  items: z
+    .array(
+      z.object({
+        producto: z.string().trim().min(1).max(80),
+        cantidad: z.coerce.number().int().min(1, "La cantidad mínima es 1").max(1000),
+      })
+    )
+    .min(1, "El carrito está vacío")
+    .max(20, "Hasta 20 productos por pedido")
+    .refine((l) => new Set(l.map((i) => i.producto)).size === l.length, "Hay productos repetidos en el pedido")
+    .optional(),
   origen: z.string().trim().max(50).optional().default(""),
 });
 
@@ -108,9 +124,11 @@ export const postIGSchema = z
     precio: z.string().trim().max(20, "El precio puede tener hasta 20 caracteres").optional().default(""),
     presentacion: z.string().trim().max(60).optional().default(""),
     imagenUrl: z.string().trim().max(500).optional().default(""),
+    // Producto del catálogo (producto y promo); vacío = a mano (producto) o el destacado (promo)
+    productoId: z.string().trim().max(50).optional().default(""),
   })
   .superRefine((data, ctx) => {
-    if (data.tipo !== "producto") return;
+    if (data.tipo !== "producto" || data.productoId) return;
     if (!data.nombreProducto) ctx.addIssue({ code: "custom", path: ["nombreProducto"], message: "Falta el nombre del producto" });
     if (!data.precio) ctx.addIssue({ code: "custom", path: ["precio"], message: "Falta el precio" });
     if (!data.imagenUrl) {
@@ -182,3 +200,82 @@ export const preguntaFrecuenteSchema = z.object({
 });
 
 export type PreguntaFrecuenteInput = z.infer<typeof preguntaFrecuenteSchema>;
+
+// ── Zonas de envío (/admin/envios) ──
+
+export const zonaEnvioSchema = z.object({
+  nombre: z
+    .string()
+    .trim()
+    .min(2, "Escribí el nombre de la zona (mínimo 2 caracteres)")
+    .max(60, "El nombre puede tener hasta 60 caracteres"),
+  // null (o vacío en el formulario) = a coordinar después de la compra
+  costo: z.preprocess(
+    (v) => (v === "" || v === undefined ? null : v),
+    z.coerce
+      .number()
+      .int("El costo tiene que ser un número entero")
+      .min(1, "El costo tiene que ser mayor a 0 (vacío = a coordinar)")
+      .max(10_000_000)
+      .nullable()
+  ),
+  aclaracion: z.string().trim().max(200, "La aclaración puede tener hasta 200 caracteres").default(""),
+  detalleResumen: z.string().trim().max(200, "El texto del resumen puede tener hasta 200 caracteres").default(""),
+  orden: z.coerce.number().int("El orden tiene que ser un número entero").min(-1000).max(10000),
+  activa: z.boolean(),
+});
+
+export type ZonaEnvioInput = z.infer<typeof zonaEnvioSchema>;
+
+// ── Productos (/admin/productos) ──
+
+export const productoSchema = z
+  .object({
+    nombre: z.string().trim().min(1, "Poné el nombre del producto").max(120, "El nombre puede tener hasta 120 caracteres"),
+    slug: z
+      .string()
+      .trim()
+      .max(80, "El slug puede tener hasta 80 caracteres")
+      .regex(FORMATO_SLUG, "El slug solo puede tener minúsculas, números y guiones (ej. mi-producto)"),
+    descripcion: z.string().trim().max(2000, "La descripción puede tener hasta 2000 caracteres").default(""),
+    precio: z.coerce.number().int("El precio va sin centavos").min(1, "El precio tiene que ser mayor a 0").max(10_000_000),
+    stock: z.coerce.number().int("El stock va sin decimales").min(0, "El stock no puede ser negativo").max(1_000_000),
+    // Promos por cantidad: precio por unidad desde cierta cantidad (hasta 3)
+    escalones: z
+      .array(z.object({ desde: z.coerce.number().int().min(2).max(1000), precio: z.coerce.number().int().min(1).max(10_000_000) }))
+      .max(3, "Hasta 3 promos")
+      .default([]),
+    // Foto: link https público (vacío = la de la config del cliente)
+    imagenUrl: z
+      .string()
+      .trim()
+      .max(500)
+      .refine((v) => !v || esUrlPublicaHttps(v), "La foto tiene que ser un link https público")
+      .transform((v) => v || null)
+      .default(""),
+    activo: z.boolean(),
+    orden: z.coerce.number().int("El orden va sin decimales").min(-100_000).max(100_000),
+    // Unidad propia (vacía = la del cliente) y lo que va al lado del precio (vacío = el del cliente)
+    unidadSingular: z.string().trim().max(30, "La unidad puede tener hasta 30 caracteres").default(""),
+    unidadPlural: z.string().trim().max(30, "La unidad puede tener hasta 30 caracteres").default(""),
+    unidadGenero: z.enum(["masculino", "femenino"]).default("masculino"),
+    aclaracionPrecio: z.string().trim().max(80, "La aclaración puede tener hasta 80 caracteres").default(""),
+  })
+  .superRefine((p, ctx) => {
+    if (Boolean(p.unidadSingular) !== Boolean(p.unidadPlural)) {
+      ctx.addIssue({ code: "custom", path: ["unidadPlural"], message: "Completá la unidad en singular y en plural (o dejá las dos vacías)" });
+      return;
+    }
+    const error = errorEscalones(p.precio, p.escalones, unidadDe(p));
+    if (error) ctx.addIssue({ code: "custom", path: ["escalones"], message: error });
+  })
+  .transform((p) => ({
+    ...p,
+    escalones: [...p.escalones].sort((a, b) => a.desde - b.desde),
+    unidadSingular: p.unidadSingular || null,
+    unidadPlural: p.unidadPlural || null,
+    unidadGenero: p.unidadSingular ? p.unidadGenero : null,
+    aclaracionPrecio: p.aclaracionPrecio || null,
+  }));
+
+export type ProductoInput = z.infer<typeof productoSchema>;

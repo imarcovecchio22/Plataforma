@@ -14,7 +14,12 @@ export type PostIGValores = {
   precio: string;
   presentacion: string;
   imagenUrl: string;
+  /** Producto del catálogo (producto y promo); "" = a mano (producto) o el destacado (promo) */
+  productoId: string;
 };
+
+/** Lo que el formulario muestra de cada producto del catálogo. */
+export type ProductoParaPost = { id: string; nombre: string; precio: string; conFoto: boolean; conPromos: boolean; activo: boolean };
 
 const VACIO = (fecha: string): PostIGValores => ({
   fecha,
@@ -26,16 +31,19 @@ const VACIO = (fecha: string): PostIGValores => ({
   precio: "",
   presentacion: "",
   imagenUrl: `${cliente.dominio}${cliente.imagenes.producto.src}`,
+  productoId: "",
 });
 
 /** Formulario para cargar (o editar, si recibe postId) un post del cronograma. */
 export default function PostIGForm({
   fechaHoy,
+  productos,
   postId,
   inicial,
   onListo,
 }: {
   fechaHoy: string;
+  productos: ProductoParaPost[];
   postId?: number;
   inicial?: PostIGValores;
   onListo?: () => void;
@@ -79,6 +87,14 @@ export default function PostIGForm({
   }
 
   const esProducto = valores.tipo === "producto";
+  const conProducto = esProducto || valores.tipo === "promo";
+  const elegido = productos.find((p) => p.id === valores.productoId);
+  const aMano = esProducto && !elegido;
+
+  function cambiarTipo(tipo: PostIGValores["tipo"]) {
+    // Un post de producto arranca con el primero del catálogo (se puede cambiar o cargar a mano)
+    setValores((v) => ({ ...v, tipo, productoId: tipo === "producto" && !v.productoId && productos[0] ? productos[0].id : v.productoId }));
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -89,11 +105,11 @@ export default function PostIGForm({
         </div>
         <div>
           <label className="label-field" htmlFor={`${idBase}-tipo`}>Tipo</label>
-          <select id={`${idBase}-tipo`} className="input-field" value={valores.tipo} onChange={(e) => set("tipo", e.target.value as PostIGValores["tipo"])}>
+          <select id={`${idBase}-tipo`} className="input-field" value={valores.tipo} onChange={(e) => cambiarTipo(e.target.value as PostIGValores["tipo"])}>
             <option value="presentacion">Presentación</option>
             <option value="dato">Dato curioso</option>
             <option value="producto">Producto</option>
-            <option value="promo">Promo (las de Precio y stock)</option>
+            <option value="promo">Promo (las promos por cantidad de un producto)</option>
           </select>
         </div>
         <div>
@@ -121,16 +137,45 @@ export default function PostIGForm({
         />
       </div>
 
+      {conProducto && (
+        <div className="rounded-lg bg-marca-50/60 p-4">
+          <label className="label-field" htmlFor={`${idBase}-producto`}>Producto</label>
+          <select id={`${idBase}-producto`} className="input-field" value={valores.productoId} onChange={(e) => set("productoId", e.target.value)}>
+            <option value="">{esProducto ? "Cargar los datos a mano" : "El destacado (el primero de Productos)"}</option>
+            {productos.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.nombre}
+                {p.activo ? "" : " (pausado)"}
+              </option>
+            ))}
+          </select>
+          {elegido && (
+            <p className="mt-2 text-xs text-stone-500">
+              {esProducto
+                ? `Nombre, precio (hoy ${elegido.precio}) y foto${elegido.conFoto ? "" : " (la del sitio: el producto no tiene)"} salen del producto al generar el post.`
+                : `Las promos salen del producto al generar el post.`}
+              {!esProducto && !elegido.conPromos && (
+                <span className="block text-red-700">Este producto no tiene promos por cantidad: el post va a dar error al generarse.</span>
+              )}
+            </p>
+          )}
+        </div>
+      )}
+
       {esProducto && (
         <div className="grid gap-4 rounded-lg bg-marca-50/60 p-4 sm:grid-cols-2">
-          <div>
-            <label className="label-field" htmlFor={`${idBase}-nombre`}>Nombre del producto</label>
-            <input id={`${idBase}-nombre`} className="input-field" value={valores.nombreProducto} onChange={(e) => set("nombreProducto", e.target.value)} placeholder={cliente.textos.ejemplosAdmin.nombreProducto} maxLength={80} />
-          </div>
-          <div>
-            <label className="label-field" htmlFor={`${idBase}-precio`}>Precio</label>
-            <input id={`${idBase}-precio`} className="input-field" value={valores.precio} onChange={(e) => set("precio", e.target.value)} placeholder="6500" maxLength={20} />
-          </div>
+          {aMano && (
+            <>
+              <div>
+                <label className="label-field" htmlFor={`${idBase}-nombre`}>Nombre del producto</label>
+                <input id={`${idBase}-nombre`} className="input-field" value={valores.nombreProducto} onChange={(e) => set("nombreProducto", e.target.value)} placeholder={cliente.textos.ejemplosAdmin.nombreProducto} maxLength={80} />
+              </div>
+              <div>
+                <label className="label-field" htmlFor={`${idBase}-precio`}>Precio</label>
+                <input id={`${idBase}-precio`} className="input-field" value={valores.precio} onChange={(e) => set("precio", e.target.value)} placeholder="6500" maxLength={20} />
+              </div>
+            </>
+          )}
           <div>
             <label className="label-field" htmlFor={`${idBase}-categoria`}>Categoría</label>
             <input id={`${idBase}-categoria`} className="input-field" value={valores.categoria} onChange={(e) => set("categoria", e.target.value)} placeholder={cliente.textos.ejemplosAdmin.categoria} maxLength={60} />
@@ -139,10 +184,12 @@ export default function PostIGForm({
             <label className="label-field" htmlFor={`${idBase}-presentacion`}>Presentación</label>
             <input id={`${idBase}-presentacion`} className="input-field" value={valores.presentacion} onChange={(e) => set("presentacion", e.target.value)} placeholder={cliente.textos.ejemplosAdmin.presentacion} maxLength={60} />
           </div>
-          <div className="sm:col-span-2">
-            <label className="label-field" htmlFor={`${idBase}-imagen`}>Foto (link https)</label>
-            <input id={`${idBase}-imagen`} className="input-field" value={valores.imagenUrl} onChange={(e) => set("imagenUrl", e.target.value)} maxLength={500} />
-          </div>
+          {aMano && (
+            <div className="sm:col-span-2">
+              <label className="label-field" htmlFor={`${idBase}-imagen`}>Foto (link https)</label>
+              <input id={`${idBase}-imagen`} className="input-field" value={valores.imagenUrl} onChange={(e) => set("imagenUrl", e.target.value)} maxLength={500} />
+            </div>
+          )}
         </div>
       )}
 

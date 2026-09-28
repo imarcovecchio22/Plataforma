@@ -3,22 +3,21 @@
  * Sin dependencias de servidor: lo usan la página y el formulario del admin (vista previa).
  *
  * En la respuesta:
- * - $PRODUCTO, $PRECIO y $PROMOS se reemplazan por los datos actuales del producto.
+ * - Las variables ($PRODUCTO, $PRECIO, $PROMOS, $CATALOGO, $ZONAS) se reemplazan por los datos
+ *   actuales (src/lib/variables.ts).
  * - [[ ... ]] se muestra solo si hay promos por cantidad.
  * - [texto](destino) es un link; el destino puede ser #ancla, /ruta o https://...
  */
-
-export type DatosProducto = { nombre: string; precio: string; promos: string };
+import { reemplazarVariables, type DatosTextos } from "@/lib/variables";
 
 export type ParteRespuesta = { texto: string } | { texto: string; href: string };
 
 /** Reemplaza las variables y resuelve los [[ ]] (sin tocar los links). */
-export function armarRespuesta(respuesta: string, datos: DatosProducto) {
-  return respuesta
-    .replace(/\[\[([\s\S]*?)\]\]/g, (_, bloque: string) => (datos.promos ? bloque : ""))
-    .replace(/\$PRODUCTO/g, datos.nombre)
-    .replace(/\$PRECIO/g, datos.precio)
-    .replace(/\$PROMOS/g, datos.promos);
+export function armarRespuesta(respuesta: string, datos: DatosTextos) {
+  return reemplazarVariables(
+    respuesta.replace(/\[\[([\s\S]*?)\]\]/g, (_, bloque: string) => (datos.promos ? bloque : "")),
+    datos
+  );
 }
 
 // #ancla, /ruta del sitio (no //otro-sitio.com, que el navegador abre como externo) o https://

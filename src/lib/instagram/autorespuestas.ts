@@ -2,8 +2,8 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { errorMessage, logEvent } from "@/lib/logs";
 import { sendTelegramMessage, siteUrl } from "@/lib/telegram";
-import { getMainProduct } from "@/lib/product";
-import { textosDelProducto } from "@/lib/precios";
+import { datosParaTextos } from "@/lib/datos-textos";
+import { usaVariables } from "@/lib/variables";
 import { armarTextoRespuesta, elegirRegla, leerBotones } from "@/lib/instagram/reglas";
 import { enviarDm, enviarRespuestaPrivada, responderComentario } from "@/lib/instagram/mensajes";
 import type { EventoEntrante } from "@/lib/instagram/webhook";
@@ -71,10 +71,7 @@ export async function procesarEvento(ev: EventoEntrante) {
     }
 
     let texto = regla.respuesta;
-    if (texto.includes("$PRECIO") || texto.includes("$PROMOS")) {
-      const { precio, promos } = textosDelProducto(await getMainProduct());
-      texto = armarTextoRespuesta(texto, precio, promos);
-    }
+    if (usaVariables(texto)) texto = armarTextoRespuesta(texto, await datosParaTextos());
     const botones = leerBotones(regla.botones);
 
     if (ev.tipo === "dm") {

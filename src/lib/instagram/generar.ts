@@ -1,4 +1,4 @@
-import type { PostIG } from "@prisma/client";
+import type { PostIG, Product } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { errorMessage, logEvent } from "@/lib/logs";
 import { esUrlPublicaHttps } from "@/lib/security";
@@ -8,7 +8,7 @@ import { formatPrecio } from "@/lib/utils";
 import { sendTelegramMessage, sendTelegramPhoto, siteUrl } from "@/lib/telegram";
 import { generarCopy, type CopyIG } from "@/lib/instagram/copy";
 import { botonesPost, hoyLocal } from "@/lib/instagram/botones";
-import { cantidadConUnidad, cliente } from "@/plataforma/cliente";
+import { cantidadConUnidad, cliente, unidadDe } from "@/plataforma/cliente";
 import { buildImageUrls, estiloUsaSemilla } from "@/plataforma/imagenes/plantillas";
 
 // Cuántos posts se generan por corrida (cada uno tarda ~10-20 s; la función tiene 60 s).
@@ -34,9 +34,23 @@ export function datosPlantilla(post: PostIG, copy: CopyIG, promo?: { promos: str
     nombre_producto: post.nombreProducto ?? "",
     precio: post.precio ?? "",
     imagen_url: post.imagenUrl || promo?.imagenUrl || "",
-    // tipo promo: las promos de "Precio y stock" al momento de generar
+    // tipo promo: las promos del producto (el elegido o el destacado) al momento de generar
     ...(promo ? { promos: promo.promos } : {}),
   };
+}
+
+/** La foto de un producto para las imágenes: la suya o, si no tiene, la del cliente. */
+function fotoDe(producto: Pick<Product, "imagenUrl">) {
+  return producto.imagenUrl || `${siteUrl()}${cliente.imagenes.producto.src}`;
+}
+
+/** El producto del catálogo del post, o el destacado en una promo sin producto elegido. */
+function productoDelPost(post: PostIG) {
+  if (!post.productoId) return getMainProduct();
+  return prisma.product.findUnique({ where: { id: post.productoId } }).then((producto) => {
+    if (!producto) throw new Error("El producto del post ya no existe: elegí otro");
+    return producto;
+  });
 }
 
 // Pide la imagen para que se dibuje ahora (y quede en caché para Meta) y devuelve sus bytes:
@@ -60,27 +74,39 @@ async function generarUno(post: PostIG) {
   if (tomado.count === 0) return "omitido" as const;
 
   try {
-    if (post.tipo === "producto" && !esUrlPublicaHttps(post.imagenUrl ?? "")) {
-      throw new Error("La foto del producto tiene que ser un link https público");
+    // Producto y promo: los datos del producto salen de la base al generar (así la imagen nunca
+    // muestra un precio o una promo vieja)
+    const producto = post.productoId || post.tipo === "promo" ? await productoDelPost(post) : null;
+
+    // Producto del catálogo: nombre, precio y foto de la base; si no, los cargados a mano
+    const datos: PostIG =
+      post.tipo === "producto" && producto
+        ? { ...post, nombreProducto: producto.nombre, precio: formatPrecio(producto.precio), imagenUrl: fotoDe(producto) }
+        : post;
+    if (post.tipo === "producto") {
+      if (!datos.nombreProducto) throw new Error("Elegí el producto del catálogo o cargá sus datos a mano");
+      const fotoDelSitio = producto && !producto.imagenUrl;
+      if (!fotoDelSitio && !esUrlPublicaHttps(datos.imagenUrl ?? "")) {
+        throw new Error("La foto del producto tiene que ser un link https público");
+      }
     }
 
-    // Promo: los precios salen de la base al generar (así la imagen nunca muestra una promo vieja)
     let promo: { promos: string; imagenUrl: string; texto: string } | undefined;
     if (post.tipo === "promo") {
-      const producto = await getMainProduct();
-      if (!producto) throw new Error("No hay producto cargado en Precio y stock");
+      if (!producto) throw new Error("No hay productos cargados en Productos");
       const escalones = leerEscalones(producto.escalones);
-      if (!escalones.length) throw new Error("No hay promos cargadas en Precio y stock");
+      if (!escalones.length) throw new Error(`${producto.nombre} no tiene promos por cantidad (se cargan en Productos)`);
       promo = {
-        promos: promosParaPlantilla(producto.precio, escalones),
-        imagenUrl: `${siteUrl()}${cliente.imagenes.producto.src}`,
-        texto: `${cantidadConUnidad(1)} a ${formatPrecio(producto.precio)} · ${textoPromos(escalones)}`,
+        promos: promosParaPlantilla(producto.precio, escalones, unidadDe(producto)),
+        imagenUrl: fotoDe(producto),
+        texto: `${cantidadConUnidad(1, unidadDe(producto))} a ${formatPrecio(producto.precio)} · ${textoPromos(escalones, unidadDe(producto))}`,
       };
     }
 
-    const copy = await generarCopy(post, promo?.texto);
+    // Una promo de un producto elegido nombra ese producto en el pedido a Gemini
+    const copy = await generarCopy(datos, promo?.texto, post.productoId && producto ? producto.nombre : undefined);
     const urls: { image_url: string; story_image_url: string } = buildImageUrls(
-      datosPlantilla(post, copy, promo),
+      datosPlantilla(datos, copy, promo),
       siteUrl()
     );
     const [feedJpg, storyJpg] = await Promise.all([
@@ -92,6 +118,10 @@ async function generarUno(post: PostIG) {
       where: { id: post.id },
       data: {
         estado: "esperando_aprobacion",
+        // Con producto del catálogo, queda lo que se usó (para verlo en el admin)
+        ...(post.tipo === "producto" && producto
+          ? { nombreProducto: datos.nombreProducto, precio: datos.precio, imagenUrl: datos.imagenUrl }
+          : {}),
         copy,
         caption: copy.caption_ig,
         feedUrl: urls.image_url,

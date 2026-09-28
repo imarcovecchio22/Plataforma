@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // --- Base de datos en memoria: respeta la condición de updateMany como lo hace Postgres ---
-type Pedido = { id: string; numero: number; estado: string; productId: string; cantidad: number; total: number; mpPaymentId?: string | null; [k: string]: unknown };
+type Pedido = { id: string; numero: number; estado: string; total: number; mpPaymentId?: string | null; [k: string]: unknown };
 const db = vi.hoisted(() => ({
   pedidos: new Map<string, Pedido>(),
   stock: 10,
@@ -55,7 +55,8 @@ beforeEach(() => {
   db.stock = 10;
   db.pedidos.clear();
   db.pedidos.set("ord-1", {
-    id: "ord-1", numero: 7, estado: "pendiente", productId: "prod-1", cantidad: 2, total: 13000,
+    id: "ord-1", numero: 7, estado: "pendiente", total: 13000,
+    items: [{ productId: "prod-1", nombre: "Miel Artesanal 500g", cantidad: 2, subtotal: 13000 }],
     nombre: "Ana", apellido: "Pérez", localidad: "Palermo", provincia: "CABA", origen: "instagram",
   });
 });

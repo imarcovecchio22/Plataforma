@@ -2,9 +2,10 @@ import Link from "next/link";
 import FotoProducto from "@/components/FotoProducto";
 import { formatPrecio } from "@/lib/utils";
 import { textoPromos, type Escalon } from "@/lib/precios";
-import { cliente } from "@/plataforma/cliente";
+import type { Product } from "@prisma/client";
+import { cliente, unidadDe } from "@/plataforma/cliente";
 
-export default function Hero({ precio, escalones = [] }: { precio: number; escalones?: Escalon[] }) {
+export default function Hero({ product, escalones = [] }: { product: Product; escalones?: Escalon[] }) {
   return (
     <section
       aria-labelledby="titulo-hero"
@@ -12,6 +13,7 @@ export default function Hero({ precio, escalones = [] }: { precio: number; escal
     >
       {/* Mobile: la foto arriba del título (hasta 34svh). Escritorio: a la derecha, grande. */}
       <FotoProducto
+        producto={product}
         lcp
         sizes="(min-width: 1024px) 460px, 260px"
         className="lg:order-2"
@@ -25,15 +27,15 @@ export default function Hero({ precio, escalones = [] }: { precio: number; escal
           {cliente.textos.hero.bajada}
         </p>
         <p className={`flex items-baseline gap-2.5 ${escalones.length ? "mb-1" : "mb-[1.6rem]"}`}>
-          <span className="precio text-[2.3rem]">{formatPrecio(precio)}</span>
-          <span className="texto-suave">{cliente.textos.aclaracionPrecio}</span>
+          <span className="precio text-[2.3rem]">{formatPrecio(product.precio)}</span>
+          <span className="texto-suave">{product.aclaracionPrecio || cliente.textos.aclaracionPrecio}</span>
         </p>
         {escalones.length > 0 && (
-          <p className="mb-[1.6rem] text-sm font-semibold text-[var(--destacado)]">Promo: {textoPromos(escalones)}</p>
+          <p className="mb-[1.6rem] text-sm font-semibold text-[var(--destacado)]">Promo: {textoPromos(escalones, unidadDe(product))}</p>
         )}
         <div className="flex flex-wrap items-center gap-x-[1.4rem] gap-y-3">
           <span className="wrap-focus">
-            <Link href="/producto" className="btn" data-fondo-evita>
+            <Link href={`/producto/${product.slug}`} className="btn" data-fondo-evita>
               Comprar ahora
             </Link>
           </span>
