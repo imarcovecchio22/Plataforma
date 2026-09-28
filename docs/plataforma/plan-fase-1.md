@@ -96,7 +96,18 @@ saludo y título del chat, placeholders del admin. Los componentes quedan genér
 
 Las preguntas frecuentes de `/consultas` van a la base en el paso 3b.
 
-## Paso 3b: Preguntas frecuentes en la base
+## Paso 3b: Preguntas frecuentes en la base ✅ (2026-09-28)
+
+Hecho: modelo `PreguntaFrecuente` (migración `20260928052507_preguntas_frecuentes`, aplicada en la
+base de desarrollo junto con las 11 anteriores). La respuesta admite `$PRODUCTO`, `$PRECIO`,
+`$PROMOS`, `[[ solo si hay promos ]]` y links `[texto](#ancla | /ruta | https://…)`
+(`src/lib/preguntas.ts`). Pantalla `/admin/preguntas` (crear, editar con vista previa, ordenar,
+mostrar/ocultar, borrar) y rutas `/api/admin/preguntas`. `/consultas` lee de la base y, sin
+preguntas visibles, muestra solo el formulario. Las de Melera están en `clientes/melera/seed.ts`
+y `npm run db:seed` las carga si la tabla está vacía. El snapshot de `/consultas` no cambió; el
+del menú del admin suma solo el link nuevo.
+
+Plan original:
 
 - Modelo `PreguntaFrecuente` (pregunta, respuesta, orden, activa) con su migración.
 - La respuesta admite `$PRECIO` y `$PROMOS` (como las autorespuestas), así la del precio sigue

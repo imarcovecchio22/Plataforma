@@ -159,3 +159,22 @@ export const autoRespuestaSchema = z.object({
 });
 
 export type AutoRespuestaInput = z.infer<typeof autoRespuestaSchema>;
+
+// ── Preguntas frecuentes de /consultas ──
+
+export const preguntaFrecuenteSchema = z.object({
+  pregunta: z
+    .string()
+    .trim()
+    .min(3, "Escribí la pregunta (mínimo 3 caracteres)")
+    .max(200, "La pregunta puede tener hasta 200 caracteres"),
+  respuesta: z
+    .string()
+    .trim()
+    .min(3, "Escribí la respuesta (mínimo 3 caracteres)")
+    .max(1500, "La respuesta puede tener hasta 1500 caracteres"),
+  orden: z.coerce.number().int("El orden tiene que ser un número entero").min(-1000).max(10000),
+  activa: z.boolean(),
+});
+
+export type PreguntaFrecuenteInput = z.infer<typeof preguntaFrecuenteSchema>;

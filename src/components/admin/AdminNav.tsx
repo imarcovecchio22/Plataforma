@@ -9,6 +9,7 @@ const links = [
   { href: "/admin/pedidos", label: "Pedidos" },
   { href: "/admin/stock", label: "Precio y stock" },
   { href: "/admin/consultas", label: "Consultas" },
+  { href: "/admin/preguntas", label: "Preguntas frecuentes" },
   { href: "/admin/instagram", label: "Instagram" },
   { href: "/admin/autorespuestas", label: "Autorespuestas" },
   { href: "/admin/logs", label: "Logs" },

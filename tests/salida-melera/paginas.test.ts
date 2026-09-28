@@ -78,6 +78,7 @@ const db = vi.hoisted(() => ({
   autoRespuesta: { findMany: async () => [] },
   instagramEvento: { findMany: async () => [] },
   eventLog: { deleteMany: async () => ({ count: 0 }), findMany: async () => [], count: async () => 0 },
+  preguntaFrecuente: { findMany: async () => [] },
 }));
 vi.mock("@/lib/prisma", () => ({ prisma: db }));
 
@@ -97,6 +98,7 @@ vi.mock("@/lib/telegram", async (original) => ({
   telegramConfigurado: () => false,
 }));
 
+import seedMelera from "../../clientes/melera/seed";
 import RootLayout, { metadata as metadataRaiz } from "@/app/layout";
 import PublicoLayout from "@/app/(publico)/layout";
 import HomePage from "@/app/(publico)/page";
@@ -117,6 +119,7 @@ import AdminConsultasPage from "@/app/admin/(dashboard)/consultas/page";
 import AdminInstagramPage from "@/app/admin/(dashboard)/instagram/page";
 import AdminAutoRespuestasPage from "@/app/admin/(dashboard)/autorespuestas/page";
 import AdminLogsPage from "@/app/admin/(dashboard)/logs/page";
+import AdminPreguntasPage from "@/app/admin/(dashboard)/preguntas/page";
 
 const html = (nodo: ReactNode) => renderToStaticMarkup(nodo as ReactElement);
 const conLayout = (layout: (p: { children: ReactNode }) => unknown, pagina: ReactNode) =>
@@ -206,6 +209,9 @@ beforeAll(() => {
       },
     ] as never;
   db.eventLog.count = async () => 1;
+  // Las preguntas frecuentes de Melera, como quedan en la base después del seed
+  db.preguntaFrecuente.findMany = async () =>
+    seedMelera.preguntas.map((p, i) => ({ id: i + 1, ...p, activa: true })) as never;
 });
 
 afterAll(() => {
@@ -275,6 +281,9 @@ describe("HTML del admin de Melera", () => {
   });
   it("/admin/autorespuestas", async () => {
     expect(html(await AdminAutoRespuestasPage())).toMatchSnapshot();
+  });
+  it("/admin/preguntas", async () => {
+    expect(html(await AdminPreguntasPage())).toMatchSnapshot();
   });
   it("/admin/logs", async () => {
     expect(html(await AdminLogsPage({ searchParams: params({}) }))).toMatchSnapshot();

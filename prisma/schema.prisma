@@ -94,6 +94,20 @@ model Consulta {
   @@index([estado, createdAt])
 }
 
+// Preguntas frecuentes de /consultas (se editan en /admin/preguntas).
+// La respuesta admite $PRODUCTO, $PRECIO, $PROMOS, [[ solo si hay promos ]] y [links](#ancla).
+model PreguntaFrecuente {
+  id        Int      @id @default(autoincrement())
+  pregunta  String
+  respuesta String
+  orden     Int      @default(0) // se muestran de menor a mayor
+  activa    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([activa, orden])
+}
+
 enum LogNivel {
   info
   warn

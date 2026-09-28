@@ -65,5 +65,9 @@ Plan de la fase 1: [`docs/plataforma/plan-fase-1.md`](docs/plataforma/plan-fase-
 - Next.js 16 (App Router): el middleware es `src/proxy.ts`; `params`, `searchParams`, `cookies()` y
   `headers()` son asíncronos. Lint con `npm run lint`.
 - Todo en español rioplatense: nombres de variables, comentarios, textos y mensajes de commit.
-- Tests con vitest en `tests/` (mockean Prisma; no necesitan base).
+- Tests con vitest en `tests/` (mockean Prisma; no necesitan base). `tests/salida-melera/` fija la
+  salida de Melera con snapshots: si cambia uno, revisar el diff y actualizar solo si es lo buscado.
+- La CLI de Prisma lee `.env`, no `.env.local`: para migrar, exportar antes `DATABASE_URL` de
+  `.env.local`. La base de Neon se suspende sola; por eso la URL lleva `connect_timeout=30`.
+  `npm run db:seed` y los scripts sí leen `.env.local` (usan `@next/env`).
 - Más detalle (Instagram, autorespuestas, seguridad, base) en el `README.md`.
