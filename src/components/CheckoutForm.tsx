@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { formatPrecio } from "@/lib/utils";
 import { totalPedido, type Escalon } from "@/lib/precios";
+import { cadaUno, cantidadConUnidad } from "@/plataforma/cliente";
 
 type Props = {
   producto: { nombre: string; precio: number; escalones: Escalon[] };
@@ -161,7 +162,7 @@ export default function CheckoutForm({ producto, cantidadInicial, origen }: Prop
             onClick={() => setCantidad(proximo.desde)}
             className="mt-2 text-left text-xs text-[var(--glow)] underline underline-offset-2"
           >
-            Llevando {proximo.desde} frascos pagás {formatPrecio(proximo.precio)} cada uno
+            Llevando {cantidadConUnidad(proximo.desde)} pagás {formatPrecio(proximo.precio)} {cadaUno}
           </button>
         )}
         <p className="mt-2 text-xs texto-suave">

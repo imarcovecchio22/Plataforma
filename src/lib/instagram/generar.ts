@@ -8,6 +8,7 @@ import { formatPrecio } from "@/lib/utils";
 import { sendTelegramMessage, sendTelegramPhoto, siteUrl } from "@/lib/telegram";
 import { generarCopy, type CopyIG } from "@/lib/instagram/copy";
 import { botonesPost, hoyLocal } from "@/lib/instagram/botones";
+import { cantidadConUnidad } from "@/plataforma/cliente";
 
 // Módulo CommonJS compartido con las plantillas (melera-templates/generate.js)
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -75,7 +76,7 @@ async function generarUno(post: PostIG) {
       promo = {
         promos: promosParaPlantilla(producto.precio, escalones),
         imagenUrl: `${siteUrl()}/producto-miel-500g.png`,
-        texto: `1 frasco a ${formatPrecio(producto.precio)} · ${textoPromos(escalones)}`,
+        texto: `${cantidadConUnidad(1)} a ${formatPrecio(producto.precio)} · ${textoPromos(escalones)}`,
       };
     }
 

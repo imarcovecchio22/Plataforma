@@ -119,7 +119,15 @@ Plan original:
   respuesta de envíos se resuelve con un formato mínimo de links en la respuesta.
 - Tests: rutas de API, reemplazo de `$PRECIO`/`$PROMOS` y que `/consultas` muestre lo de la base.
 
-## Paso 4: Unidad de venta ("frasco / frascos")
+## Paso 4: Unidad de venta ("frasco / frascos") ✅ (2026-09-28)
+
+Hecho: config `unidad` (singular, plural, género) y helpers `cantidadConUnidad`, `cadaUno`,
+`deLaUnidad` y `masBarato` en `src/plataforma/cliente`. Los usan `precios.ts` (promos, errores y
+filas de la plantilla), el selector de cantidad, el checkout, el admin de stock, la ayuda de
+autorespuestas y el texto de promos que recibe Gemini. Test con un cliente de "piezas" (femenino).
+Quedan con "frasco" el prompt del chat y del copy (paso 5) y la foto `FotoFrasco` (paso 6).
+
+Plan original:
 
 Config `unidad: { singular, plural }` y que la usen `precios.ts`, `QuantitySelector`,
 `CheckoutForm`, `StockEditor` y el form de autorespuestas. Los tests de `precios` quedan iguales

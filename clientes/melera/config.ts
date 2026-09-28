@@ -11,6 +11,7 @@ export default definirCliente({
       "Miel pura de abejas, producida por Apícola Mercedes en Tomás Jofré, Buenos Aires. Directo del campo a tu mesa.",
     altImagen: "Melera — Miel Artesanal",
   },
+  unidad: { singular: "frasco", plural: "frascos", genero: "masculino" },
   textos: {
     emoji: "🐝",
     hero: {

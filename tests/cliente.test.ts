@@ -32,6 +32,7 @@ describe("config del cliente", () => {
     ["SEO sin título", (c: ReturnType<typeof valida>) => ((c.seo as Record<string, string>).titulo = ""), /^seo\.titulo:/],
     ["Quiénes somos sin párrafos", (c: ReturnType<typeof valida>) => (((c.textos as Record<string, Record<string, unknown>>).nosotros.parrafos = [])), /^textos\.nosotros\.parrafos:/],
     ["texto vacío", (c: ReturnType<typeof valida>) => (((c.textos as Record<string, Record<string, unknown>>).hero.titulo = "  ")), /^textos\.hero\.titulo: No puede estar vacío/],
+    ["género de la unidad inválido", (c: ReturnType<typeof valida>) => ((c.unidad as Record<string, string>).genero = "neutro"), /^unidad\.genero:/],
     ["sin región", (c: ReturnType<typeof valida>) => delete (c as Partial<ReturnType<typeof valida>>).region, /^region:/],
   ])("rechaza: %s", (_nombre, romper, esperado) => {
     const config = valida();

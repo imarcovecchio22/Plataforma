@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { cliente } from "@/plataforma/cliente";
+import { cliente, deLaUnidad } from "@/plataforma/cliente";
 
 export type AutoRespuestaValores = {
   nombre: string;
@@ -125,7 +125,7 @@ export default function AutoRespuestaForm({
         <label className="label-field" htmlFor={`${idBase}-respuesta`}>Respuesta</label>
         <textarea id={`${idBase}-respuesta`} className="input-field min-h-[100px]" value={valores.respuesta} onChange={(e) => set("respuesta", e.target.value)} maxLength={640} required />
         <p className="mt-1 text-xs text-stone-500">
-          $PRECIO se reemplaza por el precio actual del frasco y $PROMOS por las promos por cantidad. Hasta 640 caracteres ({valores.respuesta.length}).
+          $PRECIO se reemplaza por el precio actual {deLaUnidad} y $PROMOS por las promos por cantidad. Hasta 640 caracteres ({valores.respuesta.length}).
         </p>
       </div>
 

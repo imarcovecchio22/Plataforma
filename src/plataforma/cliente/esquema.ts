@@ -61,6 +61,15 @@ export const esquemaCliente = z
         altImagen: z.string().trim().min(1),
       })
       .strict(),
+    /** Cómo se llama lo que se vende, para precios, promos y cantidades (ej. frasco / frascos). */
+    unidad: z
+      .object({
+        singular: texto,
+        plural: texto,
+        /** Para "cada uno" / "cada una". */
+        genero: z.enum(["masculino", "femenino"]),
+      })
+      .strict(),
     /**
      * Textos de la tienda. En los que dicen "admite **negrita**", lo que va entre ** se
      * muestra destacado.

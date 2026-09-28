@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { formatPrecio } from "@/lib/utils";
 import { totalPedido, type Escalon } from "@/lib/precios";
+import { cantidadConUnidad, cliente } from "@/plataforma/cliente";
 
 export default function QuantitySelector({
   stock,
@@ -22,7 +23,7 @@ export default function QuantitySelector({
   const sinStock = stock <= 0;
   // Solo para mostrar: el total que se cobra lo calcula el servidor con los mismos escalones
   const { unitario, total, ahorro } = totalPedido(precio, escalones, cantidad);
-  // Atajos: 1 frasco y cada promo que el stock permita
+  // Atajos: 1 unidad y cada promo que el stock permita
   const atajos = [1, ...escalones.map((e) => e.desde)].filter((n) => n <= stock);
 
   function decrementar() {
@@ -50,7 +51,7 @@ export default function QuantitySelector({
   return (
     <div className="space-y-5">
       {atajos.length > 1 && (
-        <div className="flex flex-wrap gap-2" role="group" aria-label="Elegí cuántos frascos">
+        <div className="flex flex-wrap gap-2" role="group" aria-label={`Elegí cuántos ${cliente.unidad.plural}`}>
           {atajos.map((n) => {
             const t = totalPedido(precio, escalones, n);
             const elegido = n === cantidad;
@@ -67,7 +68,7 @@ export default function QuantitySelector({
                 }`}
               >
                 <span className="block text-sm font-semibold text-[var(--ink)]">
-                  {n === 1 ? "1 frasco" : `${n} frascos`}
+                  {cantidadConUnidad(n)}
                 </span>
                 <span className="block text-xs texto-suave">
                   {formatPrecio(t.total)}
@@ -108,7 +109,7 @@ export default function QuantitySelector({
         </span>
       </div>
       <p className="texto-suave text-sm">
-        {cantidad > 1 && <>{formatPrecio(unitario)} cada frasco{ahorro > 0 && <> · ahorrás {formatPrecio(ahorro)}</>} · </>}
+        {cantidad > 1 && <>{formatPrecio(unitario)} cada {cliente.unidad.singular}{ahorro > 0 && <> · ahorrás {formatPrecio(ahorro)}</>} · </>}
         {stock} unidades disponibles
       </p>
     </div>
