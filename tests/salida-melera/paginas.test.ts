@@ -79,6 +79,7 @@ const db = vi.hoisted(() => ({
   instagramEvento: { findMany: async () => [] },
   eventLog: { deleteMany: async () => ({ count: 0 }), findMany: async () => [], count: async () => 0 },
   preguntaFrecuente: { findMany: async () => [] },
+  product: { findMany: async () => [] },
 }));
 vi.mock("@/lib/prisma", () => ({ prisma: db }));
 
@@ -114,7 +115,7 @@ import AdminLoginPage from "@/app/admin/login/page";
 import AdminLayout from "@/app/admin/(dashboard)/layout";
 import AdminPedidosPage from "@/app/admin/(dashboard)/pedidos/page";
 import AdminPedidoDetallePage from "@/app/admin/(dashboard)/pedidos/[id]/page";
-import AdminStockPage from "@/app/admin/(dashboard)/stock/page";
+import AdminProductosPage from "@/app/admin/(dashboard)/productos/page";
 import AdminConsultasPage from "@/app/admin/(dashboard)/consultas/page";
 import AdminInstagramPage from "@/app/admin/(dashboard)/instagram/page";
 import AdminAutoRespuestasPage from "@/app/admin/(dashboard)/autorespuestas/page";
@@ -209,6 +210,7 @@ beforeAll(() => {
       },
     ] as never;
   db.eventLog.count = async () => 1;
+  db.product.findMany = async () => [{ ...PRODUCTO, slug: "miel-artesanal-500g", activo: true, orden: 10, _count: { orders: 3 } }] as never;
   // Las preguntas frecuentes de Melera, como quedan en la base después del seed
   db.preguntaFrecuente.findMany = async () =>
     seedMelera.preguntas.map((p, i) => ({ id: i + 1, ...p, activa: true })) as never;
@@ -270,8 +272,8 @@ describe("HTML del admin de Melera", () => {
   it("/admin/pedidos/[id]", async () => {
     expect(html(await AdminPedidoDetallePage({ params: params({ id: "ord-1" }) }))).toMatchSnapshot();
   });
-  it("/admin/stock", async () => {
-    expect(html(await AdminStockPage())).toMatchSnapshot();
+  it("/admin/productos", async () => {
+    expect(html(await AdminProductosPage())).toMatchSnapshot();
   });
   it("/admin/consultas", async () => {
     expect(html(await AdminConsultasPage())).toMatchSnapshot();

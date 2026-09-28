@@ -63,7 +63,14 @@ Plan original:
 Migración con `slug` a partir del nombre para los productos existentes. `getMainProduct()` pasa a
 ser "el primer producto activo por orden". Sin cambios visibles.
 
-### Paso 2: admin de productos
+### Paso 2: admin de productos ✅ (2026-09-28)
+Hecho: `/admin/productos` (lista por orden con estado, destacado, slug, stock y pedidos; crear,
+editar con promos y slug sugerido desde el nombre, activar/desactivar, borrar) y su API
+`/api/admin/productos`. No se puede borrar un producto con pedidos (409: hay que desactivarlo).
+Reemplaza a "Precio y stock": `/admin/stock` redirige, se borraron `StockEditor` y
+`/api/admin/stock` y sus tests pasaron a `tests/productos-admin.test.ts` (mismos registros en los
+logs). Foto: link https público (vacío = la de la config). Probado de punta a punta con la app.
+Plan original:
 `/admin/productos`: listar, crear, editar (nombre, slug, descripción, precio, promos por cantidad,
 stock, foto, activo, orden). Reemplaza a "Precio y stock" (`/admin/stock` redirige). La foto: según
 la pregunta 8.

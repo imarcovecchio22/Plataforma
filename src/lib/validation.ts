@@ -2,6 +2,8 @@ import { z } from "zod";
 import { esUrlPublicaHttps } from "@/lib/urls";
 import { parsearPalabrasClave } from "@/lib/instagram/reglas";
 import { cliente } from "@/plataforma/cliente";
+import { FORMATO_SLUG } from "@/lib/slug";
+import { errorEscalones } from "@/lib/precios";
 
 export const checkoutSchema = z.object({
   nombre: z.string().trim().min(1, "Ingresá tu nombre"),
@@ -182,3 +184,40 @@ export const preguntaFrecuenteSchema = z.object({
 });
 
 export type PreguntaFrecuenteInput = z.infer<typeof preguntaFrecuenteSchema>;
+
+// ── Productos (/admin/productos) ──
+
+export const productoSchema = z
+  .object({
+    nombre: z.string().trim().min(1, "Poné el nombre del producto").max(120, "El nombre puede tener hasta 120 caracteres"),
+    slug: z
+      .string()
+      .trim()
+      .max(80, "El slug puede tener hasta 80 caracteres")
+      .regex(FORMATO_SLUG, "El slug solo puede tener minúsculas, números y guiones (ej. mi-producto)"),
+    descripcion: z.string().trim().max(2000, "La descripción puede tener hasta 2000 caracteres").default(""),
+    precio: z.coerce.number().int("El precio va sin centavos").min(1, "El precio tiene que ser mayor a 0").max(10_000_000),
+    stock: z.coerce.number().int("El stock va sin decimales").min(0, "El stock no puede ser negativo").max(1_000_000),
+    // Promos por cantidad: precio por unidad desde cierta cantidad (hasta 3)
+    escalones: z
+      .array(z.object({ desde: z.coerce.number().int().min(2).max(1000), precio: z.coerce.number().int().min(1).max(10_000_000) }))
+      .max(3, "Hasta 3 promos")
+      .default([]),
+    // Foto: link https público (vacío = la de la config del cliente)
+    imagenUrl: z
+      .string()
+      .trim()
+      .max(500)
+      .refine((v) => !v || esUrlPublicaHttps(v), "La foto tiene que ser un link https público")
+      .transform((v) => v || null)
+      .default(""),
+    activo: z.boolean(),
+    orden: z.coerce.number().int("El orden va sin decimales").min(-100_000).max(100_000),
+  })
+  .superRefine((p, ctx) => {
+    const error = errorEscalones(p.precio, p.escalones);
+    if (error) ctx.addIssue({ code: "custom", path: ["escalones"], message: error });
+  })
+  .transform((p) => ({ ...p, escalones: [...p.escalones].sort((a, b) => a.desde - b.desde) }));
+
+export type ProductoInput = z.infer<typeof productoSchema>;

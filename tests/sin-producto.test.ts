@@ -7,6 +7,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 
 // Base recién creada: no hay ningún producto
 vi.mock("@/lib/product", () => ({ getMainProduct: async () => null }));
+vi.mock("@/lib/prisma", () => ({ prisma: { product: { findMany: async () => [] } } }));
 vi.mock("next/navigation", () => ({ usePathname: () => "/", useRouter: () => ({ push: () => {}, refresh: () => {} }) }));
 vi.mock("@/lib/logs", () => ({ logEvent: vi.fn(async () => {}), errorMessage: (e: unknown) => String(e) }));
 vi.mock("@/lib/security", async (original) => ({
@@ -25,7 +26,7 @@ vi.mock("@google/genai", async (original) => ({
 import HomePage from "@/app/(publico)/page";
 import ProductoPage from "@/app/(publico)/producto/page";
 import CheckoutPage from "@/app/checkout/page";
-import AdminStockPage from "@/app/admin/(dashboard)/stock/page";
+import AdminProductosPage from "@/app/admin/(dashboard)/productos/page";
 import { POST as checkout } from "@/app/api/checkout/route";
 import { POST as chat } from "@/app/api/chat/route";
 import { PRECIO_SIN_PRODUCTO, textosDelProducto } from "@/lib/precios";
@@ -49,8 +50,8 @@ describe("tienda sin productos cargados", () => {
     expect(h).toContain('href="/consultas"');
   });
 
-  it("el admin de stock explica cómo cargarlo", async () => {
-    expect(await html(AdminStockPage())).toContain("npm run db:seed");
+  it("el admin de productos explica cómo cargarlos", async () => {
+    expect(await html(AdminProductosPage())).toContain("npm run db:seed");
   });
 
   it("el checkout responde 404 sin crear pedidos", async () => {
