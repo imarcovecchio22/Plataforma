@@ -65,12 +65,8 @@ const nextConfig = {
   serverExternalPackages: ["@sparticuz/chromium", "puppeteer-core"],
   outputFileTracingIncludes: {
     // Las claves son globs: los corchetes de [formato]/[token] no coincidirían literalmente
-    "/api/img/**": [
-      "./melera-templates/*.html",
-      "./melera-templates/logo.png",
-      "./melera-templates/panal-fondo.js",
-      "./node_modules/@sparticuz/chromium/bin/**",
-    ],
+    // (las plantillas de Instagram son del cliente de este despliegue)
+    "/api/img/**": [`./clientes/${CLIENTE}/instagram/**`, "./node_modules/@sparticuz/chromium/bin/**"],
   },
 };
 

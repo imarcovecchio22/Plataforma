@@ -240,7 +240,22 @@ animación) que se usa cuando el cliente no trae tema. Se prueba con un cliente 
 (`clientes/ejemplo/`) que solo tiene la config mínima: la tienda tiene que levantar y verse bien.
 Ese cliente sirve después como base para crear `clientes/rino/`.
 
-## Paso 10: Plantillas de Instagram
+## Paso 10: Plantillas de Instagram ✅ (2026-09-28)
+
+Hecho: plantillas, `panal-fondo.js`, `logo.png` y su README → `clientes/melera/instagram/`. El motor
+pasó de CommonJS a TypeScript (`src/plataforma/imagenes/plantillas.ts` y `render.ts`, misma lógica):
+toma la carpeta y los estilos del cliente de la config (`estilosInstagram`: id, nombre y
+`usaSemilla`). `<!--PANAL_JS-->` → `<!--SCRIPT:panal-fondo.js-->` (sirve para cualquier script de
+la carpeta). `preparar-cliente` falla si falta una plantilla de un estilo declarado; Vercel incluye
+`clientes/<CLIENTE>/instagram/**` en `/api/img`. Se borraron `server.js` y el `package.json` de
+`melera-templates/` (restos del servicio viejo con htmlcsstoimage, sin uso) y el uso por línea de
+comandos (`node generate.js`): para probar, generar desde `/admin/instagram`. `clientes/ejemplo/`
+suma un estilo `simple`. Verificado: snapshots de plantillas y tokens iguales; las 12 imágenes
+dibujadas con el motor viejo y con la app nueva: 9 idénticas byte a byte y las 3 de tipo "dato"
+distintas en pocos bytes, igual que el motor viejo entre dos corridas (diferencia máxima 6/255
+en la zona del número, ruido de JPEG).
+
+Plan original:
 
 - Mover las 12 plantillas, `panal-fondo.js` y `logo.png` a `clientes/melera/instagram/`.
 - El motor (`generate.js`, `render.js`, `server.js`) queda en la plataforma (`src/plataforma/imagenes/`

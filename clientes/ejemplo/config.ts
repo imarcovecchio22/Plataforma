@@ -36,6 +36,7 @@ export default definirCliente({
     compartir: "/compartir.svg",
     producto: { src: "/producto.svg", alt: "Producto de ejemplo", ancho: 400, alto: 480 },
   },
+  estilosInstagram: [{ id: "simple", nombre: "Simple", usaSemilla: false }],
   ia: {
     descripcion: "una tienda de ejemplo",
     tema: "Tienda Ejemplo y sus productos",

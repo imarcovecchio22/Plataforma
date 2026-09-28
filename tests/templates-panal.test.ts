@@ -1,16 +1,14 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { createRequire } from "module";
+import * as g from "@/plataforma/imagenes/plantillas";
 import { readFileSync } from "fs";
 import path from "path";
 import vm from "vm";
 import { postIGSchema } from "@/lib/validation";
 
-const require = createRequire(import.meta.url);
 
 beforeAll(() => {
   process.env.IMAGE_SIGNING_SECRET = "secreto-de-prueba";
 });
-const g = require("../melera-templates/generate.js");
 
 const DATOS = {
   presentacion: { tagline: "miel artesanal", titulo: "Miel de <em>Tomás Jofré</em>", texto: "Frasco de 500 g de Apícola Mercedes.", cta: "Escribinos por DM" },
@@ -20,7 +18,7 @@ const DATOS = {
 
 // panal-fondo.js corre en el navegador: acá se ejecuta en un contexto con un "window" mínimo
 function cargarPanal() {
-  const codigo = readFileSync(path.join(__dirname, "../melera-templates/panal-fondo.js"), "utf8");
+  const codigo = readFileSync(path.join(__dirname, "../clientes/melera/instagram/panal-fondo.js"), "utf8");
   const ctx = { window: {} as { MeleraPanal?: { panal: (w: number, h: number, s: string) => string; abeja: (o: object) => string } }, Math };
   vm.runInNewContext(codigo, ctx);
   return ctx.window.MeleraPanal!;
@@ -28,7 +26,7 @@ function cargarPanal() {
 
 describe("estilo panal: validaciones", () => {
   it("generate.js lo acepta para los 3 tipos, sin dejar de aceptar orgánico y geo", () => {
-    expect(g.ESTILOS).toEqual(["organico", "geo", "panal"]);
+    expect(g.estilosDelCliente()).toEqual(["organico", "geo", "panal"]);
     for (const [tipo, datos] of Object.entries(DATOS)) {
       expect(() => g.validateData({ tipo, estilo: "panal", fecha: "2026-09-25", ...datos })).not.toThrow();
     }

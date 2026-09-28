@@ -11,6 +11,7 @@ import { pathToFileURL } from "url";
 import { loadEnvConfig } from "@next/env";
 import { problemasDeConfig } from "../src/plataforma/cliente/validar";
 import { copiarAssets, copiarTema, imagenesFaltantes } from "../src/plataforma/cliente/assets";
+import { plantillasFaltantes } from "../src/plataforma/imagenes/archivos";
 
 const raiz = path.resolve(__dirname, "..");
 loadEnvConfig(raiz, process.argv.includes("--dev"));
@@ -34,6 +35,10 @@ async function main() {
 
   const faltan = imagenesFaltantes(raiz, slug, config);
   if (faltan.length) fallar(`faltan imágenes en clientes/${slug}/public/: ${faltan.join(", ")}`);
+
+  const estilos = config.estilosInstagram.map((e: { id: string }) => e.id);
+  const plantillas = plantillasFaltantes(path.join(raiz, "clientes", slug, "instagram"), estilos);
+  if (plantillas.length) fallar(`faltan plantillas de Instagram en clientes/${slug}/instagram/: ${plantillas.join(", ")}`);
 
   console.log(`✔ Cliente "${slug}" válido.`);
 

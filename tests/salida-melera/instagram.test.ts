@@ -7,10 +7,8 @@
  */
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { createHash } from "crypto";
-import { createRequire } from "module";
 import type { PostIG } from "@prisma/client";
 
-const require = createRequire(import.meta.url);
 
 vi.mock("@/lib/logs", () => ({
   logEvent: vi.fn(async () => {}),
@@ -76,16 +74,11 @@ vi.mock("@/lib/prisma", () => ({
 }));
 
 import { generarPendientes } from "@/lib/instagram/generar";
+import * as g from "@/plataforma/imagenes/plantillas";
 
-let g: {
-  ESTILOS: string[];
-  buildHtml: (datos: Record<string, string>) => string;
-  readImageToken: (token: string) => unknown;
-};
 
 beforeAll(() => {
   process.env.IMAGE_SIGNING_SECRET = "secreto-de-prueba";
-  g = require("../../melera-templates/generate.js");
 });
 
 beforeEach(() => {
@@ -116,7 +109,7 @@ const DATOS: Record<string, Record<string, string>> = {
 
 describe("plantillas de Instagram de Melera", () => {
   it("los estilos son organico, geo y panal", () => {
-    expect(g.ESTILOS).toEqual(["organico", "geo", "panal"]);
+    expect(g.estilosDelCliente()).toEqual(["organico", "geo", "panal"]);
   });
 
   it("logo embebido en las plantillas", () => {

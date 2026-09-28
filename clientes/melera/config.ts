@@ -34,6 +34,12 @@ export default definirCliente({
     // Sin fondo; la etiqueta se editó de 900 a 500 g
     producto: { src: "/producto-miel-500g.png", alt: "Frasco de miel artesanal Melera", ancho: 433, alto: 577 },
   },
+  estilosInstagram: [
+    { id: "organico", nombre: "Orgánico (fondo oscuro)", usaSemilla: false },
+    { id: "geo", nombre: "Geo (fondo crema)", usaSemilla: false },
+    // El panal del fondo sale del id del post
+    { id: "panal", nombre: "Panal (como la web)", usaSemilla: true },
+  ],
   ia: {
     descripcion: "una marca de miel artesanal de Tomás Jofré, Buenos Aires",
     tema: "Melera y la miel",

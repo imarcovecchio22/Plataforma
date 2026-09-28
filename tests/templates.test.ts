@@ -1,13 +1,13 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { createRequire } from "module";
+import * as g from "@/plataforma/imagenes/plantillas";
+import path from "path";
+import ejemplo from "../clientes/ejemplo/config";
 
-const require = createRequire(import.meta.url);
 
 // generate.js es CommonJS y lee el secreto de firma del entorno.
 beforeAll(() => {
   process.env.IMAGE_SIGNING_SECRET = "secreto-de-prueba";
 });
-const g = require("../melera-templates/generate.js");
 
 describe("renderTemplate: escapado", () => {
   it("escapa HTML en campos comunes", () => {
@@ -100,5 +100,35 @@ describe("tokens de imagen firmados", () => {
     expect(() => g.readImageToken(`${otroPayload}.${firma}`)).toThrow(/Firma/);
     expect(() => g.readImageToken(`${payload}.xxxxxxxxxxxxxxxxxxxxxx`)).toThrow(/Firma/);
     expect(() => g.readImageToken("basura")).toThrow();
+  });
+});
+
+describe("estilos y plantillas del cliente", () => {
+  const carpeta = (slug: string) => path.resolve(__dirname, "..", "clientes", slug, "instagram");
+
+  it("Melera y el ejemplo tienen todas las plantillas de los estilos que declaran", () => {
+    expect(g.plantillasFaltantes(carpeta("melera"), g.estilosDelCliente())).toEqual([]);
+    expect(g.plantillasFaltantes(carpeta("ejemplo"), ejemplo.estilosInstagram.map((e) => e.id))).toEqual([]);
+  });
+
+  it("detecta las plantillas que faltan de un estilo declarado", () => {
+    expect(g.plantillasFaltantes(carpeta("melera"), ["neon"])).toEqual([
+      "neon-presentacion.html",
+      "neon-producto.html",
+      "neon-dato.html",
+      "neon-promo.html",
+    ]);
+  });
+
+  it("solo el panal usa la semilla (el id del post)", () => {
+    expect(g.estiloUsaSemilla("panal")).toBe(true);
+    expect(g.estiloUsaSemilla("geo")).toBe(false);
+    expect(g.estiloUsaSemilla("inventado")).toBe(false);
+  });
+
+  it("rechaza un estilo que el cliente no declara", () => {
+    expect(() => g.validateData({ tipo: "dato", estilo: "simple", fecha: "x", numero: "1", texto_dato: "x" })).toThrow(
+      /Estilo "simple" inválido. Debe ser uno de: organico, geo, panal/
+    );
   });
 });

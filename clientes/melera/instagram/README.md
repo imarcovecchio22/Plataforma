@@ -16,12 +16,16 @@ Cada plantilla sirve para **feed y story**: el diseño se adapta solo según el 
 | `organico-{presentacion,dato,producto}.html` | Estilo orgánico: fondo oscuro, gotas de miel, logo en círculo crema |
 | `geo-{presentacion,dato,producto}.html` | Estilo geométrico: fondo crema, hexágonos, logo directo |
 | `panal-{presentacion,dato,producto}.html` | Estilo panal (el de la web): panal con luz cálida, abeja con jarrón, logo sobre una celda crema |
-| `panal-fondo.js` | Dibujo compartido del estilo panal (panal con semilla + abeja). `generate.js` lo inserta en cada `panal-*.html` donde dice `<!--PANAL_JS-->` |
-| `logo.png` | Logo Melera (abeja + hexágono + wordmark). `generate.js` lo inyecta como data URI en `{{logo_src}}` |
-| `generate.js` | Normaliza y valida los datos, rellena la plantilla, arma y verifica las URLs firmadas |
-| `render.js` | Abre Chromium y saca la captura JPEG (en Vercel usa `@sparticuz/chromium`; en local, Chrome/Edge instalado o `CHROME_PATH`) |
+| `panal-fondo.js` | Dibujo compartido del estilo panal (panal con semilla + abeja). El motor lo inserta en cada `panal-*.html` donde dice `<!--SCRIPT:panal-fondo.js-->` |
+| `logo.png` | Logo Melera (abeja + hexágono + wordmark). El motor lo inyecta como data URI en `{{logo_src}}` |
 
-Rutas de la app que lo usan: `src/app/api/generate/route.ts` y `src/app/api/img/[formato]/[token]/route.ts`.
+Los estilos se declaran en `clientes/melera/config.ts` (`estilosInstagram`, con `usaSemilla` para el panal);
+el build falla si falta alguna de sus plantillas.
+
+El motor es de la plataforma: `src/plataforma/imagenes/plantillas.ts` (normaliza y valida los datos, rellena la
+plantilla, arma y verifica las URLs firmadas) y `render.ts` (abre Chromium y saca la captura JPEG; en Vercel usa
+`@sparticuz/chromium`, en local Chrome/Edge instalado o `CHROME_PATH`). Rutas que lo usan:
+`src/app/api/generate/route.ts` y `src/app/api/img/[formato]/[token]/route.ts`.
 
 Tipografías: Fraunces + Poppins (Google Fonts, `<link>` en el `<head>`).
 
@@ -73,7 +77,7 @@ Obligatorios por tipo: presentación `tagline`, `titulo`, `texto` · dato `numer
 - **Dato:** `{{numero}}` grande en Fraunces color miel, `{{texto_dato}}` debajo y `{{tagline}}` arriba con el hexágono.
 - **Presentación:** `{{tagline}}`, `{{titulo}}`, `{{texto}}` y `{{cta}}` como botón hexagonal (sin sticker de encuesta: la API de Meta no lo permite).
 - **Producto:** la foto con resplandor, `{{nombre_producto}}`, `{{caracteristicas}}` en una línea (separadas por ·), `{{precio}}` y "melera.vercel.app".
-- La plantilla avisa con `window.__plantillaLista` cuándo terminó de medir y dibujar; `render.js` la espera.
+- La plantilla avisa con `window.__plantillaLista` cuándo terminó de medir y dibujar; `render.ts` la espera.
 - Referencias de diseño aprobadas: `docs/templates-panal/*.dc.html`.
 
 ### Reglas
@@ -81,10 +85,10 @@ Obligatorios por tipo: presentación `tagline`, `titulo`, `texto` · dato `numer
 - Los textos largos se achican solos (script al final de cada plantilla). La foto de producto también cede espacio si no entra todo.
 - `precio` numérico se formatea como `$6.500`; cualquier etiqueta que sea un precio se descarta (el precio ya va grande abajo).
 - `imagen_url` tiene que responder con una imagen: si es una página (por ejemplo `/producto`) o da error, `/api/generate` devuelve 400 con el motivo.
-- `{{logo_src}}` lo completa `generate.js`; no hay que mandarlo.
+- `{{logo_src}}` lo completa el motor; no hay que mandarlo.
 
 ### Compatibilidad con la Sheet "Cronograma"
-`generate.js` (`normalizeData`) traduce los nombres de columna que usa Make:
+`normalizeData` (`src/plataforma/imagenes/plantillas.ts`) traduce los nombres de columna que usa Make:
 
 | Sheet / Make | Plantilla |
 |---|---|
@@ -125,16 +129,11 @@ Si se cambia una plantilla, las URLs viejas ya cacheadas siguen mostrando el dis
 
 ## Uso local
 
-```bash
-node generate.js ejemplo.json
-# o
-node generate.js '{"tipo":"dato","estilo":"geo","fecha":"2026-09-23","numero":"50.000+","texto_dato":"abejas en una colmena","tagline":"la magia de la colmena"}'
-```
-
-Guarda feed y story en `output/` (JPEG). Usa Chrome/Edge instalado; si no lo encuentra, definir `CHROME_PATH`.
+Con `npm run dev`, generar un post desde `/admin/instagram` (con `IG_DRY_RUN=true` no publica): las imágenes
+se dibujan con Chrome/Edge instalado (o `CHROME_PATH`).
 
 Para previsualizar solo el HTML: abrir la plantilla en Chrome con la ventana en 1080×1350 o 1080×1920.
 
 ## Deploy
-- `@sparticuz/chromium` y `puppeteer-core` están en `serverComponentsExternalPackages` y el binario de Chromium se incluye con `outputFileTracingIncludes` (`next.config.js`).
+- `@sparticuz/chromium` y `puppeteer-core` están en `serverExternalPackages` y el binario de Chromium se incluye con `outputFileTracingIncludes` (`next.config.js`).
 - Requieren Node ≥ 22.17: el proyecto de Vercel está en Node 24.x. No agregar `engines.node` al `package.json` (fijar 22.x rompió el build).

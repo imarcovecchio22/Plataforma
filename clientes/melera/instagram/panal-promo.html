@@ -29,32 +29,55 @@ h1 em,h1 i{font-style:italic;font-weight:400;color:#FFD27A;padding-right:.06em}
  .sello{width:164px;height:189px}
 }
 
-.contenido{padding:88px 90px 80px}
-.arriba{display:flex;align-items:center;gap:18px;font-size:30px;font-weight:500;color:#FFD27A}
-.arriba b{width:34px;height:39px;background:#EAA21C;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);flex-shrink:0}
-.centro{display:flex;flex-direction:column;gap:30px}
-.numero{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:230px;line-height:.9;letter-spacing:-.03em;color:#FFD27A;white-space:nowrap}
-.centro h1{font-size:84px;line-height:1.08}
-.pie{display:flex;align-items:center;justify-content:space-between}
-.pie .sello{width:130px;height:150px}
+.foto{position:relative;flex:1 1 0;min-height:0;display:flex;align-items:center;justify-content:center;margin:24px 0}
+.foto::before{content:"";position:absolute;left:50%;top:50%;width:min(900px,120%);height:118%;transform:translate(-50%,-50%);background:radial-gradient(closest-side,rgba(255,190,90,.55),rgba(255,150,40,.18) 55%,rgba(255,150,40,0))}
+.foto img{position:relative;display:block;width:520px;height:100%;max-height:560px;object-fit:contain;filter:drop-shadow(0 26px 34px rgba(8,3,0,.6)) drop-shadow(0 4px 10px rgba(8,3,0,.4))}
+.texto{flex-shrink:0;display:flex;flex-direction:column;gap:18px}
+.texto h1{font-size:96px}
+.detalle{font-size:34px;line-height:1.45}
+.fila{display:flex;align-items:center;justify-content:space-between;gap:30px;margin-top:10px}
+.precio{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:104px;line-height:1;color:#FFD27A;letter-spacing:-.01em;white-space:nowrap}
+.sitio{min-height:76px;padding:0 44px;font-size:30px;--cut:22px;flex-shrink:0}
 @media (max-aspect-ratio:10/16){
- .contenido{padding:250px 90px 330px}
- .numero{font-size:260px}
- .centro h1{font-size:92px}
- .pie .sello{width:150px;height:173px}
+ .foto img{width:680px;max-height:760px}
+ .texto h1{font-size:112px}
+ .texto{gap:22px}
 }
+
+/* ---------- promo ---------- */
+.eyebrow{margin-bottom:-4px}
+.promos{display:flex;flex-direction:column;gap:12px}
+.promo{display:grid;grid-template-columns:1fr auto;align-items:baseline;column-gap:24px;padding:14px 28px;background:rgba(26,12,4,.72);border:1.5px solid rgba(234,162,28,.45);border-radius:18px}
+.promo-ahorro{border-color:#EAA21C;background:rgba(58,30,6,.8)}
+.promo-cant{font-size:34px;font-weight:600;color:#F7EBD3}
+.promo-precio{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:52px;line-height:1;color:#FFD27A}
+.promo-extra{grid-column:1/-1;font-size:24px;font-weight:500;color:#DCC7A0}
+.promo:not(.promo-ahorro) .promo-precio{font-size:40px;color:#F7EBD3}
+@media (max-aspect-ratio:10/16){.promo{padding:18px 32px}.promo-cant{font-size:38px}.promo-precio{font-size:58px}}
 </style></head>
-<body><div class="post"><div class="fondo"></div><div class="abeja" data-lugares='[[0.80,0.13,-20,46,-1],[0.78,0.66,-12,28,-1],[0.30,0.66,12,28,1],[0.82,0.70,-14,40,-1],[0.20,0.70,14,40,1],[0.84,0.30,-8,48,-1],[0.55,0.80,-16,22,-1]]'></div>
-<div class="contenido">
-<div class="arriba" data-vacio><b class="no-abeja"></b><span class="velo-chico no-abeja">{{tagline}}</span></div>
-<div class="centro velo">
-<div class="numero fit fit-ancho no-abeja">{{numero}}</div>
-<h1 class="fit no-abeja">{{texto_dato}}</h1>
+<body><div class="post"><div class="fondo"></div><div class="abeja" data-lugares='[[0.80,0.20,-26,44,-1],[0.19,0.20,26,44,1],[0.86,0.42,-4,52,-1],[0.14,0.42,4,52,1],[0.89,0.40,-2,50,-1],[0.11,0.40,2,50,1],[0.86,0.60,-4,50,-1]]'></div>
+<div class="contenido"><div class="marca"><div class="sello no-abeja"><span><img src="{{logo_src}}" alt="Melera"></span></div><div class="usuario velo-chico no-abeja">@melera.miel</div></div>
+<div class="foto"><img class="no-abeja" src="{{imagen_url}}" alt=""></div>
+<div class="texto velo">
+<div class="eyebrow fit no-abeja" data-vacio>{{tagline}}</div>
+<h1 class="fit no-abeja">{{titulo}}</h1>
+<div class="promos no-abeja" data-promos="{{promos}}"></div>
+<div class="fila">{{#if cta}}<div class="hexbtn sitio fit no-abeja">{{cta}}</div>{{/if}}<div class="usuario velo-chico no-abeja">melera.vercel.app</div></div>
 </div>
-<div class="pie"><div class="sello no-abeja"><span><img src="{{logo_src}}" alt="Melera"></span></div><div class="usuario velo-chico no-abeja">@melera.miel</div></div>
 </div></div>
-<!--PANAL_JS-->
+<!--SCRIPT:panal-fondo.js-->
 <script>
+
+// promos: "1 frasco|$ 6.500|;5 frascos|$ 30.000|ahorrás $ 2.500" -> filas
+document.querySelectorAll('[data-promos]').forEach(function(el){
+  el.getAttribute('data-promos').split(';').map(function(f){return f.split('|')}).filter(function(p){return p[0]&&p[1]}).forEach(function(p){
+    var fila=document.createElement('div');fila.className='promo'+(p[2]?' promo-ahorro':'');
+    var a=document.createElement('span');a.className='promo-cant';a.textContent=p[0].trim();
+    var b=document.createElement('span');b.className='promo-precio';b.textContent=p[1].trim();
+    fila.appendChild(a);fila.appendChild(b);
+    if(p[2]){var c=document.createElement('span');c.className='promo-extra';c.textContent=p[2].trim();fila.appendChild(c);}
+    el.appendChild(fila);});
+});
 (function(){
   var W=innerWidth,H=innerHeight,semilla="{{semilla}}";
   document.querySelector('.fondo').innerHTML=MeleraPanal.panal(W,H,semilla);

@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-// Módulo CommonJS compartido con las plantillas (melera-templates/generate.js)
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const generate = require("../../../../../../melera-templates/generate");
-const { readImageToken, renderImage, ValidationError, SignatureError } = generate;
+import { readImageToken, renderImage, SignatureError, ValidationError } from "@/plataforma/imagenes/plantillas";
 import { errorMessage, logEvent } from "@/lib/logs";
 
 export const runtime = "nodejs";

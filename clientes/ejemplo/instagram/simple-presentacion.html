@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; width: 100%; height: 100%; }
+  body { font-family: system-ui, sans-serif; background: #eff6ff; color: #0f172a; display: flex; flex-direction: column; justify-content: center; padding: 90px; box-sizing: border-box; gap: 28px; }
+  .tagline { font-size: 34px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: #1d4ed8; }
+  h1 { margin: 0; font-size: 96px; line-height: 1.05; }
+  h1 em { color: #1d4ed8; }
+  p { margin: 0; font-size: 42px; line-height: 1.35; }
+  .grande { font-size: 180px; font-weight: 800; color: #1d4ed8; }
+  .cta { align-self: flex-start; background: #1d4ed8; color: #fff; font-size: 38px; font-weight: 700; padding: 22px 44px; border-radius: 16px; }
+  .foto { width: 100%; height: 520px; background: center / contain no-repeat url('{{imagen_url}}'); }
+  .fila { display: flex; justify-content: space-between; font-size: 40px; border-bottom: 2px solid #bfdbfe; padding: 14px 0; }
+</style>
+</head>
+<body>
+  <div class="tagline">{{tagline}}</div>
+  <h1>{{titulo}}</h1>
+  <p>{{texto}}</p>
+  {{#if cta}}<div class="cta">{{cta}}</div>{{/if}}
+</body>
+</html>

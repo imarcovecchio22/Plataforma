@@ -118,6 +118,25 @@ export const esquemaCliente = z
           .strict(),
       })
       .strict(),
+    /**
+     * Estilos de las imágenes de Instagram. Por cada uno tiene que existir
+     * clientes/<slug>/instagram/<id>-<tipo>.html para los 4 tipos (presentacion, producto, dato
+     * y promo); el build falla si falta alguna.
+     */
+    estilosInstagram: z
+      .array(
+        z
+          .object({
+            id: z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "El id del estilo solo puede tener minúsculas, números y guiones"),
+            /** Cómo se muestra en el admin (ej. "Orgánico (fondo oscuro)"). */
+            nombre: texto,
+            /** Si la plantilla dibuja algo a partir del id del post (mismo post, misma imagen). */
+            usaSemilla: z.boolean(),
+          })
+          .strict()
+      )
+      .min(1, "Declará al menos un estilo")
+      .refine((l) => new Set(l.map((e) => e.id)).size === l.length, "Hay dos estilos con el mismo id"),
     /** Lo que Gemini tiene que saber de la marca (chat de la web y textos de Instagram). */
     ia: z
       .object({

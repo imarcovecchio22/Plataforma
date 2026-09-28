@@ -9,10 +9,7 @@ import { sendTelegramMessage, sendTelegramPhoto, siteUrl } from "@/lib/telegram"
 import { generarCopy, type CopyIG } from "@/lib/instagram/copy";
 import { botonesPost, hoyLocal } from "@/lib/instagram/botones";
 import { cantidadConUnidad, cliente } from "@/plataforma/cliente";
-
-// Módulo CommonJS compartido con las plantillas (melera-templates/generate.js)
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { buildImageUrls } = require("../../../melera-templates/generate");
+import { buildImageUrls, estiloUsaSemilla } from "@/plataforma/imagenes/plantillas";
 
 // Cuántos posts se generan por corrida (cada uno tarda ~10-20 s; la función tiene 60 s).
 export const MAX_POR_CORRIDA = 3;
@@ -23,8 +20,8 @@ export function datosPlantilla(post: PostIG, copy: CopyIG, promo?: { promos: str
     tipo: post.tipo,
     estilo: post.estilo,
     fecha: post.fecha.toISOString().slice(0, 10),
-    // estilo panal: el panal del fondo se genera a partir del id del post (mismo post, misma imagen)
-    ...(post.estilo === "panal" ? { semilla: String(post.id) } : {}),
+    // estilos con semilla (ej. panal): la imagen sale del id del post (mismo post, misma imagen)
+    ...(estiloUsaSemilla(post.estilo) ? { semilla: String(post.id) } : {}),
     tagline: copy.tagline,
     titulo: copy.titulo,
     subtitulo: copy.subtitulo,
