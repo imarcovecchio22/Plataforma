@@ -5,6 +5,7 @@ import { checkoutSchema } from "@/lib/validation";
 import { getMainProduct } from "@/lib/product";
 import { leerEscalones, totalPedido } from "@/lib/precios";
 import { errorMessage, logEvent } from "@/lib/logs";
+import { cliente } from "@/plataforma/cliente";
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
@@ -76,7 +77,7 @@ export async function POST(req: NextRequest) {
             title: product.nombre,
             quantity: data.cantidad,
             unit_price: unitario,
-            currency_id: "ARS",
+            currency_id: cliente.region.moneda,
           },
         ],
         payer: {

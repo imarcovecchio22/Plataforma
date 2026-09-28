@@ -7,7 +7,7 @@ import { leerEscalones, promosParaPlantilla, textoPromos } from "@/lib/precios";
 import { formatPrecio } from "@/lib/utils";
 import { sendTelegramMessage, sendTelegramPhoto, siteUrl } from "@/lib/telegram";
 import { generarCopy, type CopyIG } from "@/lib/instagram/copy";
-import { botonesPost, hoyArgentina } from "@/lib/instagram/botones";
+import { botonesPost, hoyLocal } from "@/lib/instagram/botones";
 
 // Módulo CommonJS compartido con las plantillas (melera-templates/generate.js)
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -139,7 +139,7 @@ async function generarUno(post: PostIG) {
  * hasta MAX_POR_CORRIDA por vez, en paralelo.
  */
 export async function generarPendientes(opciones: { ids?: number[] } = {}) {
-  const hoy = new Date(`${hoyArgentina()}T00:00:00.000Z`);
+  const hoy = new Date(`${hoyLocal()}T00:00:00.000Z`);
   const posts = await prisma.postIG.findMany({
     where: {
       estado: "pendiente",

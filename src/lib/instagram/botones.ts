@@ -1,4 +1,5 @@
 import type { BotonTelegram } from "@/lib/telegram";
+import { cliente } from "@/plataforma/cliente";
 
 export type AccionBoton = "feed" | "story" | "both" | "descartar";
 
@@ -35,10 +36,10 @@ export const DESTINO_LABEL: Record<"feed" | "story" | "both", string> = {
   both: "feed + historia",
 };
 
-/** Fecha de hoy en Argentina (YYYY-MM-DD), para comparar con la fecha del post. */
-export function hoyArgentina(ahora = new Date()) {
+/** Fecha de hoy en la zona horaria del cliente (YYYY-MM-DD), para comparar con la fecha del post. */
+export function hoyLocal(ahora = new Date()) {
   return new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/Argentina/Buenos_Aires",
+    timeZone: cliente.region.zonaHoraria,
     year: "numeric",
     month: "2-digit",
     day: "2-digit",

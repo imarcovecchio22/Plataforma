@@ -1,7 +1,9 @@
+import { cliente } from "@/plataforma/cliente";
+
 export function formatPrecio(pesos: number) {
-  return new Intl.NumberFormat("es-AR", {
+  return new Intl.NumberFormat(cliente.region.locale, {
     style: "currency",
-    currency: "ARS",
+    currency: cliente.region.moneda,
     maximumFractionDigits: 0,
   }).format(pesos);
 }
@@ -12,10 +14,10 @@ export function haceMs(ms: number) {
 }
 
 export function formatFecha(fecha: Date | string) {
-  return new Intl.DateTimeFormat("es-AR", {
+  return new Intl.DateTimeFormat(cliente.region.locale, {
     dateStyle: "short",
     timeStyle: "short",
-    timeZone: "America/Argentina/Buenos_Aires",
+    timeZone: cliente.region.zonaHoraria,
   }).format(new Date(fecha));
 }
 

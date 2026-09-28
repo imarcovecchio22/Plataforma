@@ -38,7 +38,16 @@ Regla para los pasos siguientes: si un snapshot cambia, el diff tiene que ser **
 
 Resultado: 20 archivos, 277 tests (231 anteriores + 46 nuevos); lint, tipos y build en verde.
 
-## Paso 1: Esqueleto de la config del cliente
+## Paso 1: Esqueleto de la config del cliente ✅ (2026-09-28)
+
+Hecho: `src/plataforma/cliente/` (esquema zod, `definirCliente`, `problemasDeConfig`, `cliente`),
+`clientes/melera/config.ts` (slug, nombre, dominio, región), alias `@cliente/*` en
+`next.config.js` (Turbopack) y `vitest.config.ts` (los tests usan Melera salvo otro `CLIENTE`),
+`scripts/validar-cliente.ts` antes de `dev` y `build`, y `formatPrecio`, `formatFecha`,
+`hoyLocal` (antes `hoyArgentina`) y la moneda de Mercado Pago leen la región de la config.
+Queda fijo en `vercel.json` el horario de los crons (12 UTC = 9 h de Argentina).
+
+Plan original:
 
 - `src/plataforma/cliente/esquema.ts`: esquema zod de la config (se arranca solo con `slug`,
   `nombre` y `dominio`, y se va ampliando en los pasos siguientes).

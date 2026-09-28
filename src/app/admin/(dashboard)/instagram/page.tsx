@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { formatFecha } from "@/lib/utils";
 import { telegramApi, telegramConfigurado } from "@/lib/telegram";
 import { estadoToken, modoPrueba } from "@/lib/instagram/meta";
-import { DESTINO_LABEL, hoyArgentina } from "@/lib/instagram/botones";
+import { DESTINO_LABEL, hoyLocal } from "@/lib/instagram/botones";
 import PostIGForm, { type PostIGValores } from "@/components/admin/PostIGForm";
 import PostIGActions from "@/components/admin/PostIGActions";
 import InstagramControls from "@/components/admin/InstagramControls";
@@ -74,7 +74,7 @@ export default async function AdminInstagramPage() {
     estadoConexiones(),
   ]);
   const { token, webhookUrl, botConectadoAqui, botPendientes, botUltimoError } = conexiones;
-  const hoy = hoyArgentina();
+  const hoy = hoyLocal();
 
   return (
     <div className="space-y-8">

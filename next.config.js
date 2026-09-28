@@ -1,4 +1,19 @@
 /** @type {import('next').NextConfig} */
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const fs = require("fs");
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const path = require("path");
+
+// El cliente de este despliegue (clientes/<CLIENTE>). Sin cliente no se levanta nada.
+// La config en sí se valida antes en scripts/validar-cliente.ts.
+const CLIENTE = process.env.CLIENTE?.trim();
+if (!CLIENTE) {
+  throw new Error("Falta la variable de entorno CLIENTE (ej. CLIENTE=melera).");
+}
+if (!fs.existsSync(path.join(__dirname, "clientes", CLIENTE, "config.ts"))) {
+  throw new Error(`CLIENTE="${CLIENTE}" pero no existe clientes/${CLIENTE}/config.ts.`);
+}
+
 const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "X-Frame-Options", value: "DENY" },
@@ -35,6 +50,11 @@ if (process.env.NODE_ENV === "production") {
 
 const nextConfig = {
   poweredByHeader: false,
+  turbopack: {
+    resolveAlias: {
+      "@cliente/*": `./clientes/${CLIENTE}/*`,
+    },
+  },
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];
   },

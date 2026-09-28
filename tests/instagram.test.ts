@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { botonesPost, hoyArgentina, leerBoton } from "@/lib/instagram/botones";
+import { botonesPost, hoyLocal, leerBoton } from "@/lib/instagram/botones";
 import { armarPrompt, limpiarCopy } from "@/lib/instagram/copy";
 import { postIGSchema } from "@/lib/validation";
 
@@ -42,10 +42,10 @@ describe("botonesPost", () => {
   });
 });
 
-describe("hoyArgentina", () => {
+describe("hoyLocal", () => {
   it("usa la zona horaria de Argentina (UTC-3)", () => {
-    expect(hoyArgentina(new Date("2026-09-24T02:30:00Z"))).toBe("2026-09-23");
-    expect(hoyArgentina(new Date("2026-09-24T03:30:00Z"))).toBe("2026-09-24");
+    expect(hoyLocal(new Date("2026-09-24T02:30:00Z"))).toBe("2026-09-23");
+    expect(hoyLocal(new Date("2026-09-24T03:30:00Z"))).toBe("2026-09-24");
   });
 });
 
