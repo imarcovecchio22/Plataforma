@@ -18,3 +18,8 @@ export async function getProductosActivos() {
 export async function getProductoPorSlug(slug: string) {
   return prisma.product.findFirst({ where: { slug, activo: true } });
 }
+
+/** Los productos activos con esos slugs (los que no existen o están inactivos no vienen). */
+export async function getProductosPorSlugs(slugs: string[]) {
+  return prisma.product.findMany({ where: { slug: { in: slugs }, activo: true } });
+}

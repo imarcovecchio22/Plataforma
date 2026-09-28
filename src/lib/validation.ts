@@ -17,9 +17,21 @@ export const checkoutSchema = z.object({
   // Por ahora solo se envía dentro de CABA.
   provincia: z.string().trim().refine((p) => p === "CABA", "Por ahora enviamos solo dentro de CABA"),
   codigoPostal: z.string().trim().min(1, "Ingresá el código postal"),
-  cantidad: z.coerce.number().int().min(1, "La cantidad mínima es 1"),
-  // Slug del producto que se compra (sin él, el destacado)
+  // Un solo producto (el formulario de siempre): su slug (sin él, el destacado) y la cantidad
+  cantidad: z.coerce.number().int().min(1, "La cantidad mínima es 1").max(1000).default(1),
   producto: z.string().trim().max(80).optional().default(""),
+  // Varios productos (el carrito): si viene, reemplaza a producto y cantidad
+  items: z
+    .array(
+      z.object({
+        producto: z.string().trim().min(1).max(80),
+        cantidad: z.coerce.number().int().min(1, "La cantidad mínima es 1").max(1000),
+      })
+    )
+    .min(1, "El carrito está vacío")
+    .max(20, "Hasta 20 productos por pedido")
+    .refine((l) => new Set(l.map((i) => i.producto)).size === l.length, "Hay productos repetidos en el pedido")
+    .optional(),
   origen: z.string().trim().max(50).optional().default(""),
 });
 

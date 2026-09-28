@@ -115,6 +115,10 @@ con varios ítems.
   unidad; la usan la ficha, el selector, el listado, la home, el checkout, el chat, los posts de
   promo y los registros. El admin de productos suma los campos. Melera (sin unidad propia) no
   cambia; el selector concuerda con el género ("cuántas piezas").
+- **5b ✅ (2026-09-28):** la API de checkout acepta `items: [{ producto, cantidad }]` (hasta 20, sin
+  repetir) y sigue aceptando `producto` + `cantidad`. Busca todos los productos de una vez, valida
+  que estén a la venta y el stock de cada uno (el error dice de cuál), calcula cada ítem con sus
+  promos y manda a Mercado Pago un ítem por producto. Con un producto, mismos mensajes que antes.
 
 Plan original del paso 5:
 Carrito (pregunta 3). La API de checkout recibe ítems, valida stock de cada uno, calcula todo en el
