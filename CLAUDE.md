@@ -57,7 +57,9 @@ Plan de la fase 3 (opciones configurables por cliente): [`docs/plataforma/plan-f
 ## Reglas de trabajo
 
 - **Pasos chicos**, cada uno con los tests pasando (`npm test`) antes de seguir.
-- **Nunca conectarse a la base de producción de Melera.** Solo a la base de desarrollo de `.env.local`.
+- **Nunca conectarse a la base de producción de Melera.** Solo a las bases de desarrollo: la de
+  `.env.local` (Melera) y la de `.env.rino.local` (Rino). Para Rino (o cualquier otro cliente), todo
+  va por `npm run cliente -- rino <comando>`, que carga su entorno y se niega si no coincide.
 - **No desplegar nada** ni configurar Vercel / Meta / Telegram reales desde acá.
 - **Cambios de esquema siempre con migraciones de Prisma** (`npx prisma migrate dev --name <nombre>`
   contra la base de desarrollo). Nunca `db push`.

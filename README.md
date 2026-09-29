@@ -29,8 +29,12 @@ clientes/<slug>/
 1. Copiar `clientes/ejemplo/` a `clientes/<slug>/` y cambiar `slug` en `config.ts` (tiene que ser igual al nombre de la carpeta).
 2. Completar la config: marca, colores, imágenes (en `public/`), textos, módulos y estilos de Instagram (con sus plantillas en `instagram/`).
 3. Opcional: tema propio (`tema.css` y `tema/index.tsx`); si no, se usa el neutro con los colores de la config.
-4. Base nueva: `npx prisma migrate deploy` y `CLIENTE=<slug> npm run db:seed` (con los datos de `seed.ts`).
-5. `CLIENTE=<slug> npm run dev` y revisar; `npm test` tiene que seguir pasando.
+4. Base de desarrollo propia (cada cliente tiene la suya): crear `.env.<slug>.local` con `CLIENTE="<slug>"`, su `DATABASE_URL` y el resto de las variables (las que no tenga quedan vacías, nunca se toman las de otro cliente). Después `npm run cliente -- <slug> db:migrate` y `npm run cliente -- <slug> db:seed` (con los datos de `seed.ts`).
+5. `npm run cliente -- <slug> dev` y revisar; `npm test` tiene que seguir pasando.
+
+### Desarrollar varios clientes en la misma máquina
+
+`npm run cliente -- <slug> <comando>` (o `node scripts/con-cliente.js <slug> <comando>`) corre un script de npm (`dev`, `build`, `db:migrate`, `db:seed`…) o cualquier comando (`prisma studio`, `node …`) con el entorno de ese cliente: `.env.<slug>.local` o, si no existe, `.env.local` (el de Melera). Antes de correr muestra a qué base se conecta, y no corre nada si el archivo declara otro `CLIENTE`. Los clientes se levantan de a uno (comparten `public/` y `.next/`, que se regeneran al cambiar de cliente).
 
 ## Stack
 
@@ -113,7 +117,8 @@ Ver `.env.example` para el detalle completo.
 | `npm run build` | `prisma generate` + build de producción |
 | `npm start` | Levanta el build de producción |
 | `npx prisma migrate dev --name <nombre>` | Crea una migración nueva a partir de cambios en `schema.prisma` (contra una base de desarrollo) |
-| `npx prisma migrate deploy` | Aplica las migraciones pendientes (producción) |
+| `npx prisma migrate deploy` o `npm run db:migrate` | Aplica las migraciones pendientes (producción, o la base de desarrollo de otro cliente con `npm run cliente -- <slug> db:migrate`) |
+| `npm run cliente -- <slug> <comando>` | Corre el comando con el entorno de desarrollo de ese cliente (ver "Desarrollar varios clientes") |
 | `npm run db:push` | Sincroniza el schema sin migraciones — ya no se usa desde 2026-09-24 |
 | `npm run db:studio` | Abre Prisma Studio |
 | `npm run db:seed` | Carga datos de ejemplo |
