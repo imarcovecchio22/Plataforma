@@ -114,7 +114,14 @@ oscuro (avisos de error, íconos de éxito/pendiente/falla del checkout, detalle
 semitransparentes) pasa al contrato de tema. Capturas en Chrome del ejemplo y de Rino con las dos
 variantes, en escritorio y celular; Melera sin cambios.
 
-### Paso 4: inicio de catálogo
+### Paso 4: inicio de catálogo ✅ (2026-09-28)
+Hecho: `inicio` en la config (opcional; sin definir = `destacado`, como Melera). Con `catalogo`:
+`HeroMarca` (título, bajada y foto por defecto de la config, "Ver productos" y el botón de
+"Quiénes somos"), la grilla con todos los productos (`#productos`) y "Quiénes somos"; el menú dice
+"Productos" (a `/#productos`) y "Comprar" va a `/productos`. Rino lo usa. Snapshots de Melera sin
+cambios.
+
+Plan original:
 `inicio: "destacado" | "catalogo"`. En `catalogo`: hero de la marca (sin el precio de un
 producto), grilla de productos y "Quiénes somos". Melera en `destacado`.
 

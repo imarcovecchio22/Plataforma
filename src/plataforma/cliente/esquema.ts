@@ -144,6 +144,12 @@ export const esquemaCliente = z
           .strict(),
       })
       .strict(),
+    /**
+     * Cómo arranca la home. "destacado" (por defecto): hero del primer producto con su precio y su
+     * sección, y los demás abajo. "catalogo": hero de la marca (sin precio) y la grilla de todos
+     * los productos; el menú dice "Productos".
+     */
+    inicio: z.enum(["destacado", "catalogo"]).optional(),
     /** Funcionalidades opcionales (ver src/plataforma/cliente/modulos.ts). */
     modulos: z
       .object({

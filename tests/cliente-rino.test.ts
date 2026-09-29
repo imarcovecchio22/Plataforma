@@ -73,6 +73,16 @@ describe("cliente Rino", () => {
     expect(paginas).toContain('src="/logo.svg"');
   });
 
+  it("home de catálogo: la marca sin precio, todos los productos y el menú a la grilla", async () => {
+    const home = renderToStaticMarkup(createElement(PublicoLayout, null, await HomePage()));
+    expect(home).toContain("Ver productos");
+    expect(home).not.toContain("Comprar ahora");
+    for (const p of catalogo.productos) expect(home).toContain(`href="/producto/${p.slug}"`);
+    expect(home).toContain('href="/#productos"');
+    expect(home).toContain('href="/productos"');
+    expect(home).toContain('id="nosotros"');
+  });
+
   it("sus estilos de Instagram son los suyos", () => {
     const base = { fecha: "2026-10-01", tipo: "dato", tema: "Un dato" };
     expect(postIGSchema.safeParse({ ...base, estilo: "simple" }).success).toBe(true);

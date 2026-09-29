@@ -4,6 +4,8 @@ import CarritoIcono from "@/components/CarritoIcono";
 import { cliente } from "@/plataforma/cliente";
 
 export default function Header() {
+  // En la home de catálogo, el menú lleva a la grilla y "Comprar" al listado
+  const catalogo = cliente.inicio === "catalogo";
   return (
     <header className="contenedor-publico relative z-10 flex items-center justify-between gap-4 py-4 sm:py-6">
       <Link
@@ -15,8 +17,8 @@ export default function Header() {
         <span>{cliente.nombre}</span>
       </Link>
       <nav aria-label="Principal" className="flex items-center gap-[clamp(0.8rem,2vw,1.6rem)]">
-        <Link href="/#producto" className="link-nav hidden sm:inline">
-          Producto
+        <Link href={catalogo ? "/#productos" : "/#producto"} className="link-nav hidden sm:inline">
+          {catalogo ? "Productos" : "Producto"}
         </Link>
         <Link href="/#nosotros" className="link-nav hidden sm:inline">
           Quiénes somos
@@ -26,7 +28,7 @@ export default function Header() {
         </Link>
         <CarritoIcono />
         <span className="wrap-focus">
-          <Link href="/producto" className="btn btn-sm" data-fondo-evita>
+          <Link href={catalogo ? "/productos" : "/producto"} className="btn btn-sm" data-fondo-evita>
             Comprar
           </Link>
         </span>

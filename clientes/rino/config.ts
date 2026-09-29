@@ -46,6 +46,8 @@ export default definirCliente({
     compartir: "/compartir.svg",
     producto: { src: "/producto.svg", alt: "Pieza impresa en 3D", ancho: 400, alto: 480 },
   },
+  // Home con la grilla de productos (tiene catálogo, no un producto estrella)
+  inicio: "catalogo",
   modulos: { instagram: true, autorespuestas: true, chatIA: true, cotizador: false },
   estilosInstagram: [{ id: "simple", nombre: "Simple", usaSemilla: false }],
   // PROVISORIO: tono y textos para Gemini
