@@ -149,7 +149,7 @@ export default function CheckoutForm({ producto, cantidadInicial = 1, carrito, z
               <input className="campo" id="pisoDepto" name="pisoDepto" />
             </div>
             <div>
-              <label className="etiqueta" htmlFor="localidad">Barrio</label>
+              <label className="etiqueta" htmlFor="localidad">Localidad</label>
               <input className="campo" id="localidad" name="localidad" required />
             </div>
             <div>

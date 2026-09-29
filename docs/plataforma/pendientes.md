@@ -11,8 +11,8 @@ Lo que queda abierto al cerrar la fase 3 (2026-09-29). Se tacha o se borra cuand
       `enlaceCotizador` ya, y para integrarlo como módulo después (ver plan de la fase 3, paso 9).
 - [ ] **Cuentas de Rino para lanzar**: base de producción nueva, Mercado Pago, y Telegram, Gemini
       e Instagram si los usa. Variables y pasos en [`rino-para-lanzar.md`](rino-para-lanzar.md).
-- [ ] **Campo "Barrio" del checkout**: viene del envío solo a CABA; para otras zonas quedaría mejor
-      "Localidad". Cambia lo que ve Melera, así que es decisión tuya.
+- [x] **Campo "Barrio" del checkout**: pasó a "Localidad" (2026-09-29; en Melera cambia solo la
+      etiqueta y el mensaje de error, el dato se guarda igual).
 - [x] **Merge y push**: `fase-3` e `identidad-editable` mergeadas a `main` y subidas a GitHub
       (2026-09-29).
 - [ ] **Credenciales de prueba de Mercado Pago** (opcional): para probar un pago completo de punta

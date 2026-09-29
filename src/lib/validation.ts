@@ -19,7 +19,7 @@ export const checkoutSchema = z.object({
   calle: z.string().trim().min(1, "Ingresá la calle"),
   numero_dir: z.string().trim().min(1, "Ingresá el número"),
   pisoDepto: z.string().trim().optional().default(""),
-  localidad: z.string().trim().min(1, "Ingresá el barrio"),
+  localidad: z.string().trim().min(1, "Ingresá la localidad"),
   // Zona de envío elegida (id de ZonaEnvio); sin ella, si hay una sola zona activa, esa
   zona: z.coerce.number().int().positive().optional(),
   codigoPostal: z.string().trim().min(1, "Ingresá el código postal"),
