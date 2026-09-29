@@ -204,7 +204,7 @@ export default function CheckoutForm({ producto, cantidadInicial = 1, carrito, z
         {zona && <p className="mt-2 text-xs texto-suave">{textoResumenEnvio(zona)}</p>}
 
         {error && (
-          <p className="mt-4 rounded-lg border border-red-400/40 bg-red-950/60 px-3 py-2 text-sm text-red-200">{error}</p>
+          <p className="mt-4 rounded-lg border aviso-error px-3 py-2 text-sm">{error}</p>
         )}
 
         <button type="submit" className="btn mt-6 w-full" disabled={loading || zonas.length === 0}>

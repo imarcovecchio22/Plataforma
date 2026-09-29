@@ -59,7 +59,7 @@ export default function QuantitySelector({
 
   if (sinStock) {
     return (
-      <p className="inline-block rounded-full border border-red-400/40 bg-red-950/60 px-4 py-2 text-sm font-semibold text-red-200">
+      <p className="inline-block rounded-full border aviso-error px-4 py-2 text-sm font-semibold">
         Sin stock por el momento
       </p>
     );
@@ -102,7 +102,7 @@ export default function QuantitySelector({
           <button
             type="button"
             onClick={decrementar}
-            className="flex h-9 w-9 items-center justify-center rounded-full text-lg font-semibold text-[var(--texto)] transition hover:bg-white/10 disabled:opacity-40"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-lg font-semibold text-[var(--texto)] transition hover:bg-[var(--resalte)] disabled:opacity-40"
             disabled={cantidad <= 1}
             aria-label="Restar cantidad"
           >
@@ -112,7 +112,7 @@ export default function QuantitySelector({
           <button
             type="button"
             onClick={incrementar}
-            className="flex h-9 w-9 items-center justify-center rounded-full text-lg font-semibold text-[var(--texto)] transition hover:bg-white/10 disabled:opacity-40"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-lg font-semibold text-[var(--texto)] transition hover:bg-[var(--resalte)] disabled:opacity-40"
             disabled={cantidad >= stock}
             aria-label="Sumar cantidad"
           >

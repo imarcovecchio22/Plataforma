@@ -1,11 +1,15 @@
 /*
  * Tema neutro de la plataforma: el que usa un cliente sin clientes/<slug>/tema.css.
- * Fondo claro, sin animaciones, fuentes del sistema (o las del tema, si las trae) y el color de
- * la marca de la config (--marca-*, que define el layout raíz a partir de config.colores).
- * Implementa el contrato de tema completo (ver clientes/melera/tema.css).
+ * Sin animaciones, con el color de la marca de la config (--marca-*, que define el layout raíz a
+ * partir de config.colores). Implementa el contrato de tema completo (ver clientes/melera/tema.css).
+ *
+ * Apariencia (config.apariencia): fondo claro por defecto u oscuro (<html data-fondo="oscuro">),
+ * y las fuentes de la config (el layout define --fuente-texto y --fuente-titulos); sin fuentes,
+ * las del sistema.
  */
 
 :root {
+  /* Contrato de tema */
   --texto: rgb(var(--oscuro));
   --texto-suave: #57534e;
   --destacado: rgb(var(--marca-700));
@@ -15,18 +19,75 @@
   --degrade-seccion: linear-gradient(to bottom, #fafaf9, #f5f5f4);
   --fondo-control: #ffffff;
   --texto-pie: #57534e;
+  --linea-suave: #e7e5e4;
+  --resalte: rgb(0 0 0 / 0.05);
+
+  /* Propias del tema neutro (lo único que cambia entre fondo claro y oscuro) */
+  --fondo: #fafaf9;
+  --fondo-tarjeta: #ffffff;
+  --borde: #e7e5e4;
+  --borde-campo: #d6d3d1;
+  --texto-placeholder: #a8a29e;
+  --fondo-boton: rgb(var(--marca-700));
+  --fondo-boton-hover: rgb(var(--marca-800));
+  --texto-boton: #ffffff;
+  --sombra-foto: rgba(0, 0, 0, 0.12);
+  --aviso-error-borde: #fecaca;
+  --aviso-error-fondo: #fef2f2;
+  --aviso-error-texto: #b91c1c;
+  --icono-exito-fondo: #d1fae5;
+  --icono-exito-texto: #047857;
+  --icono-error-fondo: #fee2e2;
+  --icono-error-texto: #b91c1c;
+  --icono-pendiente-fondo: #fef3c7;
+  --icono-pendiente-texto: #b45309;
+}
+
+:root[data-fondo="oscuro"] {
+  color-scheme: dark;
+  --texto: #f5f5f4;
+  --texto-suave: #a8a29e;
+  --destacado: rgb(var(--marca-300));
+  --acento: rgb(var(--marca-400));
+  --acento-rgb: var(--marca-400);
+  --fondo-seccion: #1c1917;
+  --degrade-seccion: linear-gradient(to bottom, #0c0a09, #1c1917);
+  --fondo-control: #1c1917;
+  --texto-pie: #a8a29e;
+  --linea-suave: rgb(255 255 255 / 0.1);
+  --resalte: rgb(255 255 255 / 0.1);
+
+  --fondo: #0c0a09;
+  --fondo-tarjeta: #1c1917;
+  --borde: #292524;
+  --borde-campo: #44403c;
+  --texto-placeholder: #78716c;
+  --fondo-boton: rgb(var(--marca-600));
+  --fondo-boton-hover: rgb(var(--marca-500));
+  --texto-boton: #ffffff;
+  --sombra-foto: rgba(0, 0, 0, 0.5);
+  --aviso-error-borde: rgb(248 113 113 / 0.4);
+  --aviso-error-fondo: rgb(69 10 10 / 0.6);
+  --aviso-error-texto: #fecaca;
+  --icono-exito-fondo: rgb(6 78 59 / 0.5);
+  --icono-exito-texto: #6ee7b7;
+  --icono-error-fondo: rgb(127 29 29 / 0.5);
+  --icono-error-texto: #fca5a5;
+  --icono-pendiente-fondo: rgb(120 53 15 / 0.5);
+  --icono-pendiente-texto: #fcd34d;
 }
 
 @layer base {
+  :root:has(.tema-publico),
   :root:has(.tema-publico) body {
-    background: #fafaf9;
+    background: var(--fondo);
     color: var(--texto);
   }
 }
 
 @layer components {
   .tema-publico {
-    background: #fafaf9;
+    background: var(--fondo);
     color: var(--texto);
     -webkit-font-smoothing: antialiased;
   }
@@ -49,15 +110,15 @@
     padding: 0 1.6rem;
     border: 0;
     border-radius: 10px;
-    background: rgb(var(--marca-700));
-    color: #fff;
+    background: var(--fondo-boton);
+    color: var(--texto-boton);
     font-weight: 600;
     text-decoration: none;
     cursor: pointer;
     transition: background-color 0.15s ease;
   }
   .btn:hover {
-    background: rgb(var(--marca-800));
+    background: var(--fondo-boton-hover);
   }
   .btn:disabled {
     cursor: not-allowed;
@@ -123,15 +184,15 @@
   .campo {
     width: 100%;
     border-radius: 10px;
-    border: 1px solid #d6d3d1;
-    background: #fff;
+    border: 1px solid var(--borde-campo);
+    background: var(--fondo-control);
     color: var(--texto);
     padding: 0.7rem 1rem;
     outline: none;
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
   }
   .campo::placeholder {
-    color: #a8a29e;
+    color: var(--texto-placeholder);
   }
   .campo:focus {
     border-color: var(--acento);
@@ -154,7 +215,7 @@
     justify-content: center;
   }
   .foto-producto img {
-    filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.12));
+    filter: drop-shadow(0 16px 24px var(--sombra-foto));
   }
 
   .precio {
@@ -172,7 +233,25 @@
 
   .tarjeta {
     border-radius: 16px;
-    border: 1px solid #e7e5e4;
-    background: #fff;
+    border: 1px solid var(--borde);
+    background: var(--fondo-tarjeta);
+  }
+
+  .aviso-error {
+    border-color: var(--aviso-error-borde);
+    background-color: var(--aviso-error-fondo);
+    color: var(--aviso-error-texto);
+  }
+  .icono-exito {
+    background-color: var(--icono-exito-fondo);
+    color: var(--icono-exito-texto);
+  }
+  .icono-error {
+    background-color: var(--icono-error-fondo);
+    color: var(--icono-error-texto);
+  }
+  .icono-pendiente {
+    background-color: var(--icono-pendiente-fondo);
+    color: var(--icono-pendiente-texto);
   }
 }

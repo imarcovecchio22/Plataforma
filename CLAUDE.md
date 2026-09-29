@@ -91,7 +91,11 @@ Plan de la fase 3 (opciones configurables por cliente): [`docs/plataforma/plan-f
   sus páginas del admin empiezan con `exigirModulo("<módulo>")`.
 - Un cliente sin `tema.css` o sin `tema/index.tsx` usa el **tema neutro** (`src/plataforma/tema/`).
   `clientes/ejemplo/` es un cliente completo sin tema: sirve para probar sin Melera
-  (`CLIENTE=ejemplo npm run dev`) y como base para uno nuevo.
+  (`CLIENTE=ejemplo npm run dev`) y como base para uno nuevo. El neutro se ajusta con
+  `apariencia` en la config: `fondo` claro u oscuro (`<html data-fondo="oscuro">`) y `fuentes` de
+  Google Fonts, que `preparar-cliente` baja a `public/fuentes/` (el sitio no le pide nada a Google).
+  Los avisos de error y los íconos de resultado del checkout usan las clases del contrato
+  (`.aviso-error`, `.icono-exito`, `.icono-error`, `.icono-pendiente`): nada de colores fijos.
 - **Catálogo y pedidos**: el producto destacado es el primero activo por orden (`getMainProduct`);
   con más de un producto activo la tienda usa el carrito (`localStorage`, `<slug>-carrito`). Un pedido
   tiene ítems (`OrderItem`, con nombre y precio del momento) y una zona de envío (`Order.provincia`

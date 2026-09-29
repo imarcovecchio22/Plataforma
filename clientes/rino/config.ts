@@ -35,6 +35,11 @@ export default definirCliente({
     oscuro: "#1c1917",
     sombra: "#1c1917",
   },
+  // PROVISORIO: fondo y fuentes del tema neutro
+  apariencia: {
+    fondo: "claro",
+    fuentes: { titulos: "Space Grotesk", texto: "Inter" },
+  },
   // PROVISORIO: logo de texto hasta tener el de la marca
   imagenes: {
     logo: "/logo.svg",

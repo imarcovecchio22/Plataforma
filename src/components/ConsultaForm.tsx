@@ -173,7 +173,7 @@ export default function ConsultaForm({ origen }: { origen?: string }) {
         <input id="empresa" name="empresa" tabIndex={-1} autoComplete="off" />
       </div>
 
-      {error && <p className="rounded-lg border border-red-400/40 bg-red-950/60 px-3 py-2 text-sm text-red-200">{error}</p>}
+      {error && <p className="rounded-lg border aviso-error px-3 py-2 text-sm">{error}</p>}
 
       <button type="submit" className="btn w-full" disabled={loading}>
         {loading ? "Enviando..." : "Enviar consulta"}

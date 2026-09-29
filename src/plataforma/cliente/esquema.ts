@@ -35,6 +35,11 @@ function monedaValida(moneda: string) {
 }
 
 const texto = z.string().trim().min(1, "No puede estar vacío");
+/** Nombre de una familia de Google Fonts: letras, números y espacios (va en la URL de Google). */
+const familiaDeFuente = z
+  .string()
+  .trim()
+  .regex(/^[A-Za-z0-9][A-Za-z0-9 ]{0,60}$/, "Nombre de fuente inválido (solo letras, números y espacios, como en Google Fonts)");
 
 const hex = z.string().regex(/^#[0-9a-fA-F]{6}$/, "Color inválido (tiene que ser #rrggbb)");
 
@@ -97,6 +102,27 @@ export const esquemaCliente = z
         sombra: hex,
       })
       .strict(),
+    /**
+     * Apariencia del tema neutro (un cliente con tema propio la define en su tema.css). Opcional:
+     * sin esto, fondo claro y las fuentes del sistema.
+     */
+    apariencia: z
+      .object({
+        fondo: z.enum(["claro", "oscuro"]).default("claro"),
+        /**
+         * Familias de Google Fonts, tal cual se llaman ahí (ej. "Space Grotesk"). Se bajan al
+         * preparar el cliente y se sirven desde el propio sitio (src/plataforma/cliente/fuentes.ts).
+         */
+        fuentes: z
+          .object({
+            texto: familiaDeFuente.optional(),
+            titulos: familiaDeFuente.optional(),
+          })
+          .strict()
+          .optional(),
+      })
+      .strict()
+      .optional(),
     /**
      * Imágenes de la marca. Las rutas son de clientes/<slug>/public/ (se copian a public/ antes
      * de dev y build), empiezan con / y el archivo tiene que existir.

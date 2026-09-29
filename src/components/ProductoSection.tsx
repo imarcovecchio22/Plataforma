@@ -23,7 +23,7 @@ export default function ProductoSection({ product }: { product: Product }) {
             </p>
           )}
           {sinStock ? (
-            <p className="mt-6 inline-block rounded-full border border-red-400/40 bg-red-950/60 px-4 py-2 text-sm font-semibold text-red-200">
+            <p className="mt-6 inline-block rounded-full border aviso-error px-4 py-2 text-sm font-semibold">
               Sin stock por el momento
             </p>
           ) : (

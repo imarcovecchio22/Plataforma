@@ -91,7 +91,24 @@ textos de relleno claramente marcados), logo de texto, imágenes por defecto, y 
 productos, zonas y preguntas de muestra. Tests: la config valida y sus páginas no tienen rastros de
 Melera ni del cliente de ejemplo.
 
-### Paso 3: apariencia del tema neutro
+### Paso 3: apariencia del tema neutro ✅ (2026-09-28)
+Hecho:
+- Contrato de tema: variables `--linea-suave` y `--resalte`, y clases `.aviso-error`,
+  `.icono-exito`, `.icono-error` e `.icono-pendiente` (reemplazan los colores fijos pensados para
+  fondo oscuro). Melera las define con los mismos valores que tenían: sus snapshots solo cambian
+  los nombres de clase y la comparación por píxel con el final de la fase 2 da todas las páginas
+  idénticas.
+- `apariencia` en la config (opcional): `fondo` claro/oscuro y `fuentes` (texto y títulos, de
+  Google Fonts). El neutro pasó a variables propias (`--fondo`, `--fondo-tarjeta`, `--borde`,
+  `--fondo-boton`…) que el fondo oscuro redefine. Las fuentes: `preparar-cliente` las baja (latin
+  y latin-ext, woff2) a `public/fuentes/` y agrega sus `@font-face` al CSS del tema; si Google no
+  tiene la familia o los pesos, el build falla; sin conexión, avisa y usa las del sistema. Primero
+  se probó con un `<link>` a Google, pero la política de seguridad del sitio (CSP) lo bloquea, y
+  servirlas desde el sitio es mejor igual.
+- Rino: fondo claro con Space Grotesk (títulos) e Inter (texto), provisorio. Capturas con fondo
+  claro y oscuro.
+
+Plan original:
 Opciones `fondo` (claro/oscuro) y fuentes en la config para el tema neutro. Lo que hoy asume fondo
 oscuro (avisos de error, íconos de éxito/pendiente/falla del checkout, detalles blancos
 semitransparentes) pasa al contrato de tema. Capturas en Chrome del ejemplo y de Rino con las dos
