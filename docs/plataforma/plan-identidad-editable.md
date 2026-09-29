@@ -91,6 +91,16 @@ Plan original:
 Tres secciones (textos, colores y fondo, imágenes), con la vista previa de la escala de colores y
 "volver a lo de la config" en cada una. API con validación y registro en los logs.
 
-### Paso 4: pruebas y cierre
+### Paso 4: pruebas y cierre ✅ (2026-09-29)
+- **Rino de punta a punta** (build con `CLIENTE=rino`, Chrome contra su base): desde `/admin/marca`
+  se cambiaron el título del inicio, el pie, el color (azul), el fondo (oscuro) y el logo (link);
+  la base guardó solo eso y la tienda lo mostró al instante (botones y acentos azules, fondo
+  oscuro, logo y textos nuevos; lo demás, de la config). Un logo `http://` se rechazó con el
+  campo que falla, sin pisar nada. "Volver a los de la config" en todo dejó la base en `{}` y la
+  tienda como antes.
+- **Melera**: build sin cambios en su base y comparación por píxel: todas las páginas públicas
+  idénticas; en el admin, solo el menú (el link "Marca"), la fecha de hoy en Instagram y los logs.
+
+Plan original:
 Melera sin cambios (snapshots y comparación por píxel), Rino con cambios desde el admin en Chrome
 (y vuelta atrás), docs.

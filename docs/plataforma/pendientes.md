@@ -21,8 +21,10 @@ Lo que queda abierto al cerrar la fase 3 (2026-09-29). Se tacha o se borra cuand
 
 ## Etapa de refinamiento (a planificar)
 
-- [ ] **Identidad editable por el dueño desde el admin** (logo, colores, textos): se quiere, pero
-      se dejó para esta etapa porque se complica. Ver plan de la fase 3, "Etapa de refinamiento".
+- [x] **Identidad editable por el dueño desde el admin**: hecha el 2026-09-29 (textos, color de
+      la marca, fondo, logo e imagen para compartir por link). Ver
+      [`plan-identidad-editable.md`](plan-identidad-editable.md). Quedan en la config: nombre,
+      Instagram, SEO y fuentes (las fuentes, junto con la subida de archivos).
 - [ ] **Subir fotos de producto desde el admin** (hoy son links https; depende del hosting).
 - [ ] **Integrar el cotizador como módulo** (cuando se sepa qué es hoy).
 - [ ] **Hosting**: una app por cliente en un VPS con Coolify (sin atarse a Vercel).
