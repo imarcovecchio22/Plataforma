@@ -3,7 +3,8 @@ import tema from "@cliente/tema";
 import CarritoIcono from "@/components/CarritoIcono";
 import { cliente } from "@/plataforma/cliente";
 
-export default function Header() {
+/** `logo`: el de la identidad (lo pasa el layout); sin él, el de la config. */
+export default function Header({ logo }: { logo?: string }) {
   // En la home de catálogo, el menú lleva a la grilla y "Comprar" al listado
   const catalogo = cliente.inicio === "catalogo";
   return (
@@ -13,7 +14,7 @@ export default function Header() {
         aria-label={`${cliente.nombre}, inicio`}
         className="flex shrink-0 items-center gap-2.5 rounded-md font-serif text-[1.4rem] font-semibold tracking-[-0.01em] text-[var(--texto)]"
       >
-        {tema.Logo && <tema.Logo tamano={44} />}
+        {tema.Logo && <tema.Logo tamano={44} src={logo} />}
         <span>{cliente.nombre}</span>
       </Link>
       <nav aria-label="Principal" className="flex items-center gap-[clamp(0.8rem,2vw,1.6rem)]">

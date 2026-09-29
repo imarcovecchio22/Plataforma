@@ -339,3 +339,11 @@ model InstagramToken {
   envHash     String? // huella del IG_ACCESS_TOKEN del que salió: si cambia en Vercel, se vuelve a tomar
   updatedAt   DateTime  @updatedAt
 }
+
+// Lo que el dueño cambió de su identidad desde /admin/marca (textos, color, fondo, logo). Una sola
+// fila (id 1). Lo que no está acá sale de la config del cliente (clientes/<slug>/config.ts).
+model IdentidadCliente {
+  id        Int      @id @default(1)
+  valores   Json     @default("{}")
+  updatedAt DateTime @updatedAt
+}

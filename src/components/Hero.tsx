@@ -4,8 +4,18 @@ import { formatPrecio } from "@/lib/utils";
 import { textoPromos, type Escalon } from "@/lib/precios";
 import type { Product } from "@prisma/client";
 import { cliente, unidadDe } from "@/plataforma/cliente";
+import type { Identidad } from "@/plataforma/cliente/identidad";
 
-export default function Hero({ product, escalones = [] }: { product: Product; escalones?: Escalon[] }) {
+export default function Hero({
+  product,
+  escalones = [],
+  textos = cliente.textos,
+}: {
+  product: Product;
+  escalones?: Escalon[];
+  /** Los de la identidad (la home los pasa); sin ellos, los de la config. */
+  textos?: Identidad["textos"];
+}) {
   return (
     <section
       aria-labelledby="titulo-hero"
@@ -21,14 +31,14 @@ export default function Hero({ product, escalones = [] }: { product: Product; es
       />
       <div className="velo-texto max-w-[37rem] lg:order-1">
         <h1 id="titulo-hero" className="titulo-hero mb-[1.15rem]">
-          {cliente.textos.hero.titulo}
+          {textos.hero.titulo}
         </h1>
         <p className="texto-suave mb-6 max-w-[31rem] text-[clamp(1rem,1.25vw,1.13rem)] leading-[1.65]">
-          {cliente.textos.hero.bajada}
+          {textos.hero.bajada}
         </p>
         <p className={`flex items-baseline gap-2.5 ${escalones.length ? "mb-1" : "mb-[1.6rem]"}`}>
           <span className="precio text-[2.3rem]">{formatPrecio(product.precio)}</span>
-          <span className="texto-suave">{product.aclaracionPrecio || cliente.textos.aclaracionPrecio}</span>
+          <span className="texto-suave">{product.aclaracionPrecio || textos.aclaracionPrecio}</span>
         </p>
         {escalones.length > 0 && (
           <p className="mb-[1.6rem] text-sm font-semibold text-[var(--destacado)]">Promo: {textoPromos(escalones, unidadDe(product))}</p>
@@ -40,7 +50,7 @@ export default function Hero({ product, escalones = [] }: { product: Product; es
             </Link>
           </span>
           <Link href="/#nosotros" className="btn-ghost">
-            {cliente.textos.hero.botonNosotros}
+            {textos.hero.botonNosotros}
           </Link>
         </div>
       </div>

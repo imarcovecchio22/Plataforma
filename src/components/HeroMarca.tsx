@@ -1,9 +1,13 @@
 import Link from "next/link";
 import FotoProducto from "@/components/FotoProducto";
 import { cliente } from "@/plataforma/cliente";
+import type { Identidad } from "@/plataforma/cliente/identidad";
 
-/** Hero de la home de catálogo (config inicio: "catalogo"): la marca, sin el precio de un producto. */
-export default function HeroMarca() {
+/**
+ * Hero de la home de catálogo (config inicio: "catalogo"): la marca, sin el precio de un producto.
+ * `textos`: los de la identidad (la home los pasa); sin ellos, los de la config.
+ */
+export default function HeroMarca({ textos = cliente.textos }: { textos?: Identidad["textos"] }) {
   return (
     <section
       aria-labelledby="titulo-hero"
@@ -18,10 +22,10 @@ export default function HeroMarca() {
       />
       <div className="velo-texto max-w-[37rem] lg:order-1">
         <h1 id="titulo-hero" className="titulo-hero mb-[1.15rem]">
-          {cliente.textos.hero.titulo}
+          {textos.hero.titulo}
         </h1>
         <p className="texto-suave mb-7 max-w-[31rem] text-[clamp(1rem,1.25vw,1.13rem)] leading-[1.65]">
-          {cliente.textos.hero.bajada}
+          {textos.hero.bajada}
         </p>
         <div className="flex flex-wrap items-center gap-x-[1.4rem] gap-y-3">
           <span className="wrap-focus">
@@ -30,7 +34,7 @@ export default function HeroMarca() {
             </Link>
           </span>
           <Link href="/#nosotros" className="btn-ghost">
-            {cliente.textos.hero.botonNosotros}
+            {textos.hero.botonNosotros}
           </Link>
         </div>
       </div>

@@ -1,6 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
 import path from "path";
-import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
 // Las páginas con la config de Rino (sin tema propio: tema neutro) y los productos de su seed.
@@ -25,7 +24,7 @@ import { problemasDeConfig } from "@/plataforma/cliente/validar";
 import { imagenesFaltantes } from "@/plataforma/cliente/assets";
 import { aliasCliente } from "../scripts/alias-cliente";
 import { autoRespuestaSchema, postIGSchema } from "@/lib/validation";
-import RootLayout, { metadata } from "@/app/layout";
+import RootLayout, { generateMetadata } from "@/app/layout";
 import PublicoLayout from "@/app/(publico)/layout";
 import HomePage from "@/app/(publico)/page";
 import ProductosPage from "@/app/(publico)/productos/page";
@@ -34,6 +33,9 @@ import ConsultasPage from "@/app/(publico)/consultas/page";
 import PrivacidadPage from "@/app/(publico)/privacidad/page";
 import AdminLoginPage from "@/app/admin/login/page";
 
+// Los layouts leen la identidad (son async): se renderizan con lo que devuelven
+const conPublico = async (hijos: React.ReactNode) => (await PublicoLayout({ children: hijos })) as React.ReactElement;
+const conRaiz = async (hijos: React.ReactNode) => (await RootLayout({ children: hijos })) as React.ReactElement;
 const RAIZ = path.resolve(__dirname, "..");
 const RASTROS_DE_MELERA = /melera|miel|frasco|abeja|colmena|panal|apícola|jofré|🐝|🍯/i;
 const RASTROS_DEL_EJEMPLO = /tienda ejemplo|tienda-ejemplo|tienda\.ejemplo|producto de ejemplo/i;
@@ -57,16 +59,16 @@ describe("cliente Rino", () => {
 
   it("sus páginas no tienen nada de Melera ni del cliente de ejemplo", async () => {
     const paginas = [
-      renderToStaticMarkup(createElement(RootLayout, null, "x")),
-      renderToStaticMarkup(createElement(PublicoLayout, null, await HomePage())),
-      renderToStaticMarkup(createElement(PublicoLayout, null, await ProductosPage({ searchParams: Promise.resolve({}) }))),
+      renderToStaticMarkup(await conRaiz("x")),
+      renderToStaticMarkup(await conPublico(await HomePage())),
+      renderToStaticMarkup(await conPublico(await ProductosPage({ searchParams: Promise.resolve({}) }))),
       renderToStaticMarkup(
-        createElement(PublicoLayout, null, await FichaPage({ params: Promise.resolve({ slug: "maceta-geometrica" }), searchParams: Promise.resolve({}) }))
+        await conPublico(await FichaPage({ params: Promise.resolve({ slug: "maceta-geometrica" }), searchParams: Promise.resolve({}) }))
       ),
-      renderToStaticMarkup(createElement(PublicoLayout, null, await ConsultasPage({ searchParams: Promise.resolve({}) }))),
-      renderToStaticMarkup(createElement(PublicoLayout, null, await PrivacidadPage())),
-      renderToStaticMarkup(createElement(AdminLoginPage)),
-      JSON.stringify(metadata),
+      renderToStaticMarkup(await conPublico(await ConsultasPage({ searchParams: Promise.resolve({}) }))),
+      renderToStaticMarkup(await conPublico(await PrivacidadPage())),
+      renderToStaticMarkup(await AdminLoginPage()),
+      JSON.stringify(await generateMetadata()),
     ].join("\n");
     expect(paginas).not.toMatch(RASTROS_DE_MELERA);
     expect(paginas).not.toMatch(RASTROS_DEL_EJEMPLO);
@@ -77,7 +79,7 @@ describe("cliente Rino", () => {
   });
 
   it("home de catálogo: la marca sin precio, todos los productos y el menú a la grilla", async () => {
-    const home = renderToStaticMarkup(createElement(PublicoLayout, null, await HomePage()));
+    const home = renderToStaticMarkup(await conPublico(await HomePage()));
     expect(home).toContain("Ver productos");
     expect(home).not.toContain("Comprar ahora");
     for (const p of catalogo.productos) expect(home).toContain(`href="/producto/${p.slug}"`);

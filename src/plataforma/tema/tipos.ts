@@ -20,6 +20,16 @@ export type TemaPublico = {
    * --fuente-texto y --fuente-titulos. Sin ellas se usan las del sistema.
    */
   fuentes?: string[];
-  /** Logo al lado del nombre en el Header y el Footer. Sin él, va solo el nombre. */
-  Logo?: ComponentType<{ tamano: number }>;
+  /**
+   * Logo al lado del nombre en el Header y el Footer. Sin él, va solo el nombre. `src` es el logo
+   * de la identidad (el de la config o el que cambió el dueño); un tema con su propio logo puede
+   * ignorarlo.
+   */
+  Logo?: ComponentType<{ tamano: number; src?: string }>;
+  /**
+   * Solo el tema neutro: sus colores salen de la config y del admin, y admite el fondo claro u
+   * oscuro. Un tema propio tiene su paleta en su CSS (en /admin/marca el color cambia poco y no se
+   * ofrece el fondo).
+   */
+  neutro?: boolean;
 };

@@ -8,11 +8,12 @@ import SinProductos from "@/components/SinProductos";
 import { getProductosActivos } from "@/lib/product";
 import { leerEscalones } from "@/lib/precios";
 import { cliente } from "@/plataforma/cliente";
+import { getIdentidad } from "@/lib/identidad";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const productos = await getProductosActivos();
+  const [productos, { textos }] = await Promise.all([getProductosActivos(), getIdentidad()]);
   // El primero activo es el destacado (hero y sección de producto); el resto va debajo
   const [product, ...otros] = productos;
   if (!product) {
@@ -29,7 +30,7 @@ export default async function HomePage() {
     return (
       <>
         <main className="flex-1">
-          <HeroMarca />
+          <HeroMarca textos={textos} />
           <section id="productos" className="contenedor-publico scroll-mt-4 pb-[clamp(56px,8vw,96px)]">
             <div className="max-w-[1100px]">
               <span className="etiqueta-seccion">Productos</span>
@@ -38,7 +39,7 @@ export default async function HomePage() {
               </div>
             </div>
           </section>
-          <QuienesSomos />
+          <QuienesSomos textos={textos} />
         </main>
         <ChatWidget />
       </>
@@ -48,8 +49,8 @@ export default async function HomePage() {
   return (
     <>
       <main className="flex-1">
-        <Hero product={product} escalones={leerEscalones(product.escalones)} />
-        <QuienesSomos />
+        <Hero product={product} escalones={leerEscalones(product.escalones)} textos={textos} />
+        <QuienesSomos textos={textos} />
         <ProductoSection product={product} />
         {otros.length > 0 && (
           <section id="productos" className="contenedor-publico scroll-mt-4 bg-[var(--fondo-seccion)] pb-[clamp(56px,8vw,96px)]">
