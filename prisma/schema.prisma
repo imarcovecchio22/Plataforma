@@ -40,6 +40,8 @@ model Product {
   // Categoría (solo si el cliente usa categorías: config.catalogo.categorias)
   categoriaId      Int?
   categoria        Categoria? @relation(fields: [categoriaId], references: [id], onDelete: Restrict)
+  // Opciones que elige el comprador (config.catalogo.opciones): [{ nombre: "Color", valores: ["Rojo", "Negro"] }]
+  opciones         Json     @default("[]")
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
@@ -130,6 +132,8 @@ model OrderItem {
   nombre         String
   precioUnitario Int // con la promo por cantidad ya aplicada
   cantidad       Int
+  // Lo que eligió de las opciones del producto: [{ nombre: "Color", valor: "Rojo" }] (el nombre ya lo incluye)
+  opciones       Json     @default("[]")
   subtotal       Int
 
   @@index([orderId])

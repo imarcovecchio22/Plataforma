@@ -14,6 +14,7 @@ export default definirSeed({
       precio: 8500,
       stock: 15,
       categoria: "decoracion",
+      opciones: [{ nombre: "Color", valores: ["Blanco", "Negro", "Terracota"] }],
       escalones: [{ desde: 3, precio: 7800 }],
     },
     {
@@ -23,6 +24,7 @@ export default definirSeed({
       precio: 2500,
       stock: 60,
       categoria: "accesorios",
+      opciones: [{ nombre: "Color", valores: ["Rojo", "Azul", "Negro", "Blanco"] }],
       escalones: [
         { desde: 5, precio: 2200 },
         { desde: 10, precio: 1900 },

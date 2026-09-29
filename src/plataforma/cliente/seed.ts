@@ -19,6 +19,8 @@ export type SeedCliente = {
     escalones?: { desde: number; precio: number }[];
     /** Slug de una de `categorias`. */
     categoria?: string;
+    /** Opciones que elige el comprador (si la config usa opciones de producto). */
+    opciones?: { nombre: string; valores: string[] }[];
   }[];
   /**
    * Zonas de envío del checkout, en el orden en que se muestran. Sin costo = a coordinar después de

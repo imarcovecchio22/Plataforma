@@ -141,7 +141,21 @@ Config `catalogo.categorias`. Tabla de categorías (admin: crear, renombrar, ord
 tiene productos), cada producto en una (opcional); `/productos` con filtro
 (`/productos?categoria=macetas`) cuando hay dos o más; `$CATALOGO` y el chat agrupan por categoría.
 
-### Paso 6: opciones de producto
+### Paso 6: opciones de producto ✅ (2026-09-29)
+Hecho: `config.catalogo.opciones`; `Product.opciones` y `OrderItem.opciones` (Json, migración
+`*_opciones_de_producto`, por defecto vacías: los pedidos y productos existentes no cambian).
+`src/lib/opciones.ts` (leer, validar, textos) sin dependencias de servidor. En el admin, cada
+producto tiene "Opciones para elegir" (hasta 3, con sus valores separados por comas). La ficha
+pide cada opción antes de agregar o comprar (avisa si falta). El carrito guarda lo elegido: la
+misma pieza con distintas opciones son líneas distintas. **El stock y la promo por cantidad son
+del producto**: suman todas sus líneas (2 negras + 1 terracota = 3 piezas, ya tienen la promo
+"desde 3"), en el carrito, el checkout y la API. La API valida lo elegido contra el producto
+(falta, valor que ya no existe, opción de más → 400) y el ítem guarda lo elegido y lo lleva en el
+nombre ("Maceta geométrica (Color: Negro)"), así lo muestran solos el admin, Telegram y Mercado
+Pago. Apagada (Melera): las opciones que lleguen se ignoran y la API de productos no las toca.
+Rino: color en la maceta y el llavero. Compra de punta a punta en Chrome contra la base de Rino.
+
+Plan original:
 Config `catalogo.opciones`. En el admin, cada producto puede tener opciones (nombre y valores); la
 ficha las pide antes de agregar al carrito; el carrito distingue la misma pieza con distintas
 opciones; el ítem del pedido guarda lo elegido (admin, Telegram, Mercado Pago). Migración sin tocar

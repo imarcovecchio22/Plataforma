@@ -5,6 +5,7 @@ import { useState, useSyncExternalStore } from "react";
 import { formatPrecio } from "@/lib/utils";
 import { totalPedido, type Escalon } from "@/lib/precios";
 import { lineasDelCarrito } from "@/lib/carrito";
+import { textoOpciones, type Eleccion, type OpcionElegida } from "@/lib/opciones";
 import { etiquetaZona, textoResumenEnvio, type ZonaParaCheckout } from "@/lib/envios";
 import { useCarrito } from "@/components/useCarrito";
 import type { ProductoCarrito } from "@/components/CarritoVista";
@@ -12,7 +13,16 @@ import { cadaUnoDe, cantidadConUnidad, type Unidad } from "@/plataforma/cliente"
 
 type Props = {
   /** Compra de un producto (la ficha con "Comprar", o los links de siempre). */
-  producto?: { slug: string; nombre: string; precio: number; escalones: Escalon[]; unidad: Unidad };
+  producto?: {
+    slug: string;
+    nombre: string;
+    precio: number;
+    escalones: Escalon[];
+    unidad: Unidad;
+    /** Lo elegido en la ficha, si el producto tiene opciones */
+    opciones?: Eleccion;
+    elegidas?: OpcionElegida[];
+  };
   cantidadInicial?: number;
   /** Compra del carrito: los productos a la venta, con los datos actuales (el carrito guarda slug y cantidad). */
   carrito?: ProductoCarrito[];
@@ -44,10 +54,15 @@ export default function CheckoutForm({ producto, cantidadInicial = 1, carrito, z
     const formData = new FormData(e.currentTarget);
     const payload = Object.fromEntries(formData.entries());
     if (lineas) {
-      payload.items = lineas.lineas.map((l) => ({ producto: l.producto.slug, cantidad: l.cantidad })) as never;
+      payload.items = lineas.lineas.map((l) => ({
+        producto: l.producto.slug,
+        cantidad: l.cantidad,
+        ...(l.item.opciones ? { opciones: l.item.opciones } : {}),
+      })) as never;
     } else if (producto) {
       payload.cantidad = String(cantidad);
       payload.producto = producto.slug;
+      if (producto.opciones) payload.opciones = producto.opciones as never;
     }
     if (origen) payload.origen = origen;
 
@@ -233,7 +248,10 @@ function ResumenProducto({
   return (
     <>
     <div className="mt-4 flex items-center justify-between text-sm texto-suave">
-      <span>{producto.nombre}</span>
+      <span>
+        {producto.nombre}
+        {producto.elegidas?.length ? <span className="block text-xs text-[var(--texto)]">{textoOpciones(producto.elegidas)}</span> : null}
+      </span>
       <div className="flex items-center gap-2">
         <button
           type="button"
@@ -294,9 +312,10 @@ function ResumenCarrito({
     <>
       <ul className="mt-4 space-y-3">
         {lineas.map((l) => (
-          <li key={l.producto.slug} className="flex items-start justify-between gap-3 text-sm texto-suave">
+          <li key={l.clave} className="flex items-start justify-between gap-3 text-sm texto-suave">
             <span>
               {l.producto.nombre}
+              {l.elegidas.length > 0 && <span className="block text-xs text-[var(--texto)]">{textoOpciones(l.elegidas)}</span>}
               <span className="block text-xs">
                 {cantidadConUnidad(l.cantidad, l.producto.unidad)} × {formatPrecio(l.unitario)}
               </span>

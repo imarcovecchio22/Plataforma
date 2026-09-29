@@ -5,11 +5,13 @@ import { unidadDe } from "@/plataforma/cliente";
 import ProductoForm from "@/components/admin/ProductoForm";
 import ProductoActions from "@/components/admin/ProductoActions";
 import { funcionActiva } from "@/plataforma/cliente/catalogo";
+import { leerOpciones } from "@/lib/opciones";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminProductosPage() {
   const conCategorias = funcionActiva("categorias");
+  const conOpciones = funcionActiva("opciones");
   const [productos, categorias] = await Promise.all([
     prisma.product.findMany({
       orderBy: [{ orden: "asc" }, { createdAt: "asc" }],
@@ -48,6 +50,12 @@ export default async function AdminProductosPage() {
               <p className="mt-2 text-sm text-stone-700">
                 <strong>{formatPrecio(p.precio)}</strong> · {p.stock} en stock · {p._count.items} pedidos
                 {promos && <> · Promos: {promos}</>}
+                {conOpciones &&
+                  leerOpciones(p.opciones).map((o) => (
+                    <span key={o.nombre}>
+                      {" "}· {o.nombre}: {o.valores.join(", ")}
+                    </span>
+                  ))}
               </p>
               <div className="mt-4">
                 <ProductoActions
@@ -67,8 +75,10 @@ export default async function AdminProductosPage() {
                     unidadGenero: p.unidadGenero === "femenino" ? "femenino" : "masculino",
                     aclaracionPrecio: p.aclaracionPrecio ?? "",
                     categoriaId: p.categoriaId ? String(p.categoriaId) : "",
+                    opciones: leerOpciones(p.opciones).map((o) => ({ nombre: o.nombre, valores: o.valores.join(", ") })),
                   }}
                   categorias={categorias}
+                  conOpciones={conOpciones}
                 />
               </div>
             </article>
@@ -84,7 +94,7 @@ export default async function AdminProductosPage() {
       <section>
         <h2 className="font-serif text-lg font-semibold text-oscuro">Nuevo producto</h2>
         <div className="mt-3 rounded-xl border border-marca-100 bg-white p-5 shadow-soft">
-          <ProductoForm ordenSugerido={ordenSugerido} categorias={categorias} />
+          <ProductoForm ordenSugerido={ordenSugerido} categorias={categorias} conOpciones={conOpciones} />
         </div>
       </section>
     </div>

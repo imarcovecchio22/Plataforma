@@ -5,7 +5,9 @@ import { checkoutSchema } from "@/lib/validation";
 import { getMainProduct, getProductosPorSlugs } from "@/lib/product";
 import { getZonasActivas } from "@/lib/zonas";
 import type { Product } from "@prisma/client";
-import { leerEscalones, totalPedido } from "@/lib/precios";
+import { leerEscalones, precioUnitario } from "@/lib/precios";
+import { nombreConOpciones, validarEleccion, type OpcionElegida } from "@/lib/opciones";
+import { opcionesDe } from "@/plataforma/cliente/catalogo";
 import { errorMessage, logEvent } from "@/lib/logs";
 import { cliente } from "@/plataforma/cliente";
 
@@ -27,7 +29,7 @@ export async function POST(req: NextRequest) {
 
   // Lo que se compra: los ítems del carrito o, con el formulario de un producto, ese producto (por
   // slug; sin slug, el destacado).
-  const pedidos = data.items ?? [{ producto: data.producto, cantidad: data.cantidad }];
+  const pedidos = data.items ?? [{ producto: data.producto, cantidad: data.cantidad, opciones: data.opciones }];
   const resueltos = await resolverProductos(pedidos.map((p) => p.producto));
   const faltante = pedidos.find((p) => !resueltos.get(p.producto));
   if (faltante) {
@@ -35,8 +37,27 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error }, { status: 404 });
   }
 
-  const lineas = pedidos.map((p) => ({ product: resueltos.get(p.producto)!, cantidad: p.cantidad }));
-  const sinStock = lineas.find((l) => l.cantidad > l.product.stock);
+  // Opciones elegidas: las que tiene el producto (si el cliente usa opciones), todas y válidas
+  const lineas: { product: Product; cantidad: number; elegidas: OpcionElegida[] }[] = [];
+  for (const p of pedidos) {
+    const product = resueltos.get(p.producto)!;
+    const opciones = opcionesDe(product);
+    if (!opciones.length) {
+      lineas.push({ product, cantidad: p.cantidad, elegidas: [] });
+      continue;
+    }
+    const validada = validarEleccion(opciones, p.opciones ?? {}, product.nombre);
+    if ("error" in validada) return NextResponse.json({ error: validada.error }, { status: 400 });
+    lineas.push({ product, cantidad: p.cantidad, elegidas: validada.elegidas });
+  }
+
+  // El stock y la promo son del producto: suman todas sus líneas (ej. dos colores de la misma pieza)
+  const porProducto = new Map<string, { product: Product; cantidad: number }>();
+  for (const l of lineas) {
+    const actual = porProducto.get(l.product.id);
+    porProducto.set(l.product.id, { product: l.product, cantidad: (actual?.cantidad ?? 0) + l.cantidad });
+  }
+  const sinStock = [...porProducto.values()].find((l) => l.cantidad > l.product.stock);
   if (sinStock) {
     const { product, cantidad } = sinStock;
     const deQue = lineas.length > 1 ? ` de ${product.nombre}` : "";
@@ -49,10 +70,18 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Precio por escalón (promos por cantidad) de cada producto, siempre calculado acá con los datos de la base
-  const items = lineas.map(({ product, cantidad }) => {
-    const { unitario, total: subtotal } = totalPedido(product.precio, leerEscalones(product.escalones), cantidad);
-    return { productId: product.id, nombre: product.nombre, precioUnitario: unitario, cantidad, subtotal };
+  // Precio por escalón (promos por cantidad) de cada producto, por la cantidad total del producto,
+  // siempre calculado acá con los datos de la base
+  const items = lineas.map(({ product, cantidad, elegidas }) => {
+    const unitario = precioUnitario(product.precio, leerEscalones(product.escalones), porProducto.get(product.id)!.cantidad);
+    return {
+      productId: product.id,
+      nombre: nombreConOpciones(product.nombre, elegidas),
+      precioUnitario: unitario,
+      cantidad,
+      subtotal: unitario * cantidad,
+      ...(elegidas.length ? { opciones: elegidas } : {}),
+    };
   });
 
   // Zona de envío: la elegida, o la única que haya. Su costo (si no es "a coordinar") se suma al total.

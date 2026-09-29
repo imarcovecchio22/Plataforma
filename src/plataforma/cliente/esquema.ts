@@ -158,6 +158,8 @@ export const esquemaCliente = z
       .object({
         /** Categorías (ej. "Macetas", "Llaveros"): cada producto en una, filtro en /productos. */
         categorias: z.boolean().optional(),
+        /** Opciones que elige el comprador (ej. "Color: Rojo, Negro"), sin precio ni stock propio. */
+        opciones: z.boolean().optional(),
       })
       .strict()
       .optional(),
