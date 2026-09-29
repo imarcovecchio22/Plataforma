@@ -57,6 +57,7 @@ Inventario de lo específico de Melera: [`docs/plataforma/inventario-melera.md`]
 Plan de la fase 1: [`docs/plataforma/plan-fase-1.md`](docs/plataforma/plan-fase-1.md).
 Plan de la fase 2 (con las decisiones tomadas): [`docs/plataforma/plan-fase-2.md`](docs/plataforma/plan-fase-2.md).
 Plan de la fase 3 (opciones configurables por cliente): [`docs/plataforma/plan-fase-3.md`](docs/plataforma/plan-fase-3.md).
+Pendientes (del usuario y de la etapa de refinamiento): [`docs/plataforma/pendientes.md`](docs/plataforma/pendientes.md).
 
 ## Reglas de trabajo
 
