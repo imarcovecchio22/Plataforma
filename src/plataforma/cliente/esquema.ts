@@ -35,6 +35,11 @@ function monedaValida(moneda: string) {
 }
 
 const texto = z.string().trim().min(1, "No puede estar vacío");
+/** Nombre de una familia de Google Fonts: letras, números y espacios (va en la URL de Google). */
+const familiaDeFuente = z
+  .string()
+  .trim()
+  .regex(/^[A-Za-z0-9][A-Za-z0-9 ]{0,60}$/, "Nombre de fuente inválido (solo letras, números y espacios, como en Google Fonts)");
 
 const hex = z.string().regex(/^#[0-9a-fA-F]{6}$/, "Color inválido (tiene que ser #rrggbb)");
 
@@ -98,6 +103,27 @@ export const esquemaCliente = z
       })
       .strict(),
     /**
+     * Apariencia del tema neutro (un cliente con tema propio la define en su tema.css). Opcional:
+     * sin esto, fondo claro y las fuentes del sistema.
+     */
+    apariencia: z
+      .object({
+        fondo: z.enum(["claro", "oscuro"]).default("claro"),
+        /**
+         * Familias de Google Fonts, tal cual se llaman ahí (ej. "Space Grotesk"). Se bajan al
+         * preparar el cliente y se sirven desde el propio sitio (src/plataforma/cliente/fuentes.ts).
+         */
+        fuentes: z
+          .object({
+            texto: familiaDeFuente.optional(),
+            titulos: familiaDeFuente.optional(),
+          })
+          .strict()
+          .optional(),
+      })
+      .strict()
+      .optional(),
+    /**
      * Imágenes de la marca. Las rutas son de clientes/<slug>/public/ (se copian a public/ antes
      * de dev y build), empiezan con / y el archivo tiene que existir.
      */
@@ -118,6 +144,39 @@ export const esquemaCliente = z
           .strict(),
       })
       .strict(),
+    /**
+     * Cómo arranca la home. "destacado" (por defecto): hero del primer producto con su precio y su
+     * sección, y los demás abajo. "catalogo": hero de la marca (sin precio) y la grilla de todos
+     * los productos; el menú dice "Productos".
+     */
+    inicio: z.enum(["destacado", "catalogo"]).optional(),
+    /**
+     * Funciones del catálogo que usa la tienda (todas apagadas por defecto). Prendida, su parte del
+     * admin aparece y el dueño la carga ahí (ver src/plataforma/cliente/catalogo.ts).
+     */
+    catalogo: z
+      .object({
+        /** Categorías (ej. "Macetas", "Llaveros"): cada producto en una, filtro en /productos. */
+        categorias: z.boolean().optional(),
+        /** Opciones que elige el comprador (ej. "Color: Rojo, Negro"), sin precio ni stock propio. */
+        opciones: z.boolean().optional(),
+        /** Productos a pedido: sin límite de stock y con un aviso de demora. */
+        aPedido: z.boolean().optional(),
+      })
+      .strict()
+      .optional(),
+    /**
+     * Link a un cotizador que el cliente tiene en otro lado (ej. el de impresión 3D). Si está, el
+     * menú y el pie lo muestran. Cuando el cotizador se integre como módulo (modulos.cotizador),
+     * esto va a apuntar a su página propia.
+     */
+    enlaceCotizador: z
+      .object({
+        url: z.string().trim().url("El link del cotizador no es una URL válida").startsWith("https://", "El link del cotizador tiene que empezar con https://"),
+        texto: z.string().trim().min(1).max(40).default("Cotizá tu impresión"),
+      })
+      .strict()
+      .optional(),
     /** Funcionalidades opcionales (ver src/plataforma/cliente/modulos.ts). */
     modulos: z
       .object({

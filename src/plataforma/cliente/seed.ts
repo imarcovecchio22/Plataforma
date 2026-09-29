@@ -4,6 +4,8 @@
  * se editó en el admin); después se editan desde el admin.
  */
 export type SeedCliente = {
+  /** Categorías (si la config usa categorías), en el orden en que se muestran. */
+  categorias?: { nombre: string; slug: string }[];
   /** Productos de la tienda, en el orden en que se muestran. Sin ninguno, la tienda muestra "todavía no hay productos". */
   productos?: {
     nombre: string;
@@ -15,6 +17,13 @@ export type SeedCliente = {
     stock: number;
     /** Promos por cantidad: precio por unidad desde cierta cantidad. */
     escalones?: { desde: number; precio: number }[];
+    /** Slug de una de `categorias`. */
+    categoria?: string;
+    /** Opciones que elige el comprador (si la config usa opciones de producto). */
+    opciones?: { nombre: string; valores: string[] }[];
+    /** Se hace a pedido (si la config usa productos a pedido), con su demora. */
+    aPedido?: boolean;
+    demora?: string;
   }[];
   /**
    * Zonas de envío del checkout, en el orden en que se muestran. Sin costo = a coordinar después de

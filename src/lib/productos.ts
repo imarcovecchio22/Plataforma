@@ -3,6 +3,28 @@ import { logEvent } from "@/lib/logs";
 import { formatPrecio } from "@/lib/utils";
 import { leerEscalones, textoPromos } from "@/lib/precios";
 import { unidadDe } from "@/plataforma/cliente";
+import { funcionActiva } from "@/plataforma/cliente/catalogo";
+import { leerOpciones } from "@/lib/opciones";
+
+const textoDeOpciones = (opciones: unknown) => leerOpciones(opciones).map((o) => `${o.nombre}: ${o.valores.join(", ")}`).join(" · ");
+
+/**
+ * Lo que se guarda de un producto: los campos de las funciones del catálogo que el cliente no usa
+ * no se tocan (si apagó las categorías, sus productos conservan la que tenían).
+ */
+export function datosDeProducto<T extends object>(datos: T): T {
+  const resto = { ...datos } as Record<string, unknown>;
+  if (!funcionActiva("categorias")) delete resto.categoriaId;
+  if (!funcionActiva("opciones")) delete resto.opciones;
+  if (!funcionActiva("aPedido")) {
+    delete resto.aPedido;
+    delete resto.demora;
+  }
+  return resto as T;
+}
+
+/** El error de Prisma cuando la categoría elegida no existe (se borró mientras se editaba). */
+export const CATEGORIA_INEXISTENTE = "Esa categoría ya no existe";
 
 /** Registra en /admin/logs lo que cambió de un producto (mismos textos que el viejo "Precio y stock"). */
 export async function registrarCambiosDeProducto(anterior: Product, producto: Product) {
@@ -18,7 +40,13 @@ export async function registrarCambiosDeProducto(anterior: Product, producto: Pr
   if (producto.activo !== anterior.activo) {
     await logEvent("admin", `Producto ${producto.nombre} ${producto.activo ? "activado" : "desactivado"}`);
   }
-  const otros = (["nombre", "slug", "descripcion", "imagenUrl", "orden", "unidadSingular", "unidadPlural", "unidadGenero", "aclaracionPrecio"] as const).filter((c) => producto[c] !== anterior[c]);
+  if (JSON.stringify(anterior.opciones) !== JSON.stringify(producto.opciones)) {
+    await logEvent("admin", `Opciones de ${producto.nombre}: ${textoDeOpciones(producto.opciones) || "sin opciones"}`);
+  }
+  if (producto.aPedido !== anterior.aPedido) {
+    await logEvent("admin", `Producto ${producto.nombre} ${producto.aPedido ? "pasa a hacerse a pedido" : "vuelve a venderse con stock"}`);
+  }
+  const otros = (["nombre", "slug", "descripcion", "imagenUrl", "orden", "unidadSingular", "unidadPlural", "unidadGenero", "aclaracionPrecio", "categoriaId", "demora"] as const).filter((c) => producto[c] !== anterior[c]);
   if (otros.length) {
     await logEvent("admin", `Producto ${producto.nombre} editado: ${otros.join(", ")}`);
   }

@@ -13,7 +13,9 @@
     "db:seed": "tsx prisma/seed.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "preparar-cliente": "tsx scripts/preparar-cliente.ts"
+    "preparar-cliente": "tsx scripts/preparar-cliente.ts",
+    "cliente": "node scripts/con-cliente.js",
+    "db:migrate": "prisma migrate deploy"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

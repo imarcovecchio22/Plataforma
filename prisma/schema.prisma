@@ -37,6 +37,15 @@ model Product {
   escalones        Json     @default("[]")
   stock            Int      @default(0)
   imagenUrl        String?
+  // Categoría (solo si el cliente usa categorías: config.catalogo.categorias)
+  categoriaId      Int?
+  categoria        Categoria? @relation(fields: [categoriaId], references: [id], onDelete: Restrict)
+  // Opciones que elige el comprador (config.catalogo.opciones): [{ nombre: "Color", valores: ["Rojo", "Negro"] }]
+  opciones         Json     @default("[]")
+  // A pedido (config.catalogo.aPedido): sin límite de stock (no se descuenta al pagar) y con demora
+  aPedido          Boolean  @default(false)
+  // Lo que se muestra de la demora (ej. "Se imprime en 3 a 5 días hábiles"); vacía = un texto general
+  demora           String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
@@ -44,6 +53,18 @@ model Product {
   postsIG PostIG[]
 
   @@index([activo, orden])
+}
+
+// Categorías del catálogo (config.catalogo.categorias), se editan en /admin/categorias
+model Categoria {
+  id        Int       @id @default(autoincrement())
+  nombre    String
+  // Para el filtro de /productos?categoria=<slug>
+  slug      String    @unique
+  orden     Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  productos Product[]
 }
 
 model Order {
@@ -115,6 +136,8 @@ model OrderItem {
   nombre         String
   precioUnitario Int // con la promo por cantidad ya aplicada
   cantidad       Int
+  // Lo que eligió de las opciones del producto: [{ nombre: "Color", valor: "Rojo" }] (el nombre ya lo incluye)
+  opciones       Json     @default("[]")
   subtotal       Int
 
   @@index([orderId])

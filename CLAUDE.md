@@ -48,15 +48,23 @@ de la plataforma".
 3. **Crear `clientes/rino/` y levantar 3DRinoMaker** (impresiones 3D, catálogo de productos fijos:
    listado, ficha por slug, pedido con ítems, checkout de MP con varios ítems, stock por producto,
    zonas de envío, identidad propia; el cotizador queda previsto como módulo).
+   **✅ Terminada el 2026-09-29 (rama `fase-3`)**, con la identidad de Rino provisoria (marcada
+   `PROVISORIO`) hasta hablar con el dueño: lo que varía entre clientes quedó como opciones de la
+   config (`inicio`, `catalogo`, `apariencia`, `enlaceCotizador`). Qué falta para lanzarlo:
+   [`docs/plataforma/rino-para-lanzar.md`](docs/plataforma/rino-para-lanzar.md).
 
 Inventario de lo específico de Melera: [`docs/plataforma/inventario-melera.md`](docs/plataforma/inventario-melera.md).
 Plan de la fase 1: [`docs/plataforma/plan-fase-1.md`](docs/plataforma/plan-fase-1.md).
 Plan de la fase 2 (con las decisiones tomadas): [`docs/plataforma/plan-fase-2.md`](docs/plataforma/plan-fase-2.md).
+Plan de la fase 3 (opciones configurables por cliente): [`docs/plataforma/plan-fase-3.md`](docs/plataforma/plan-fase-3.md).
+Pendientes (del usuario y de la etapa de refinamiento): [`docs/plataforma/pendientes.md`](docs/plataforma/pendientes.md).
 
 ## Reglas de trabajo
 
 - **Pasos chicos**, cada uno con los tests pasando (`npm test`) antes de seguir.
-- **Nunca conectarse a la base de producción de Melera.** Solo a la base de desarrollo de `.env.local`.
+- **Nunca conectarse a la base de producción de Melera.** Solo a las bases de desarrollo: la de
+  `.env.local` (Melera) y la de `.env.rino.local` (Rino). Para Rino (o cualquier otro cliente), todo
+  va por `npm run cliente -- rino <comando>`, que carga su entorno y se niega si no coincide.
 - **No desplegar nada** ni configurar Vercel / Meta / Telegram reales desde acá.
 - **Cambios de esquema siempre con migraciones de Prisma** (`npx prisma migrate dev --name <nombre>`
   contra la base de desarrollo). Nunca `db push`.
@@ -88,12 +96,22 @@ Plan de la fase 2 (con las decisiones tomadas): [`docs/plataforma/plan-fase-2.md
   sus páginas del admin empiezan con `exigirModulo("<módulo>")`.
 - Un cliente sin `tema.css` o sin `tema/index.tsx` usa el **tema neutro** (`src/plataforma/tema/`).
   `clientes/ejemplo/` es un cliente completo sin tema: sirve para probar sin Melera
-  (`CLIENTE=ejemplo npm run dev`) y como base para uno nuevo.
+  (`CLIENTE=ejemplo npm run dev`) y como base para uno nuevo. El neutro se ajusta con
+  `apariencia` en la config: `fondo` claro u oscuro (`<html data-fondo="oscuro">`) y `fuentes` de
+  Google Fonts, que `preparar-cliente` baja a `public/fuentes/` (el sitio no le pide nada a Google).
+  Los avisos de error y los íconos de resultado del checkout usan las clases del contrato
+  (`.aviso-error`, `.icono-exito`, `.icono-error`, `.icono-pendiente`): nada de colores fijos.
 - **Catálogo y pedidos**: el producto destacado es el primero activo por orden (`getMainProduct`);
   con más de un producto activo la tienda usa el carrito (`localStorage`, `<slug>-carrito`). Un pedido
   tiene ítems (`OrderItem`, con nombre y precio del momento) y una zona de envío (`Order.provincia`
   guarda su nombre y `Order.costoEnvio` su costo). Los precios y las promos siempre se recalculan en
   el servidor.
+- **Funciones del catálogo** (`config.catalogo`, apagadas por defecto): `funcionActiva("categorias")`
+  (o `"opciones"`, `"aPedido"`; `opcionesDe`, `stockParaVender` y `demoraDe` ya tienen en cuenta si
+  la función está prendida: usarlos en lugar de `producto.stock` u `producto.opciones`) y
+  `exigirFuncion` de `src/plataforma/cliente/catalogo.ts`, como los módulos. Apagada: su pantalla
+  y su API dan 404, no aparece en el menú ni en los formularios, y la API de productos no toca sus
+  campos (`datosDeProducto`).
 - **Variables de textos** (`$PRODUCTO`, `$PRECIO`, `$PROMOS`, `$CATALOGO`, `$ZONAS`):
   `src/lib/variables.ts` (reemplazo, sin servidor) y `datosParaTextos()` (valores de la base). El chat
   arma productos y envíos con la base; `ia.chat.datos` de la config no tiene que hablar de envíos.

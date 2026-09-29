@@ -6,6 +6,7 @@ import { useState } from "react";
 import { agregarAlCarrito, guardarCarrito, leerCarrito } from "@/lib/carrito";
 import { formatPrecio } from "@/lib/utils";
 import { totalPedido, type Escalon } from "@/lib/precios";
+import type { Eleccion, OpcionProducto } from "@/lib/opciones";
 import { cantidadConUnidad, cliente, type Unidad } from "@/plataforma/cliente";
 
 export default function QuantitySelector({
@@ -16,6 +17,8 @@ export default function QuantitySelector({
   escalones = [],
   unidad = cliente.unidad,
   conCarrito = false,
+  opciones = [],
+  demora = null,
 }: {
   /** El producto que se compra (el checkout lo busca por slug). */
   slug: string;
@@ -27,9 +30,15 @@ export default function QuantitySelector({
   unidad?: Unidad;
   /** Con varios productos en la tienda: "Agregar al carrito" en vez de ir directo al checkout. */
   conCarrito?: boolean;
+  /** Lo que el comprador elige antes de comprar (ej. el color), si el producto tiene opciones. */
+  opciones?: OpcionProducto[];
+  /** Si se hace a pedido: el aviso de demora (y no se muestra el stock). */
+  demora?: string | null;
 }) {
   const [cantidad, setCantidad] = useState(1);
   const [agregado, setAgregado] = useState(false);
+  const [eleccion, setEleccion] = useState<Eleccion>({});
+  const [falta, setFalta] = useState<string | null>(null);
   const router = useRouter();
 
   const sinStock = stock <= 0;
@@ -46,20 +55,30 @@ export default function QuantitySelector({
     setCantidad((c) => Math.min(stock, c + 1));
   }
 
+  /** Todas las opciones elegidas; si falta alguna, lo avisa. */
+  function eleccionCompleta() {
+    const sinElegir = opciones.find((o) => !eleccion[o.nombre]);
+    setFalta(sinElegir ? `Elegí ${sinElegir.nombre.toLowerCase()}` : null);
+    return !sinElegir;
+  }
+
   function agregar() {
-    guardarCarrito(agregarAlCarrito(leerCarrito(), slug, cantidad));
+    if (!eleccionCompleta()) return;
+    guardarCarrito(agregarAlCarrito(leerCarrito(), slug, cantidad, opciones.length ? eleccion : undefined));
     setAgregado(true);
   }
 
   function comprar() {
+    if (!eleccionCompleta()) return;
     const params = new URLSearchParams({ producto: slug, cantidad: String(cantidad) });
+    if (opciones.length) params.set("opciones", JSON.stringify(eleccion));
     if (origen) params.set("origen", origen);
     router.push(`/checkout?${params}`);
   }
 
   if (sinStock) {
     return (
-      <p className="inline-block rounded-full border border-red-400/40 bg-red-950/60 px-4 py-2 text-sm font-semibold text-red-200">
+      <p className="inline-block rounded-full border aviso-error px-4 py-2 text-sm font-semibold">
         Sin stock por el momento
       </p>
     );
@@ -67,6 +86,32 @@ export default function QuantitySelector({
 
   return (
     <div className="space-y-5">
+      {opciones.map((o) => (
+        <div key={o.nombre}>
+          <label className="etiqueta" htmlFor={`opcion-${o.nombre}`}>
+            {o.nombre}
+          </label>
+          <select
+            id={`opcion-${o.nombre}`}
+            className="campo max-w-xs"
+            value={eleccion[o.nombre] ?? ""}
+            onChange={(e) => {
+              setEleccion((actual) => ({ ...actual, [o.nombre]: e.target.value }));
+              setFalta(null);
+              setAgregado(false);
+            }}
+          >
+            <option value="" disabled>
+              Elegí {o.nombre.toLowerCase()}
+            </option>
+            {o.valores.map((v) => (
+              <option key={v} value={v}>
+                {v}
+              </option>
+            ))}
+          </select>
+        </div>
+      ))}
       {atajos.length > 1 && (
         <div className="flex flex-wrap gap-2" role="group" aria-label={`Elegí ${unidad.genero === "femenino" ? "cuántas" : "cuántos"} ${unidad.plural}`}>
           {atajos.map((n) => {
@@ -102,7 +147,7 @@ export default function QuantitySelector({
           <button
             type="button"
             onClick={decrementar}
-            className="flex h-9 w-9 items-center justify-center rounded-full text-lg font-semibold text-[var(--texto)] transition hover:bg-white/10 disabled:opacity-40"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-lg font-semibold text-[var(--texto)] transition hover:bg-[var(--resalte)] disabled:opacity-40"
             disabled={cantidad <= 1}
             aria-label="Restar cantidad"
           >
@@ -112,7 +157,7 @@ export default function QuantitySelector({
           <button
             type="button"
             onClick={incrementar}
-            className="flex h-9 w-9 items-center justify-center rounded-full text-lg font-semibold text-[var(--texto)] transition hover:bg-white/10 disabled:opacity-40"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-lg font-semibold text-[var(--texto)] transition hover:bg-[var(--resalte)] disabled:opacity-40"
             disabled={cantidad >= stock}
             aria-label="Sumar cantidad"
           >
@@ -125,6 +170,11 @@ export default function QuantitySelector({
           </button>
         </span>
       </div>
+      {falta && (
+        <p className="w-fit rounded-lg border aviso-error px-3 py-2 text-sm" role="alert">
+          {falta}
+        </p>
+      )}
       {agregado && (
         <p className="text-sm text-[var(--texto)]" role="status">
           Listo, está en el carrito.{" "}
@@ -135,7 +185,7 @@ export default function QuantitySelector({
       )}
       <p className="texto-suave text-sm">
         {cantidad > 1 && <>{formatPrecio(unitario)} cada {unidad.singular}{ahorro > 0 && <> · ahorrás {formatPrecio(ahorro)}</>} · </>}
-        {stock} unidades disponibles
+        {demora ?? `${stock} unidades disponibles`}
       </p>
     </div>
   );

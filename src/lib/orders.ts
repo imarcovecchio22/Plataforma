@@ -4,6 +4,7 @@ import { sendTelegramMessage, siteUrl } from "@/lib/telegram";
 import { formatPrecio } from "@/lib/utils";
 import { errorMessage, logEvent } from "@/lib/logs";
 import type { OrderStatus } from "@prisma/client";
+import { esAPedido, funcionActiva } from "@/plataforma/cliente/catalogo";
 
 export function mapMpStatus(status: string): OrderStatus | null {
   switch (status) {
@@ -79,10 +80,18 @@ async function applyPayment(
     });
     const pasoAPagado = count === 1 && nuevoEstado === "pagado";
 
-    // Stock que queda de cada producto después de descontar (para el aviso)
-    const stocks = new Map<string, number>();
+    // Stock que queda de cada producto después de descontar (para el aviso); los que se hacen a
+    // pedido no tienen stock (con la función apagada, ni se pregunta: todos descuentan)
+    const stocks = new Map<string, number | string>();
     if (pasoAPagado) {
       for (const item of order.items) {
+        if (funcionActiva("aPedido")) {
+          const actual = await tx.product.findUnique({ where: { id: item.productId }, select: { aPedido: true, stock: true } });
+          if (actual && esAPedido(actual)) {
+            stocks.set(item.productId, "a pedido");
+            continue;
+          }
+        }
         const producto = await tx.product.update({
           where: { id: item.productId },
           data: { stock: { decrement: item.cantidad } },
@@ -142,7 +151,7 @@ async function notifyOrderPaid(
     costoEnvio: number;
   },
   items: { productId: string; nombre: string; cantidad: number; subtotal: number }[],
-  stocks: Map<string, number>
+  stocks: Map<string, number | string>
 ) {
   // Con un solo ítem y sin costo de envío, el mismo texto de siempre; si no, también el envío y el total
   const stock =

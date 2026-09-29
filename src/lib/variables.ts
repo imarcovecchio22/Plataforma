@@ -45,10 +45,26 @@ export function lista(elementos: string[]) {
   return new Intl.ListFormat(cliente.region.locale, { type: "conjunction" }).format(elementos);
 }
 
-/** $CATALOGO: "Miel ($ 6.500) y Propóleo ($ 3.000)". */
-export function textoCatalogo(productos: { nombre: string; precio: number }[]) {
+type ProductoCatalogo = { nombre: string; precio: number; categoria?: { nombre: string } | null };
+
+const conPrecio = (productos: ProductoCatalogo[]) => lista(productos.map((p) => `${p.nombre} (${formatPrecio(p.precio)})`));
+
+/**
+ * $CATALOGO: "Miel ($ 6.500) y Propóleo ($ 3.000)". Con `agrupar` (el cliente usa categorías) y
+ * productos con categoría, por categoría en el orden en que vienen: "Macetas: Maceta ($ 8.500);
+ * Llaveros: Llavero ($ 2.500); Otros: Soporte ($ 6.000)".
+ */
+export function textoCatalogo(productos: ProductoCatalogo[], agrupar = false) {
   if (productos.length === 0) return SIN_CARGAR;
-  return lista(productos.map((p) => `${p.nombre} (${formatPrecio(p.precio)})`));
+  if (!agrupar || !productos.some((p) => p.categoria)) return conPrecio(productos);
+  const grupos = new Map<string, ProductoCatalogo[]>();
+  for (const p of productos) {
+    const nombre = p.categoria?.nombre ?? "Otros";
+    grupos.set(nombre, [...(grupos.get(nombre) ?? []), p]);
+  }
+  // "Otros" (sin categoría) al final
+  const orden = [...grupos.keys()].sort((a, b) => Number(a === "Otros") - Number(b === "Otros"));
+  return orden.map((nombre) => `${nombre}: ${conPrecio(grupos.get(nombre)!)}`).join("; ");
 }
 
 /** $ZONAS: "CABA (a coordinar después de la compra) y Zona sur ($ 2.500)". */

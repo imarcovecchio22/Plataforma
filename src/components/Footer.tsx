@@ -18,6 +18,11 @@ export default function Footer() {
           <Link href="/consultas" className="btn-ghost">
             Consultas
           </Link>
+          {cliente.enlaceCotizador && (
+            <a href={cliente.enlaceCotizador.url} target="_blank" rel="noopener noreferrer" className="btn-ghost">
+              {cliente.enlaceCotizador.texto}
+            </a>
+          )}
           <a
             href={`https://www.instagram.com/${cliente.instagram}/`}
             target="_blank"
@@ -33,7 +38,7 @@ export default function Footer() {
           </a>
         </div>
       </div>
-      <div className="border-t border-white/10 py-3 text-center text-xs">
+      <div className="border-t border-[var(--linea-suave)] py-3 text-center text-xs">
         © {new Date().getFullYear()} {cliente.nombre}. Todos los derechos reservados. ·{" "}
         <Link href="/privacidad" className="underline underline-offset-2 hover:text-[var(--texto-suave)]">
           Privacidad

@@ -9,9 +9,22 @@ export async function getMainProduct() {
   return prisma.product.findFirst({ where: { activo: true }, orderBy: [{ orden: "asc" }, { createdAt: "asc" }] });
 }
 
-/** Los productos que se muestran en la tienda: activos, por orden. */
+/** Los productos que se muestran en la tienda: activos, por orden (con su categoría, si tienen). */
 export async function getProductosActivos() {
-  return prisma.product.findMany({ where: { activo: true }, orderBy: [{ orden: "asc" }, { createdAt: "asc" }] });
+  return prisma.product.findMany({
+    where: { activo: true },
+    orderBy: [{ orden: "asc" }, { createdAt: "asc" }],
+    include: { categoria: { select: { nombre: true, slug: true, orden: true } } },
+  });
+}
+
+/** Las categorías que tienen algún producto activo, por orden (para el filtro de /productos). */
+export async function getCategoriasConProductos() {
+  return prisma.categoria.findMany({
+    where: { productos: { some: { activo: true } } },
+    orderBy: [{ orden: "asc" }, { id: "asc" }],
+    select: { nombre: true, slug: true },
+  });
 }
 
 /** Un producto activo por su slug (null si no existe o está inactivo). */

@@ -1,14 +1,23 @@
 /**
  * Carrito de la tienda, guardado en el navegador (localStorage, sin cuenta de usuario). Guarda
- * solo slug y cantidad: precios, promos y stock salen siempre de la base (la página del carrito
- * y el checkout los calculan con los datos actuales).
+ * solo slug, cantidad y las opciones elegidas (si el producto tiene): precios, promos y stock
+ * salen siempre de la base (la página del carrito y el checkout los calculan con los datos
+ * actuales). El mismo producto con distintas opciones son dos líneas.
  * Si el navegador no deja guardar (modo privado, almacenamiento bloqueado), el carrito vive
  * mientras la pestaña esté abierta.
  */
 import { cliente } from "@/plataforma/cliente";
-import { totalPedido, type Escalon } from "@/lib/precios";
+import { precioUnitario, type Escalon } from "@/lib/precios";
+import { claveEleccion, elegidasEnOrden, limpiarEleccion, validarEleccion, type Eleccion, type OpcionProducto } from "@/lib/opciones";
 
-export type ItemCarrito = { producto: string; cantidad: number };
+export type ItemCarrito = { producto: string; cantidad: number; opciones?: Eleccion };
+/** Qué línea: el producto y lo elegido (un slug solo = la línea sin opciones). */
+type CualLinea = string | Pick<ItemCarrito, "producto" | "opciones">;
+
+/** La identidad de una línea: producto + opciones elegidas. */
+export function claveItem(item: CualLinea): string {
+  return typeof item === "string" ? claveItem({ producto: item }) : `${item.producto}|${claveEleccion(item.opciones)}`;
+}
 
 const CLAVE = `${cliente.slug}-carrito`;
 const EVENTO = "carrito-cambio";
@@ -24,25 +33,33 @@ export function limpiarCarrito(valor: unknown): ItemCarrito[] {
   const items: ItemCarrito[] = [];
   for (const i of valor) {
     if (!i || typeof i !== "object") continue;
-    const { producto, cantidad } = i as Record<string, unknown>;
-    if (typeof producto !== "string" || !producto || vistos.has(producto)) continue;
+    const { producto, cantidad, opciones: crudas } = i as Record<string, unknown>;
+    if (typeof producto !== "string" || !producto) continue;
     if (!Number.isInteger(cantidad) || (cantidad as number) < 1) continue;
-    vistos.add(producto);
-    items.push({ producto, cantidad: Math.min(cantidad as number, MAXIMO_CANTIDAD) });
+    const opciones = limpiarEleccion(crudas);
+    const item: ItemCarrito = { producto, cantidad: Math.min(cantidad as number, MAXIMO_CANTIDAD) };
+    // Sin opciones, la línea queda como siempre (solo slug y cantidad)
+    if (Object.keys(opciones).length) item.opciones = opciones;
+    const clave = claveItem(item);
+    if (vistos.has(clave)) continue;
+    vistos.add(clave);
+    items.push(item);
   }
   return items.slice(0, MAXIMO_ITEMS);
 }
 
-export function agregarAlCarrito(items: ItemCarrito[], producto: string, cantidad: number): ItemCarrito[] {
-  const existente = items.find((i) => i.producto === producto);
-  if (existente) return cambiarCantidad(items, producto, existente.cantidad + cantidad);
-  return limpiarCarrito([...items, { producto, cantidad }]);
+export function agregarAlCarrito(items: ItemCarrito[], producto: string, cantidad: number, opciones?: Eleccion): ItemCarrito[] {
+  const cual = { producto, opciones };
+  const existente = items.find((i) => claveItem(i) === claveItem(cual));
+  if (existente) return cambiarCantidad(items, cual, existente.cantidad + cantidad);
+  return limpiarCarrito([...items, { producto, cantidad, opciones }]);
 }
 
-/** Cambia la cantidad de un producto; con 0 o menos, lo saca. */
-export function cambiarCantidad(items: ItemCarrito[], producto: string, cantidad: number): ItemCarrito[] {
-  if (cantidad < 1) return items.filter((i) => i.producto !== producto);
-  return limpiarCarrito(items.map((i) => (i.producto === producto ? { ...i, cantidad } : i)));
+/** Cambia la cantidad de una línea; con 0 o menos, la saca. */
+export function cambiarCantidad(items: ItemCarrito[], cual: CualLinea, cantidad: number): ItemCarrito[] {
+  const clave = claveItem(cual);
+  if (cantidad < 1) return items.filter((i) => claveItem(i) !== clave);
+  return limpiarCarrito(items.map((i) => (claveItem(i) === clave ? { ...i, cantidad } : i)));
 }
 
 export function unidadesEnCarrito(items: ItemCarrito[]) {
@@ -110,21 +127,54 @@ export function carritoEnServidor() {
 
 // ── Líneas del carrito con los datos actuales de los productos ──
 
-type ProductoParaCarrito = { slug: string; precio: number; escalones: Escalon[]; stock: number };
+type ProductoParaCarrito = {
+  slug: string;
+  precio: number;
+  escalones: Escalon[];
+  stock: number;
+  /** Las opciones a elegir, solo si el cliente usa opciones de producto (si no, se ignoran). */
+  opciones?: OpcionProducto[];
+};
 
 /**
- * Cruza el carrito con los productos a la venta: cada línea con su precio por la promo que
- * corresponda (la cantidad no pasa el stock), el total y lo que ya no se puede comprar (producto
- * inactivo, borrado o sin stock).
+ * Cruza el carrito con los productos a la venta: cada línea con lo elegido y su precio, el total
+ * y lo que ya no se puede comprar (producto inactivo, borrado, sin stock, o una opción que ya no
+ * existe). El stock y la promo por cantidad cuentan todas las líneas del mismo producto (dos
+ * colores de la misma pieza suman para la promo), en el orden del carrito.
  */
 export function lineasDelCarrito<P extends ProductoParaCarrito>(items: ItemCarrito[], productos: P[]) {
   const porSlug = new Map(productos.map((p) => [p.slug, p]));
-  const lineas = items.flatMap((i) => {
-    const producto = porSlug.get(i.producto);
-    if (!producto || producto.stock <= 0) return [];
-    const cantidad = Math.min(i.cantidad, producto.stock);
-    return [{ producto, cantidad, ...totalPedido(producto.precio, producto.escalones, cantidad) }];
+  const noDisponibles: ItemCarrito[] = [];
+  const quedan = new Map(productos.map((p) => [p.slug, p.stock]));
+  const aceptados: { item: ItemCarrito; producto: P; cantidad: number }[] = [];
+  for (const item of items) {
+    const producto = porSlug.get(item.producto);
+    const opciones = producto?.opciones ?? [];
+    const valida = !opciones.length || !("error" in validarEleccion(opciones, item.opciones ?? {}, ""));
+    const stock = producto ? quedan.get(producto.slug)! : 0;
+    if (!producto || stock <= 0 || !valida) {
+      noDisponibles.push(item);
+      continue;
+    }
+    const cantidad = Math.min(item.cantidad, stock);
+    quedan.set(producto.slug, stock - cantidad);
+    aceptados.push({ item, producto, cantidad });
+  }
+  // La promo, por la cantidad total de cada producto
+  const totalPorProducto = new Map<string, number>();
+  for (const a of aceptados) totalPorProducto.set(a.producto.slug, (totalPorProducto.get(a.producto.slug) ?? 0) + a.cantidad);
+  const lineas = aceptados.map(({ item, producto, cantidad }) => {
+    const unitario = precioUnitario(producto.precio, producto.escalones, totalPorProducto.get(producto.slug)!);
+    return {
+      clave: claveItem(item),
+      item,
+      producto,
+      cantidad,
+      elegidas: elegidasEnOrden(producto.opciones ?? [], item.opciones),
+      unitario,
+      total: unitario * cantidad,
+      ahorro: (producto.precio - unitario) * cantidad,
+    };
   });
-  const noDisponibles = items.filter((i) => !porSlug.get(i.producto) || porSlug.get(i.producto)!.stock <= 0);
   return { lineas, noDisponibles, total: lineas.reduce((suma, l) => suma + l.total, 0) };
 }

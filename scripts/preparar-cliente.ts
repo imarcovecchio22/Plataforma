@@ -1,7 +1,9 @@
 /**
  * Corre antes de `next dev` y `next build`:
  * 1. Valida: si CLIENTE no está definida, no existe clientes/<CLIENTE>/, su config no cumple el
- *    esquema o falta alguna imagen que nombra, corta con un mensaje claro (y el build falla).
+ *    esquema, falta alguna imagen que nombra o Google Fonts no tiene sus fuentes, corta con un
+ *    mensaje claro (y el build falla).
+ * 3. Baja las fuentes de la config (apariencia.fuentes) a public/fuentes/ (ver fuentes.ts).
  * 2. Copia los assets y el tema del cliente a public/ y src/app/ (ver src/plataforma/cliente/assets.ts).
  * Lee las mismas variables de entorno que Next (.env, .env.local, etc.).
  */
@@ -12,6 +14,8 @@ import { loadEnvConfig } from "@next/env";
 import { problemasDeConfig } from "../src/plataforma/cliente/validar";
 import { copiarAssets, copiarTema, imagenesFaltantes } from "../src/plataforma/cliente/assets";
 import { plantillasFaltantes } from "../src/plataforma/imagenes/archivos";
+import { familiasDe, PESOS_FUENTE } from "../src/plataforma/cliente/apariencia";
+import { descargarFuentes, FuenteInexistente } from "../src/plataforma/cliente/fuentes";
 
 const raiz = path.resolve(__dirname, "..");
 loadEnvConfig(raiz, process.argv.includes("--dev"));
@@ -48,7 +52,29 @@ async function main() {
   console.log(
     `✔ Tema: CSS ${tema === "cliente" ? `de "${slug}"` : "neutro"}, componentes ${componentes ? `de "${slug}"` : "neutros"}.`
   );
+  await agregarFuentes(config.apariencia);
   console.log(`✔ Assets de "${slug}" copiados a public/${iconos.length ? ` e íconos a src/app/ (${iconos.join(", ")})` : ""}.`);
+}
+
+/**
+ * Fuentes de la config: las baja de Google Fonts a public/fuentes/ y agrega sus @font-face al CSS
+ * del tema. Si Google no tiene la familia o sus pesos, falla; sin conexión, avisa (el sitio usa
+ * las fuentes del sistema hasta la próxima vez).
+ */
+async function agregarFuentes(apariencia: Parameters<typeof descargarFuentes>[1]) {
+  const familias = familiasDe(apariencia).join(", ");
+  if (!familias) return;
+  try {
+    const css = await descargarFuentes(raiz, apariencia);
+    const tema = path.join(raiz, "src", "app", "tema-cliente.css");
+    fs.appendFileSync(tema, `\n/* Fuentes de la config (bajadas de Google Fonts) */\n${css}\n`);
+    console.log(`✔ Fuentes ${familias} en public/fuentes/.`);
+  } catch (e) {
+    if (e instanceof FuenteInexistente) {
+      fallar(`Google Fonts no tiene ${familias} con los pesos ${PESOS_FUENTE.join(", ")} (revisá apariencia.fuentes).`);
+    }
+    console.warn(`⚠ No se pudieron bajar las fuentes ${familias} (${e instanceof Error ? e.message : e}): se usan las del sistema.`);
+  }
 }
 
 main();

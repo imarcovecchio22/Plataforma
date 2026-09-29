@@ -5,7 +5,19 @@ import { useState } from "react";
 import ProductoForm, { type ProductoValores } from "@/components/admin/ProductoForm";
 
 /** Activar/desactivar, editar y borrar un producto. */
-export default function ProductoActions({ productoId, valores }: { productoId: string; valores: ProductoValores }) {
+export default function ProductoActions({
+  productoId,
+  valores,
+  categorias,
+  conOpciones = false,
+  conAPedido = false,
+}: {
+  productoId: string;
+  valores: ProductoValores;
+  categorias?: { id: number; nombre: string }[];
+  conOpciones?: boolean;
+  conAPedido?: boolean;
+}) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [editando, setEditando] = useState(false);
@@ -65,7 +77,7 @@ export default function ProductoActions({ productoId, valores }: { productoId: s
       {error && <p className="text-xs text-red-600">{error}</p>}
       {editando && (
         <div className="rounded-lg border border-marca-100 bg-marca-50/40 p-4">
-          <ProductoForm productoId={productoId} inicial={valores} onListo={() => setEditando(false)} />
+          <ProductoForm productoId={productoId} inicial={valores} categorias={categorias} conOpciones={conOpciones} conAPedido={conAPedido} onListo={() => setEditando(false)} />
         </div>
       )}
     </div>

@@ -6,8 +6,9 @@
 import type { ZonaParaCheckout } from "@/lib/envios";
 import seedMelera from "../clientes/melera/seed";
 import seedEjemplo from "../clientes/ejemplo/seed";
+import seedRino from "../clientes/rino/seed";
 
-const SEEDS = { melera: seedMelera, ejemplo: seedEjemplo };
+const SEEDS = { melera: seedMelera, ejemplo: seedEjemplo, rino: seedRino };
 
 export function zonasDe(cliente: keyof typeof SEEDS): ZonaParaCheckout[] {
   return (SEEDS[cliente].zonas ?? []).map((z, i) => ({

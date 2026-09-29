@@ -6,13 +6,15 @@ import { getMainProduct, getProductoPorSlug, getProductosActivos } from "@/lib/p
 import { getZonasActivas } from "@/lib/zonas";
 import { leerEscalones } from "@/lib/precios";
 import { unidadDe } from "@/plataforma/cliente";
+import { demoraDe, opcionesDe, stockParaVender } from "@/plataforma/cliente/catalogo";
+import { limpiarEleccion, validarEleccion } from "@/lib/opciones";
 
 export const dynamic = "force-dynamic";
 
 export default async function CheckoutPage({
   searchParams: searchParamsPromise,
 }: {
-  searchParams: Promise<{ producto?: string; cantidad?: string; carrito?: string; origen?: string | string[] }>;
+  searchParams: Promise<{ producto?: string; cantidad?: string; carrito?: string; opciones?: string; origen?: string | string[] }>;
 }) {
   const searchParams = await searchParamsPromise;
   const origenCarrito = Array.isArray(searchParams.origen) ? searchParams.origen[0] : searchParams.origen;
@@ -34,8 +36,10 @@ export default async function CheckoutPage({
               nombre: p.nombre,
               precio: p.precio,
               escalones: leerEscalones(p.escalones),
-              stock: p.stock,
+              stock: stockParaVender(p),
               unidad: unidadDe(p),
+              opciones: opcionesDe(p),
+              demora: demoraDe(p),
             }))}
             zonas={zonas}
             origen={origenCarrito}
@@ -53,9 +57,14 @@ export default async function CheckoutPage({
     return <SinProductos />;
   }
   const origen = Array.isArray(searchParams.origen) ? searchParams.origen[0] : searchParams.origen;
+  // Lo elegido en la ficha (?opciones={"Color":"Rojo"}); si no cierra con el producto, se ignora
+  // y el checkout avisa qué falta elegir
+  const opciones = opcionesDe(product);
+  const eleccion = opciones.length ? leerEleccionDeUrl(searchParams.opciones) : {};
+  const validada = opciones.length ? validarEleccion(opciones, eleccion, product.nombre) : null;
   const cantidadInicial = Math.max(
     1,
-    Math.min(product.stock || 1, Number(searchParams.cantidad) || 1)
+    Math.min(stockParaVender(product) || 1, Number(searchParams.cantidad) || 1)
   );
 
   return (
@@ -71,6 +80,8 @@ export default async function CheckoutPage({
             precio: product.precio,
             escalones: leerEscalones(product.escalones),
             unidad: unidadDe(product),
+            demora: demoraDe(product),
+            ...(validada ? { opciones: eleccion, elegidas: "elegidas" in validada ? validada.elegidas : [] } : {}),
           }}
           cantidadInicial={cantidadInicial}
           zonas={zonas}
@@ -80,4 +91,13 @@ export default async function CheckoutPage({
       <ChatWidget />
     </>
   );
+}
+
+/** ?opciones={"Color":"Rojo"} (lo arma la ficha); cualquier otra cosa, sin elección. */
+function leerEleccionDeUrl(valor?: string) {
+  try {
+    return limpiarEleccion(valor ? JSON.parse(valor) : {});
+  } catch {
+    return {};
+  }
 }

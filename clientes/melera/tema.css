@@ -4,11 +4,12 @@
  *
  * Contrato de tema (lo usan los componentes públicos de la plataforma; todo tema lo define):
  * - Variables: --texto, --texto-suave, --destacado, --acento, --acento-rgb, --fondo-seccion,
- *   --degrade-seccion, --fondo-control y --texto-pie.
+ *   --degrade-seccion, --fondo-control, --texto-pie, --linea-suave y --resalte.
  *   Las fuentes (--fuente-texto y --fuente-titulos) las define next/font: ver tema/fuentes.ts.
  * - Clases: .tema-publico, .contenedor-publico, .btn, .btn-sm, .wrap-focus, .btn-ghost,
  *   .link-nav, .titulo, .titulo-hero, .texto-suave, .campo, .etiqueta, .velo-texto,
- *   .foto-producto, .precio, .etiqueta-seccion y .tarjeta.
+ *   .foto-producto, .precio, .etiqueta-seccion, .tarjeta, .aviso-error, .icono-exito,
+ *   .icono-error y .icono-pendiente.
  * El resto (.logo-celda, .velo-entrada, .boton-saltar…) es propio del panal.
  */
 
@@ -32,6 +33,9 @@
   --degrade-seccion: linear-gradient(to bottom, rgba(18, 7, 2, 0) 0, rgba(18, 7, 2, 0.84) 26%, rgba(18, 7, 2, 0.93));
   --fondo-control: rgba(14, 6, 2, 0.6);
   --texto-pie: #a99270;
+  /* Separadores finos y fondo de un botón al pasar el mouse */
+  --linea-suave: rgb(255 255 255 / 0.1);
+  --resalte: rgb(255 255 255 / 0.1);
 }
 
 @layer base {
@@ -47,6 +51,25 @@
 }
 
 @layer components {
+  /* Avisos de error y los íconos de /checkout/success, /failure y /pending (sobre fondo oscuro) */
+  .aviso-error {
+    border-color: rgb(248 113 113 / 0.4);
+    background-color: rgb(69 10 10 / 0.6);
+    color: rgb(254 202 202);
+  }
+  .icono-exito {
+    background-color: rgb(6 78 59 / 0.5);
+    color: rgb(110 231 183);
+  }
+  .icono-error {
+    background-color: rgb(127 29 29 / 0.5);
+    color: rgb(252 165 165);
+  }
+  .icono-pendiente {
+    background-color: rgb(120 53 15 / 0.5);
+    color: rgb(252 211 77);
+  }
+
   .tema-publico {
     background: var(--wax-deep);
     color: var(--texto);

@@ -21,6 +21,13 @@ export type ProductoValores = {
   unidadPlural: string;
   unidadGenero: "masculino" | "femenino";
   aclaracionPrecio: string;
+  /** Id de la categoría ("" = sin categoría); solo si el cliente usa categorías */
+  categoriaId: string;
+  /** Opciones que elige el comprador (valores separados por comas); solo si el cliente las usa */
+  opciones: { nombre: string; valores: string }[];
+  /** A pedido (sin límite de stock) y su demora; solo si el cliente usa productos a pedido */
+  aPedido: boolean;
+  demora: string;
 };
 
 /** Formulario para crear (o editar, si recibe productoId) un producto. */
@@ -28,11 +35,20 @@ export default function ProductoForm({
   productoId,
   inicial,
   ordenSugerido = 10,
+  categorias,
+  conOpciones = false,
+  conAPedido = false,
   onListo,
 }: {
   productoId?: string;
   inicial?: ProductoValores;
   ordenSugerido?: number;
+  /** Las categorías para elegir (sin esto, el cliente no usa categorías y el campo no aparece) */
+  categorias?: { id: number; nombre: string }[];
+  /** El cliente usa opciones de producto (config.catalogo.opciones) */
+  conOpciones?: boolean;
+  /** El cliente usa productos a pedido (config.catalogo.aPedido) */
+  conAPedido?: boolean;
   onListo?: () => void;
 }) {
   const vacio: ProductoValores = {
@@ -49,6 +65,10 @@ export default function ProductoForm({
     unidadPlural: "",
     unidadGenero: "masculino",
     aclaracionPrecio: "",
+    categoriaId: "",
+    opciones: [],
+    aPedido: false,
+    demora: "",
   };
   const [valores, setValores] = useState<ProductoValores>(inicial ?? vacio);
   // Al crear, el slug sigue al nombre hasta que se lo edite a mano
@@ -83,7 +103,11 @@ export default function ProductoForm({
       const res = await fetch(productoId ? `/api/admin/productos/${productoId}` : "/api/admin/productos", {
         method: productoId ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(valores),
+        body: JSON.stringify({
+          ...valores,
+          // "Rojo, Negro , Blanco" → ["Rojo", "Negro", "Blanco"]
+          opciones: valores.opciones.map((o) => ({ nombre: o.nombre, valores: o.valores.split(",").map((v) => v.trim()).filter(Boolean) })),
+        }),
       });
       const data = await res.json().catch(() => null);
       if (!res.ok) {
@@ -126,6 +150,20 @@ export default function ProductoForm({
           />
         </div>
       </div>
+      {categorias && (
+        <div>
+          <label className="label-field" htmlFor={`${idBase}-categoria`}>Categoría</label>
+          <select id={`${idBase}-categoria`} className="input-field" value={valores.categoriaId} onChange={(e) => set("categoriaId", e.target.value)}>
+            <option value="">Sin categoría</option>
+            {categorias.map((c) => (
+              <option key={c.id} value={String(c.id)}>
+                {c.nombre}
+              </option>
+            ))}
+          </select>
+          {categorias.length === 0 && <p className="mt-1 text-xs text-stone-500">Todavía no hay categorías: se crean en Categorías.</p>}
+        </div>
+      )}
       <div>
         <label className="label-field" htmlFor={`${idBase}-descripcion`}>Descripción</label>
         <textarea id={`${idBase}-descripcion`} className="input-field min-h-24" value={valores.descripcion} onChange={(e) => set("descripcion", e.target.value)} maxLength={2000} />
@@ -137,13 +175,43 @@ export default function ProductoForm({
         </div>
         <div>
           <label className="label-field" htmlFor={`${idBase}-stock`}>Stock (unidades)</label>
-          <input id={`${idBase}-stock`} type="number" min={0} step={1} className="input-field" value={valores.stock} onChange={(e) => set("stock", Number(e.target.value))} />
+          <input
+            id={`${idBase}-stock`}
+            type="number"
+            min={0}
+            step={1}
+            className={`input-field${conAPedido ? " disabled:opacity-50" : ""}`}
+            value={valores.stock}
+            onChange={(e) => set("stock", Number(e.target.value))}
+            disabled={conAPedido && valores.aPedido}
+          />
         </div>
         <div>
           <label className="label-field" htmlFor={`${idBase}-orden`}>Orden</label>
           <input id={`${idBase}-orden`} type="number" step={1} className="input-field" value={valores.orden} onChange={(e) => set("orden", Number(e.target.value))} />
         </div>
       </div>
+      {conAPedido && (
+        <div className="rounded-lg border border-marca-100 p-4">
+          <label className="flex items-center gap-2 text-sm font-medium text-stone-700">
+            <input type="checkbox" checked={valores.aPedido} onChange={(e) => set("aPedido", e.target.checked)} />
+            Se hace a pedido (sin límite de stock: el pago no descuenta nada)
+          </label>
+          {valores.aPedido && (
+            <div className="mt-3">
+              <label className="label-field" htmlFor={`${idBase}-demora`}>Demora (se muestra en la ficha, el carrito y el checkout)</label>
+              <input
+                id={`${idBase}-demora`}
+                className="input-field"
+                value={valores.demora}
+                onChange={(e) => set("demora", e.target.value)}
+                placeholder="Se hace a pedido"
+                maxLength={80}
+              />
+            </div>
+          )}
+        </div>
+      )}
       <div>
         <label className="label-field" htmlFor={`${idBase}-imagen`}>Foto (link https; vacío = la foto de la marca)</label>
         <input id={`${idBase}-imagen`} className="input-field" value={valores.imagenUrl} onChange={(e) => set("imagenUrl", e.target.value)} placeholder="https://…" maxLength={500} />
@@ -211,6 +279,59 @@ export default function ProductoForm({
           )}
         </div>
       </div>
+
+      {conOpciones && (
+        <div className="border-t border-marca-100 pt-4">
+          <p className="label-field">Opciones para elegir</p>
+          <p className="mb-3 text-xs text-stone-500">
+            Lo que el comprador elige antes de agregar al carrito (ej. Color: Rojo, Negro, Blanco). No cambian el precio ni
+            el stock; lo elegido queda en el pedido.
+          </p>
+          <div className="space-y-3">
+            {valores.opciones.map((o, i) => (
+              <div key={i} className="flex flex-wrap items-end gap-3">
+                <div className="w-40">
+                  <label className="label-field" htmlFor={`${idBase}-opcion-${i}`}>Opción</label>
+                  <input
+                    id={`${idBase}-opcion-${i}`}
+                    className="input-field"
+                    value={o.nombre}
+                    onChange={(e) => set("opciones", valores.opciones.map((x, j) => (j === i ? { ...x, nombre: e.target.value } : x)))}
+                    placeholder="Color"
+                    maxLength={30}
+                  />
+                </div>
+                <div className="min-w-[14rem] flex-1">
+                  <label className="label-field" htmlFor={`${idBase}-valores-${i}`}>Valores (separados por comas)</label>
+                  <input
+                    id={`${idBase}-valores-${i}`}
+                    className="input-field"
+                    value={o.valores}
+                    onChange={(e) => set("opciones", valores.opciones.map((x, j) => (j === i ? { ...x, valores: e.target.value } : x)))}
+                    placeholder="Rojo, Negro, Blanco"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => set("opciones", valores.opciones.filter((_, j) => j !== i))}
+                  className="mb-1.5 rounded-full border border-stone-300 px-3 py-1.5 text-sm text-stone-600 hover:bg-stone-50"
+                >
+                  Quitar
+                </button>
+              </div>
+            ))}
+            {valores.opciones.length < 3 && (
+              <button
+                type="button"
+                onClick={() => set("opciones", [...valores.opciones, { nombre: "", valores: "" }])}
+                className="rounded-full border border-marca-500 px-3 py-1.5 text-sm font-semibold text-marca-700 hover:bg-marca-50"
+              >
+                + Agregar opción
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       <label className="flex items-center gap-2 text-sm text-stone-700">
         <input type="checkbox" checked={valores.activo} onChange={(e) => set("activo", e.target.checked)} />

@@ -19,7 +19,7 @@ export default async function CheckoutFailurePage({
   return (
     <>
       <main className="contenedor-publico flex-1 flex flex-col items-center py-20 text-center">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-900/50 text-3xl text-red-300">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full icono-error text-3xl">
           ✕
         </div>
         <h1 className="mt-6 font-serif text-3xl font-semibold text-[var(--texto)] sm:text-4xl">

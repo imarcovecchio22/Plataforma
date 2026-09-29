@@ -1,0 +1,248 @@
+# Fase 3: 3DRinoMaker (`clientes/rino/`)
+
+**Objetivo:** levantar la tienda de **3DRinoMaker** (impresiones 3D) como segundo cliente de la
+plataforma. Todavía no se habló con el dueño de cómo quiere su tienda, así que la fase **no decide
+por él**: lo que puede variar entre clientes se construye como **opciones de la plataforma**, cada
+una con un valor por defecto que deja a Melera como está, y Rino arranca con una identidad
+provisoria que se completa después de esa charla.
+
+**Lo que ya está hecho (fases 1 y 2) y Rino usa tal cual:** config tipada y validada
+(`clientes/<slug>/config.ts`), tema neutro para quien no trae tema, módulos que se prenden por
+config, seed por cliente, catálogo con `/productos` y `/producto/<slug>`, carrito, pedidos con
+ítems, checkout con varios productos, zonas de envío desde el admin, variables `$CATALOGO` y
+`$ZONAS`, y posts de Instagram con productos del catálogo. `clientes/ejemplo/` es un cliente
+completo sin tema propio: es la base para arrancar `clientes/rino/`.
+
+**Criterio para Melera:** no cambia nada. Cada opción nueva tiene un valor por defecto igual al
+comportamiento de hoy; los snapshots de `tests/salida-melera/` no se tocan y su admin no suma
+pantallas ni campos de funciones que no usa.
+
+**Fuera de la fase 3:** el cotizador funcionando (queda el módulo declarado y, si la config lo
+pide, un link), la identidad editable por el dueño (ver "Etapa de refinamiento"), multi-tenant,
+hosting en Coolify y el despliegue real de Rino (queda listo para desplegar, sin desplegar).
+
+Cada paso termina con `npm test`, `npm run lint` y `npm run build` en verde, con `CLIENTE=melera`,
+`CLIENTE=ejemplo` y `CLIENTE=rino`; los cambios de esquema, con migraciones que conservan los datos.
+
+---
+
+## Opciones: quién elige qué
+
+Siguiendo los cuatro lugares de CLAUDE.md, cada opción vive en uno de dos lados:
+
+- **Config del cliente** (`clientes/<slug>/config.ts`, validada con zod): la eligen al dar de alta
+  al cliente (o cuando pide un cambio). Define **cómo se ve y qué funciones tiene** la tienda.
+- **Admin** (la base del cliente): la cambia **el dueño** cuando quiera. Define **cómo usa** esas
+  funciones. Si una función está apagada en la config, su parte del admin no aparece.
+
+| Opción | Dónde | Valores | Por defecto (= Melera) |
+|---|---|---|---|
+| Tema | config | propio (`tema.css` + `tema/`) o neutro | neutro si el cliente no trae tema |
+| Apariencia del tema neutro | config | fondo `claro` / `oscuro`, fuentes de títulos y texto (Google Fonts) | lo de hoy |
+| Inicio | config | `destacado` (hero del producto) / `catalogo` (hero de la marca + grilla) | `destacado` |
+| Módulos | config | instagram, autorespuestas, chatIA, cotizador (ya existe) | como hoy |
+| Cotizador | config | apagado / link a donde esté hoy | apagado |
+| Categorías | config prende, admin carga | lista de categorías; cada producto en una; filtro en `/productos` | apagado |
+| Opciones de producto | config prende, admin carga | por producto, listas como "Color: rojo, negro, blanco" que elige el comprador | apagado |
+| Productos a pedido | config prende, admin carga | por producto: sin límite de stock + aviso de demora ("se imprime en 3 a 5 días") | apagado |
+| Productos, precios, stock, promos, zonas, preguntas | admin | (ya existe) | — |
+
+Las opciones de producto son **simples**: lo elegido queda guardado en el ítem del pedido (y se ve
+en el admin, en Telegram y en Mercado Pago), sin precio ni stock propio por opción. Si un cliente
+necesita precio o stock por variante, se planifica aparte.
+
+## Qué falta para arrancar
+
+- **Base de desarrollo de Rino** (lo único que frena): una base de Neon aparte (proyecto o rama
+  nueva, como la de la plataforma), así sus datos no se mezclan con los de Melera. Va en
+  `.env.rino.local`. Nunca se usa una base de producción.
+- **Material de la marca** (no frena): nombre, dominio, Instagram, logo, colores, textos, tono,
+  productos y zonas. Mientras tanto, `clientes/rino/` usa valores provisorios marcados como tales,
+  y el día de la charla se cambian en su config y en el admin.
+
+---
+
+## Pasos
+
+### Paso 1: dos clientes en la misma máquina ✅ (2026-09-28)
+Hecho: `scripts/con-cliente.js` (`npm run cliente -- <slug> <comando>`), `.env.rino.local` con la
+base de desarrollo de Rino (secretos propios; MP, Telegram, Gemini e Instagram vacíos), y
+`npm run db:migrate`. Todas las migraciones aplicadas en la base de Rino.
+
+Plan original:
+Cada cliente con su archivo de entorno de desarrollo (`.env.local` para Melera,
+`.env.rino.local` para Rino) y scripts con el cliente elegido (`dev`, `build`, migrar, `db:seed`)
+que muestran a qué base se conectan y se niegan si el cliente y el archivo no coinciden.
+Migraciones y seed de Rino en su base de desarrollo.
+
+### Paso 2: `clientes/rino/` provisorio ✅ (2026-09-28)
+Hecho: `clientes/rino/` (config con todo lo provisorio marcado `PROVISORIO`, paleta naranja de
+relleno, logo de texto "3DR", foto por defecto, `app/icon.svg`, plantillas "simple" del ejemplo
+con sus colores) y seed de muestra (maceta, llavero y soporte; retiro, CABA con costo y resto del
+país a coordinar; preguntas con `$CATALOGO` y `$ZONAS`), cargado en su base. El cliente de ejemplo
+también suma `app/icon.svg` (antes pedía `/favicon.ico` y daba 404). `tests/cliente-rino.test.ts`.
+Build con `CLIENTE=rino` y capturas en Chrome (escritorio y celular) sin errores.
+Para más adelante: el campo "Barrio" del checkout viene del envío solo a CABA de Melera; para
+otras zonas quedaría mejor "Localidad" (cambia el checkout de Melera, se decide aparte).
+
+Plan original:
+A partir de `clientes/ejemplo/`: config con identidad provisoria (nombre "3DRinoMaker", colores y
+textos de relleno claramente marcados), logo de texto, imágenes por defecto, y seed con unos
+productos, zonas y preguntas de muestra. Tests: la config valida y sus páginas no tienen rastros de
+Melera ni del cliente de ejemplo.
+
+### Paso 3: apariencia del tema neutro ✅ (2026-09-28)
+Hecho:
+- Contrato de tema: variables `--linea-suave` y `--resalte`, y clases `.aviso-error`,
+  `.icono-exito`, `.icono-error` e `.icono-pendiente` (reemplazan los colores fijos pensados para
+  fondo oscuro). Melera las define con los mismos valores que tenían: sus snapshots solo cambian
+  los nombres de clase y la comparación por píxel con el final de la fase 2 da todas las páginas
+  idénticas.
+- `apariencia` en la config (opcional): `fondo` claro/oscuro y `fuentes` (texto y títulos, de
+  Google Fonts). El neutro pasó a variables propias (`--fondo`, `--fondo-tarjeta`, `--borde`,
+  `--fondo-boton`…) que el fondo oscuro redefine. Las fuentes: `preparar-cliente` las baja (latin
+  y latin-ext, woff2) a `public/fuentes/` y agrega sus `@font-face` al CSS del tema; si Google no
+  tiene la familia o los pesos, el build falla; sin conexión, avisa y usa las del sistema. Primero
+  se probó con un `<link>` a Google, pero la política de seguridad del sitio (CSP) lo bloquea, y
+  servirlas desde el sitio es mejor igual.
+- Rino: fondo claro con Space Grotesk (títulos) e Inter (texto), provisorio. Capturas con fondo
+  claro y oscuro.
+
+Plan original:
+Opciones `fondo` (claro/oscuro) y fuentes en la config para el tema neutro. Lo que hoy asume fondo
+oscuro (avisos de error, íconos de éxito/pendiente/falla del checkout, detalles blancos
+semitransparentes) pasa al contrato de tema. Capturas en Chrome del ejemplo y de Rino con las dos
+variantes, en escritorio y celular; Melera sin cambios.
+
+### Paso 4: inicio de catálogo ✅ (2026-09-28)
+Hecho: `inicio` en la config (opcional; sin definir = `destacado`, como Melera). Con `catalogo`:
+`HeroMarca` (título, bajada y foto por defecto de la config, "Ver productos" y el botón de
+"Quiénes somos"), la grilla con todos los productos (`#productos`) y "Quiénes somos"; el menú dice
+"Productos" (a `/#productos`) y "Comprar" va a `/productos`. Rino lo usa. Snapshots de Melera sin
+cambios.
+
+Plan original:
+`inicio: "destacado" | "catalogo"`. En `catalogo`: hero de la marca (sin el precio de un
+producto), grilla de productos y "Quiénes somos". Melera en `destacado`.
+
+### Paso 5: categorías ✅ (2026-09-28)
+Hecho: `config.catalogo.categorias` y `src/plataforma/cliente/catalogo.ts` (`funcionActiva`,
+`exigirFuncion`, igual que los módulos). Tabla `Categoria` (nombre, slug, orden) y
+`Product.categoriaId` (migración `*_categorias`; borrar una categoría con productos está
+bloqueado, también en la base). Admin `/admin/categorias` (crear con slug automático, editar,
+borrar) y selector "Categoría" en el producto, solo con la función prendida; apagada, la API
+responde 404 y los productos no tocan su categoría. `/productos` con filtro (Todas + cada
+categoría con productos, `?categoria=<slug>`, 404 si no existe) cuando hay dos o más.
+`$CATALOGO` agrupa ("Macetas: …; Llaveros: …; Otros: …") y el chat dice la categoría de cada
+producto. Seed: `categorias` y `categoria` por producto. Rino: Decoración y Accesorios.
+
+Plan original:
+Config `catalogo.categorias`. Tabla de categorías (admin: crear, renombrar, ordenar, borrar si no
+tiene productos), cada producto en una (opcional); `/productos` con filtro
+(`/productos?categoria=macetas`) cuando hay dos o más; `$CATALOGO` y el chat agrupan por categoría.
+
+### Paso 6: opciones de producto ✅ (2026-09-29)
+Hecho: `config.catalogo.opciones`; `Product.opciones` y `OrderItem.opciones` (Json, migración
+`*_opciones_de_producto`, por defecto vacías: los pedidos y productos existentes no cambian).
+`src/lib/opciones.ts` (leer, validar, textos) sin dependencias de servidor. En el admin, cada
+producto tiene "Opciones para elegir" (hasta 3, con sus valores separados por comas). La ficha
+pide cada opción antes de agregar o comprar (avisa si falta). El carrito guarda lo elegido: la
+misma pieza con distintas opciones son líneas distintas. **El stock y la promo por cantidad son
+del producto**: suman todas sus líneas (2 negras + 1 terracota = 3 piezas, ya tienen la promo
+"desde 3"), en el carrito, el checkout y la API. La API valida lo elegido contra el producto
+(falta, valor que ya no existe, opción de más → 400) y el ítem guarda lo elegido y lo lleva en el
+nombre ("Maceta geométrica (Color: Negro)"), así lo muestran solos el admin, Telegram y Mercado
+Pago. Apagada (Melera): las opciones que lleguen se ignoran y la API de productos no las toca.
+Rino: color en la maceta y el llavero. Compra de punta a punta en Chrome contra la base de Rino.
+
+Plan original:
+Config `catalogo.opciones`. En el admin, cada producto puede tener opciones (nombre y valores); la
+ficha las pide antes de agregar al carrito; el carrito distingue la misma pieza con distintas
+opciones; el ítem del pedido guarda lo elegido (admin, Telegram, Mercado Pago). Migración sin tocar
+los pedidos existentes.
+
+### Paso 7: productos a pedido ✅ (2026-09-29)
+Hecho: `config.catalogo.aPedido`; `Product.aPedido` y `Product.demora` (migración
+`*_productos_a_pedido`). `stockParaVender(producto)` (sin límite: hasta `LIMITE_A_PEDIDO` = 1000)
+y `demoraDe(producto)` en `src/plataforma/cliente/catalogo.ts`: las páginas se los pasan a los
+componentes y la API los usa, así el resto no cambia. La ficha muestra la demora en lugar de "N
+unidades disponibles" (y todas las promos, sin tope de stock), el listado, el carrito y el
+checkout también la muestran, y el chat la dice. Al pagar no se descuenta su stock y el aviso de
+Telegram dice "a pedido" (con la función apagada ni se consulta: Melera paga igual que antes). En
+el admin: "Se hace a pedido" con su demora (el stock queda deshabilitado) y la lista dice "a
+pedido". Rino: el llavero personalizado.
+
+Plan original:
+Config `catalogo.aPedido`. En el admin, un producto puede ser "a pedido" con su demora; no tiene
+límite de stock, la ficha, el carrito y el checkout muestran la demora, y el pago no descuenta su
+stock.
+
+### Paso 8: Instagram, respuestas automáticas y chat de Rino ✅ (2026-09-29)
+Hecho: las 4 plantillas "simple" de Rino con diseño propio provisorio (Space Grotesk e Inter,
+naranja de su paleta, líneas de "capas de impresión" abajo y la marca al pie; las características
+del producto como etiquetas y las promos en filas con el precio a la derecha), renderizadas en
+Chrome a 1080 × 1350. Dos respuestas automáticas de muestra en su seed ("Precios y catálogo" con
+`$CATALOGO` y "Envíos" con `$ZONAS`), apagadas hasta conectar su Instagram, y cargadas en su base.
+El chat ya arma catálogo, categorías, demoras y envíos con la base (pasos 5 a 7); el tono y los
+datos para Gemini están en su config (provisorios). Los tres módulos quedan prendidos en su
+config; sin credenciales de Meta, Telegram ni Gemini en `.env.rino.local`, no hacen nada.
+
+Plan original:
+Plantillas de Instagram en `clientes/rino/instagram/` (arranca con la "simple" del ejemplo con los
+colores de Rino), tono y ejemplos provisorios para Gemini, reglas de respuestas automáticas de
+muestra y datos del chat. Qué módulos quedan prendidos se elige en su config.
+
+### Paso 9: cotizador previsto ✅ (2026-09-29)
+Hecho: `enlaceCotizador` en la config (opcional: `url` https y `texto`, por defecto "Cotizá tu
+impresión"); si está, el menú y el pie muestran el link (se abre en otra pestaña). El módulo
+`cotizador` sigue apagado. Rino todavía no lo tiene: falta saber dónde está el cotizador (quedó
+marcado `PROVISORIO` en su config).
+
+Para integrarlo como módulo más adelante hace falta saber (y decidir):
+- **Qué es hoy**: dónde vive, con qué está hecho y qué datos pide (archivo STL/3MF, material,
+  color, relleno, cantidad…) y cómo calcula el precio (peso/tiempo de impresión, tabla, a mano).
+- **Rutas**: una página pública (`/cotizar`) y su API, en `RUTAS_DE_MODULOS.cotizador` y en el
+  `matcher` del proxy; una pantalla del admin con las cotizaciones (`exigirModulo("cotizador")`).
+- **Archivos**: si el cliente sube modelos 3D, dónde se guardan (depende del hosting, igual que
+  las fotos de producto).
+- **De cotización a pedido**: la cotización aceptada se vuelve un `OrderItem` con su precio fijo
+  (sin producto del catálogo, o con uno genérico "Impresión a medida") y sigue el checkout de
+  siempre (zonas, Mercado Pago, Telegram).
+- Con eso, `enlaceCotizador` pasa a apuntar a `/cotizar`.
+
+Plan original:
+El módulo `cotizador` sigue apagado. Config opcional con la URL de donde está hoy: si está, la
+tienda muestra un link ("Cotizá tu impresión"). Queda anotado qué hace falta para integrarlo
+(rutas, datos, cómo una cotización se convierte en pedido).
+
+### Paso 10: cierre ✅ (2026-09-29)
+- **Melera sin cambios**: build con `CLIENTE=melera` y comparación por píxel con las capturas del
+  final de la fase 2: todas las páginas públicas y del admin idénticas, salvo `/admin/logs` (tiene
+  más registros) y la fecha de hoy en el formulario de `/admin/instagram`. Los snapshots de
+  `tests/salida-melera/` solo cambiaron en el paso 3 (nombres de clase, mismo resultado visual).
+- **Rino de punta a punta** (build con `CLIENTE=rino`, Chrome contra su base): home de catálogo,
+  filtro por categoría, llavero a pedido en azul con la promo, maceta blanca, soporte, zona con
+  costo, checkout hasta Mercado Pago (502 porque Rino no tiene credenciales todavía), el pedido con
+  cada opción y el envío, y el detalle en el admin. Datos de prueba borrados.
+- **Cliente de ejemplo**: su config sigue siendo válida (sin las opciones nuevas, como Melera).
+- **Docs**: la guía "Crear un cliente nuevo" del README con todas las opciones, CLAUDE.md y
+  [`rino-para-lanzar.md`](rino-para-lanzar.md) (lo provisorio y las cuentas y variables para
+  desplegarlo).
+
+Plan original:
+Compra de punta a punta con `CLIENTE=rino` y todas las opciones prendidas (categorías, opciones,
+a pedido, zona con costo), Melera sin cambios (snapshots y comparación visual con `main`), guía
+"cómo crear un cliente" con todas las opciones, y la lista de lo que Rino necesita para
+desplegarse (variables de entorno, credenciales de MP, Meta y Telegram, dominio).
+
+---
+
+## Etapa de refinamiento (después de la fase 3)
+
+- **Identidad editable por el dueño desde el admin** (decidido el 2026-09-28: se quiere, pero no
+  en esta fase porque se complica). Lo que implica: el logo y las imágenes necesitan subir archivos
+  (depende del hosting, igual que las fotos de producto); los colores y los textos pasarían a la
+  base con la config como valor de reserva, validados al guardar en vez de al compilar. Para no
+  cerrarle la puerta, en esta fase los componentes leen la identidad solo a través de `cliente`
+  (`src/plataforma/cliente`), no importando la config directo.
+- Subir fotos de producto desde el admin (pendiente desde la fase 2).

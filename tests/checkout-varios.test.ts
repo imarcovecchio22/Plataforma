@@ -64,6 +64,14 @@ describe("checkout con varios productos (carrito)", () => {
     ]);
   });
 
+  it("sin la función de opciones (Melera), las opciones que lleguen se ignoran", async () => {
+    catalogo.productos[0] = { ...catalogo.productos[0], opciones: [{ nombre: "Color", valores: ["Rojo"] }] };
+    expect((await comprar([{ producto: "miel", cantidad: 1, opciones: { Color: "Verde" } }])).status).toBe(200);
+    expect(db.order.create.mock.calls[0][0].data.items.create).toEqual([
+      { productId: "id-miel", nombre: "Producto miel", precioUnitario: 6500, cantidad: 1, subtotal: 6500 },
+    ]);
+  });
+
   it("si uno ya no está a la venta, 404 sin crear el pedido", async () => {
     const res = await comprar([{ producto: "miel", cantidad: 1 }, { producto: "no-existe", cantidad: 1 }]);
     expect(res.status).toBe(404);

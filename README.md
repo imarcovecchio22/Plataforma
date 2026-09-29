@@ -27,10 +27,18 @@ clientes/<slug>/
 ### Crear un cliente nuevo
 
 1. Copiar `clientes/ejemplo/` a `clientes/<slug>/` y cambiar `slug` en `config.ts` (tiene que ser igual al nombre de la carpeta).
-2. Completar la config: marca, colores, imágenes (en `public/`), textos, módulos y estilos de Instagram (con sus plantillas en `instagram/`).
-3. Opcional: tema propio (`tema.css` y `tema/index.tsx`); si no, se usa el neutro con los colores de la config.
-4. Base nueva: `npx prisma migrate deploy` y `CLIENTE=<slug> npm run db:seed` (con los datos de `seed.ts`).
-5. `CLIENTE=<slug> npm run dev` y revisar; `npm test` tiene que seguir pasando.
+2. Completar la config: marca, colores, imágenes (en `public/`), textos, módulos y estilos de Instagram (con sus plantillas en `instagram/`), y elegir las opciones de la tienda (todas opcionales; sin definir, se comporta como Melera):
+   - `inicio`: `"destacado"` (hero del primer producto, como Melera) o `"catalogo"` (la marca y la grilla de productos).
+   - `catalogo`: `categorias`, `opciones` (ej. el color) y `aPedido` (sin límite de stock, con demora). Prendidas, el dueño las carga desde el admin.
+   - `apariencia` (tema neutro): `fondo` claro u oscuro y `fuentes` de Google Fonts.
+   - `enlaceCotizador`: link a un cotizador externo en el menú y el pie.
+3. Opcional: tema propio (`tema.css` y `tema/index.tsx`); si no, se usa el neutro con los colores de la config y su `apariencia` (fondo claro u oscuro y fuentes de Google Fonts, que se bajan al preparar el cliente y se sirven desde el sitio).
+4. Base de desarrollo propia (cada cliente tiene la suya): crear `.env.<slug>.local` con `CLIENTE="<slug>"`, su `DATABASE_URL` y el resto de las variables (las que no tenga quedan vacías, nunca se toman las de otro cliente). Después `npm run cliente -- <slug> db:migrate` y `npm run cliente -- <slug> db:seed` (con los datos de `seed.ts`).
+5. `npm run cliente -- <slug> dev` y revisar; `npm test` tiene que seguir pasando.
+
+### Desarrollar varios clientes en la misma máquina
+
+`npm run cliente -- <slug> <comando>` (o `node scripts/con-cliente.js <slug> <comando>`) corre un script de npm (`dev`, `build`, `db:migrate`, `db:seed`…) o cualquier comando (`prisma studio`, `node …`) con el entorno de ese cliente: `.env.<slug>.local` o, si no existe, `.env.local` (el de Melera). Antes de correr muestra a qué base se conecta, y no corre nada si el archivo declara otro `CLIENTE`. Los clientes se levantan de a uno (comparten `public/` y `.next/`, que se regeneran al cambiar de cliente).
 
 ## Stack
 
@@ -42,8 +50,11 @@ clientes/<slug>/
 
 ## Funcionalidades
 
-- Landing con presentación del producto destacado (el primero de Productos), "Quiénes somos" y, si hay más, los demás productos
+- Landing con presentación del producto destacado (el primero de Productos), "Quiénes somos" y, si hay más, los demás productos; o, con `inicio: "catalogo"` en la config, la marca y la grilla de todos los productos
 - Catálogo: `/productos` (listado) y `/producto/<slug>` (ficha). Con un solo producto, `/producto` muestra su ficha y la tienda no usa carrito (como Melera); con varios, `/producto` manda al listado y se compra con un **carrito** guardado en el navegador (`/carrito`)
+- Categorías opcionales (`catalogo.categorias` en la config): se cargan en `/admin/categorias` y `/productos` muestra un filtro
+- Opciones de producto opcionales (`catalogo.opciones`, ej. el color): se cargan en cada producto, el comprador las elige en la ficha y quedan en el pedido; el stock y las promos por cantidad cuentan el total del producto
+- Productos a pedido opcionales (`catalogo.aPedido`): sin límite de stock, con un aviso de demora en la ficha, el carrito y el checkout; al pagar no descuentan stock
 - Checkout con selector de cantidad (un producto) o con los ítems del carrito, promos por cantidad de cada producto y **zona de envío**: las zonas se cargan en `/admin/envios`, con costo fijo (se suma al total y a Mercado Pago como ítem "Envío") o "a coordinar"; con una sola, se elige sola
 - Integración con MercadoPago (Checkout Pro) y webhook de confirmación de pago
 - `/consultas`: preguntas frecuentes (precio real desde la base) + formulario mobile-first para quien llega desde Instagram (botones de la respuesta automática; responder por Instagram o email, anti-spam con honeypot y tiempo mínimo). Cada consulta se guarda y se avisa por Telegram
@@ -113,7 +124,8 @@ Ver `.env.example` para el detalle completo.
 | `npm run build` | `prisma generate` + build de producción |
 | `npm start` | Levanta el build de producción |
 | `npx prisma migrate dev --name <nombre>` | Crea una migración nueva a partir de cambios en `schema.prisma` (contra una base de desarrollo) |
-| `npx prisma migrate deploy` | Aplica las migraciones pendientes (producción) |
+| `npx prisma migrate deploy` o `npm run db:migrate` | Aplica las migraciones pendientes (producción, o la base de desarrollo de otro cliente con `npm run cliente -- <slug> db:migrate`) |
+| `npm run cliente -- <slug> <comando>` | Corre el comando con el entorno de desarrollo de ese cliente (ver "Desarrollar varios clientes") |
 | `npm run db:push` | Sincroniza el schema sin migraciones — ya no se usa desde 2026-09-24 |
 | `npm run db:studio` | Abre Prisma Studio |
 | `npm run db:seed` | Carga datos de ejemplo |

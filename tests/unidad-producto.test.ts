@@ -15,7 +15,7 @@ import { productoSchema } from "@/lib/validation";
 const PIEZA = {
   id: "p2", nombre: "Panal en pieza", slug: "panal-en-pieza", descripcion: "", precio: 3000, stock: 20,
   escalones: [{ desde: 3, precio: 2500 }], imagenUrl: null, activo: true, orden: 20,
-  unidadSingular: "pieza", unidadPlural: "piezas", unidadGenero: "femenino", aclaracionPrecio: "la pieza de 200 g",
+  unidadSingular: "pieza", unidadPlural: "piezas", unidadGenero: "femenino", aclaracionPrecio: "la pieza de 200 g", categoriaId: null, opciones: [], aPedido: false, demora: null,
   createdAt: new Date(0), updatedAt: new Date(0),
 };
 const SIN_UNIDAD = { ...PIEZA, unidadSingular: null, unidadPlural: null, unidadGenero: null, aclaracionPrecio: null };

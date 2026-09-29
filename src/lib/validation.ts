@@ -3,7 +3,13 @@ import { esUrlPublicaHttps } from "@/lib/urls";
 import { parsearPalabrasClave } from "@/lib/instagram/reglas";
 import { cliente, unidadDe } from "@/plataforma/cliente";
 import { FORMATO_SLUG } from "@/lib/slug";
+import { claveEleccion } from "@/lib/opciones";
 import { errorEscalones } from "@/lib/precios";
+
+/** Opciones elegidas: { "Color": "Rojo" } (hasta 3, textos cortos). */
+const eleccionSchema = z
+  .record(z.string().max(60), z.string().min(1).max(60))
+  .refine((e) => Object.keys(e).length <= 3, "Demasiadas opciones");
 
 export const checkoutSchema = z.object({
   nombre: z.string().trim().min(1, "Ingresá tu nombre"),
@@ -20,17 +26,24 @@ export const checkoutSchema = z.object({
   // Un solo producto (el formulario de siempre): su slug (sin él, el destacado) y la cantidad
   cantidad: z.coerce.number().int().min(1, "La cantidad mínima es 1").max(1000).default(1),
   producto: z.string().trim().max(80).optional().default(""),
-  // Varios productos (el carrito): si viene, reemplaza a producto y cantidad
+  // Lo elegido de las opciones del producto (config.catalogo.opciones): { Color: "Rojo" }
+  opciones: eleccionSchema.optional(),
+  // Varios productos (el carrito): si viene, reemplaza a producto y cantidad. El mismo producto
+  // puede venir en varias líneas con distintas opciones, pero no dos veces con las mismas.
   items: z
     .array(
       z.object({
         producto: z.string().trim().min(1).max(80),
         cantidad: z.coerce.number().int().min(1, "La cantidad mínima es 1").max(1000),
+        opciones: eleccionSchema.optional(),
       })
     )
     .min(1, "El carrito está vacío")
     .max(20, "Hasta 20 productos por pedido")
-    .refine((l) => new Set(l.map((i) => i.producto)).size === l.length, "Hay productos repetidos en el pedido")
+    .refine(
+      (l) => new Set(l.map((i) => `${i.producto}|${claveEleccion(i.opciones)}`)).size === l.length,
+      "Hay productos repetidos en el pedido"
+    )
     .optional(),
   origen: z.string().trim().max(50).optional().default(""),
 });
@@ -227,6 +240,20 @@ export const zonaEnvioSchema = z.object({
 
 export type ZonaEnvioInput = z.infer<typeof zonaEnvioSchema>;
 
+// ── Categorías (/admin/categorias, config.catalogo.categorias) ──
+
+export const categoriaSchema = z.object({
+  nombre: z.string().trim().min(2, "Escribí el nombre de la categoría (mínimo 2 caracteres)").max(50, "El nombre puede tener hasta 50 caracteres"),
+  slug: z
+    .string()
+    .trim()
+    .max(60, "El slug puede tener hasta 60 caracteres")
+    .regex(FORMATO_SLUG, "El slug solo puede tener minúsculas, números y guiones (ej. macetas)"),
+  orden: z.coerce.number().int("El orden tiene que ser un número entero").min(-1000).max(10000),
+});
+
+export type CategoriaInput = z.infer<typeof categoriaSchema>;
+
 // ── Productos (/admin/productos) ──
 
 export const productoSchema = z
@@ -260,6 +287,34 @@ export const productoSchema = z
     unidadPlural: z.string().trim().max(30, "La unidad puede tener hasta 30 caracteres").default(""),
     unidadGenero: z.enum(["masculino", "femenino"]).default("masculino"),
     aclaracionPrecio: z.string().trim().max(80, "La aclaración puede tener hasta 80 caracteres").default(""),
+    // Opciones que elige el comprador (config.catalogo.opciones): hasta 3, con 1 a 20 valores
+    opciones: z
+      .array(
+        z.object({
+          nombre: z.string().trim().min(1, "Cada opción necesita un nombre (ej. Color)").max(30, "El nombre de una opción puede tener hasta 30 caracteres"),
+          valores: z
+            .array(z.string().trim().min(1).max(40, "Cada valor puede tener hasta 40 caracteres"))
+            .min(1, "Cada opción necesita al menos un valor")
+            .max(20, "Hasta 20 valores por opción")
+            .refine((v) => new Set(v).size === v.length, "Hay valores repetidos en una opción"),
+        })
+      )
+      .max(3, "Hasta 3 opciones por producto")
+      .refine((o) => new Set(o.map((x) => x.nombre.toLowerCase())).size === o.length, "Hay dos opciones con el mismo nombre")
+      .default([]),
+    // A pedido (config.catalogo.aPedido): sin límite de stock, con su demora (vacía = texto general)
+    aPedido: z.boolean().default(false),
+    demora: z
+      .string()
+      .trim()
+      .max(80, "La demora puede tener hasta 80 caracteres")
+      .default("")
+      .transform((v) => v || null),
+    // Categoría (config.catalogo.categorias): id, o vacío = sin categoría
+    categoriaId: z
+      .union([z.literal(""), z.null(), z.coerce.number().int().positive()])
+      .optional()
+      .transform((v) => (typeof v === "number" ? v : null)),
   })
   .superRefine((p, ctx) => {
     if (Boolean(p.unidadSingular) !== Boolean(p.unidadPlural)) {

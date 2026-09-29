@@ -28,7 +28,7 @@ export default async function CheckoutSuccessPage({
   return (
     <>
       <main className="contenedor-publico flex-1 flex flex-col items-center py-20 text-center">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-900/50 text-3xl text-emerald-300">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full icono-exito text-3xl">
           ✓
         </div>
         <h1 className="mt-6 font-serif text-3xl font-semibold text-[var(--texto)] sm:text-4xl">

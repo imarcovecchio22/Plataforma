@@ -5,10 +5,12 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { cliente } from "@/plataforma/cliente";
 import { moduloActivo, type Modulo } from "@/plataforma/cliente/modulos";
+import { funcionActiva, type FuncionCatalogo } from "@/plataforma/cliente/catalogo";
 
-const todos: { href: string; label: string; modulo?: Modulo }[] = [
+const todos: { href: string; label: string; modulo?: Modulo; funcion?: FuncionCatalogo }[] = [
   { href: "/admin/pedidos", label: "Pedidos" },
   { href: "/admin/productos", label: "Productos" },
+  { href: "/admin/categorias", label: "Categorías", funcion: "categorias" },
   { href: "/admin/envios", label: "Envíos" },
   { href: "/admin/consultas", label: "Consultas" },
   { href: "/admin/preguntas", label: "Preguntas frecuentes" },
@@ -17,8 +19,8 @@ const todos: { href: string; label: string; modulo?: Modulo }[] = [
   { href: "/admin/logs", label: "Logs" },
 ];
 
-// Sin los de módulos que el cliente no tiene prendidos
-const links = todos.filter((l) => !l.modulo || moduloActivo(l.modulo));
+// Sin los de módulos y funciones del catálogo que el cliente no tiene prendidos
+const links = todos.filter((l) => (!l.modulo || moduloActivo(l.modulo)) && (!l.funcion || funcionActiva(l.funcion)));
 
 export default function AdminNav() {
   const pathname = usePathname();
