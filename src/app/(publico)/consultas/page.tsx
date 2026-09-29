@@ -6,13 +6,13 @@ import { prisma } from "@/lib/prisma";
 import { armarRespuesta } from "@/lib/preguntas";
 import { datosParaTextos } from "@/lib/datos-textos";
 import { cliente } from "@/plataforma/cliente";
+import { getIdentidad } from "@/lib/identidad";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: `Consultas | ${cliente.nombre}`,
-  description: cliente.textos.descripcionConsultas,
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: `Consultas | ${cliente.nombre}`, description: (await getIdentidad()).textos.descripcionConsultas };
+}
 
 export default async function ConsultasPage({
   searchParams: searchParamsPromise,

@@ -12,7 +12,10 @@ export default function FichaProducto({
   product,
   origen,
   conCarrito = false,
+  aclaracionPrecio = cliente.textos.aclaracionPrecio,
 }: {
+  /** La de la identidad (la página la pasa); sin ella, la de la config. */
+  aclaracionPrecio?: string;
   product: Product;
   origen?: string;
   /** Hay más de un producto a la venta: se agrega al carrito en vez de comprar directo. */
@@ -37,7 +40,7 @@ export default function FichaProducto({
             <p className="texto-suave mt-4 leading-[1.65]">{product.descripcion}</p>
             <p className="mt-6 flex items-baseline gap-2.5">
               <span className="precio text-[2.5rem]">{formatPrecio(product.precio)}</span>
-              <span className="texto-suave">{product.aclaracionPrecio || cliente.textos.aclaracionPrecio}</span>
+              <span className="texto-suave">{product.aclaracionPrecio || aclaracionPrecio}</span>
             </p>
             {escalones.length > 0 && (
               <p className="mt-2 text-sm font-semibold text-[var(--destacado)]">Promo: {textoPromos(escalones, unidad)}</p>

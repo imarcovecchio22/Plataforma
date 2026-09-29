@@ -20,6 +20,10 @@ export type TemaPublico = {
    * --fuente-texto y --fuente-titulos. Sin ellas se usan las del sistema.
    */
   fuentes?: string[];
-  /** Logo al lado del nombre en el Header y el Footer. Sin él, va solo el nombre. */
-  Logo?: ComponentType<{ tamano: number }>;
+  /**
+   * Logo al lado del nombre en el Header y el Footer. Sin él, va solo el nombre. `src` es el logo
+   * de la identidad (el de la config o el que cambió el dueño); un tema con su propio logo puede
+   * ignorarlo.
+   */
+  Logo?: ComponentType<{ tamano: number; src?: string }>;
 };

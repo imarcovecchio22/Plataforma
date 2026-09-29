@@ -2,9 +2,10 @@ import Image from "next/image";
 import { cliente } from "@/plataforma/cliente";
 import type { TemaPublico } from "@/plataforma/tema/tipos";
 
-/** El logo de la config (imagenes.logo), cuadrado, al lado del nombre. */
-function LogoConfig({ tamano }: { tamano: number }) {
-  return <Image src={cliente.imagenes.logo} alt="" width={tamano} height={tamano} className="rounded-md" />;
+/** El logo de la identidad (el de la config o el que cambió el dueño), cuadrado, al lado del nombre. */
+function LogoConfig({ tamano, src = cliente.imagenes.logo }: { tamano: number; src?: string }) {
+  // Un link externo va tal cual (sin el optimizador de imágenes)
+  return <Image src={src} alt="" width={tamano} height={tamano} className="rounded-md" unoptimized={src.startsWith("http")} />;
 }
 
 /**

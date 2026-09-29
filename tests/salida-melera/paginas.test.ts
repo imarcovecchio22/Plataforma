@@ -5,7 +5,7 @@
  * (por ejemplo, nombres de clases renombradas) y se actualizan a conciencia (`vitest -u`).
  */
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
-import { createElement, type FC, type ReactElement, type ReactNode } from "react";
+import { createElement, type ReactElement, type ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
 vi.mock("next/font/google", () => ({
@@ -107,11 +107,11 @@ vi.mock("@/lib/telegram", async (original) => ({
 // Las zonas del seed de Melera: con ellas el checkout tiene que verse como antes de las zonas
 vi.mock("@/lib/zonas", async () => (await import("../zonas-de-prueba")).mockZonas("melera"));
 import seedMelera from "../../clientes/melera/seed";
-import RootLayout, { metadata as metadataRaiz } from "@/app/layout";
+import RootLayout, { generateMetadata as metadataRaiz } from "@/app/layout";
 import PublicoLayout from "@/app/(publico)/layout";
 import HomePage from "@/app/(publico)/page";
 import ProductoPage from "@/app/(publico)/producto/page";
-import ConsultasPage, { metadata as metadataConsultas } from "@/app/(publico)/consultas/page";
+import ConsultasPage, { generateMetadata as metadataConsultas } from "@/app/(publico)/consultas/page";
 import PrivacidadPage, { metadata as metadataPrivacidad } from "@/app/(publico)/privacidad/page";
 import CheckoutLayout from "@/app/checkout/layout";
 import CheckoutPage from "@/app/checkout/page";
@@ -130,8 +130,9 @@ import AdminLogsPage from "@/app/admin/(dashboard)/logs/page";
 import AdminPreguntasPage from "@/app/admin/(dashboard)/preguntas/page";
 
 const html = (nodo: ReactNode) => renderToStaticMarkup(nodo as ReactElement);
-const conLayout = (layout: (p: { children: ReactNode }) => unknown, pagina: ReactNode) =>
-  html(createElement(layout as FC<{ children: ReactNode }>, null, pagina));
+// Los layouts leen la identidad (son async): se renderizan con lo que devuelven
+const conLayout = async (layout: (p: { children: ReactNode }) => unknown, pagina: ReactNode) =>
+  html((await layout({ children: pagina })) as ReactNode);
 const params = <T,>(valor: T) => Promise.resolve(valor);
 
 beforeAll(() => {
@@ -228,50 +229,50 @@ afterAll(() => {
 });
 
 describe("metadata de Melera", () => {
-  it("layout raíz", () => {
-    expect(metadataRaiz).toMatchSnapshot();
+  it("layout raíz", async () => {
+    expect(await metadataRaiz()).toMatchSnapshot();
   });
-  it("/consultas y /privacidad", () => {
-    expect({ consultas: metadataConsultas, privacidad: metadataPrivacidad }).toMatchSnapshot();
+  it("/consultas y /privacidad", async () => {
+    expect({ consultas: await metadataConsultas(), privacidad: metadataPrivacidad }).toMatchSnapshot();
   });
 });
 
 describe("HTML de las páginas públicas de Melera", () => {
-  it("layout raíz", () => {
-    expect(html(createElement(RootLayout, null, createElement("div", null, "contenido")))).toMatchSnapshot();
+  it("layout raíz", async () => {
+    expect(html((await RootLayout({ children: createElement("div", null, "contenido") })) as ReactNode)).toMatchSnapshot();
   });
   it("/", async () => {
-    expect(conLayout(PublicoLayout, await HomePage())).toMatchSnapshot();
+    expect(await conLayout(PublicoLayout, await HomePage())).toMatchSnapshot();
   });
   it("/producto", async () => {
-    expect(conLayout(PublicoLayout, await ProductoPage({ searchParams: params({ origen: "instagram" }) }))).toMatchSnapshot();
+    expect(await conLayout(PublicoLayout, await ProductoPage({ searchParams: params({ origen: "instagram" }) }))).toMatchSnapshot();
   });
   it("/consultas", async () => {
-    expect(conLayout(PublicoLayout, await ConsultasPage({ searchParams: params({ origen: "instagram" }) }))).toMatchSnapshot();
+    expect(await conLayout(PublicoLayout, await ConsultasPage({ searchParams: params({ origen: "instagram" }) }))).toMatchSnapshot();
   });
   it("/privacidad", async () => {
-    expect(conLayout(PublicoLayout, await PrivacidadPage())).toMatchSnapshot();
+    expect(await conLayout(PublicoLayout, await PrivacidadPage())).toMatchSnapshot();
   });
 });
 
 describe("HTML del checkout de Melera", () => {
   it("/checkout", async () => {
-    expect(conLayout(CheckoutLayout, await CheckoutPage({ searchParams: params({ cantidad: "5", origen: "instagram" }) }))).toMatchSnapshot();
+    expect(await conLayout(CheckoutLayout, await CheckoutPage({ searchParams: params({ cantidad: "5", origen: "instagram" }) }))).toMatchSnapshot();
   });
   it("/checkout/success", async () => {
-    expect(conLayout(CheckoutLayout, await CheckoutSuccessPage({ searchParams: params({ orderId: "ord-1" }) }))).toMatchSnapshot();
+    expect(await conLayout(CheckoutLayout, await CheckoutSuccessPage({ searchParams: params({ orderId: "ord-1" }) }))).toMatchSnapshot();
   });
   it("/checkout/failure", async () => {
-    expect(conLayout(CheckoutLayout, await CheckoutFailurePage({ searchParams: params({ orderId: "ord-1" }) }))).toMatchSnapshot();
+    expect(await conLayout(CheckoutLayout, await CheckoutFailurePage({ searchParams: params({ orderId: "ord-1" }) }))).toMatchSnapshot();
   });
   it("/checkout/pending", async () => {
-    expect(conLayout(CheckoutLayout, await CheckoutPendingPage({ searchParams: params({ orderId: "ord-1" }) }))).toMatchSnapshot();
+    expect(await conLayout(CheckoutLayout, await CheckoutPendingPage({ searchParams: params({ orderId: "ord-1" }) }))).toMatchSnapshot();
   });
 });
 
 describe("HTML del admin de Melera", () => {
-  it("/admin/login", () => {
-    expect(html(createElement(AdminLoginPage))).toMatchSnapshot();
+  it("/admin/login", async () => {
+    expect(html(await AdminLoginPage())).toMatchSnapshot();
   });
   it("/admin/pedidos (con el layout y el menú)", async () => {
     expect(html(await AdminLayout({ children: await AdminPedidosPage() }))).toMatchSnapshot();

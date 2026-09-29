@@ -2,15 +2,16 @@ import tema from "@cliente/tema";
 import Link from "next/link";
 import { cliente } from "@/plataforma/cliente";
 
-export default function Footer() {
+/** `logo` y `pie`: los de la identidad (los pasa el layout); sin ellos, los de la config. */
+export default function Footer({ logo, pie = cliente.textos.pie }: { logo?: string; pie?: string }) {
   return (
     <footer className="relative z-[1] bg-[var(--fondo-seccion)] text-[var(--texto-pie)]">
       <div className="contenedor-publico flex flex-col items-center gap-5 py-8 text-center sm:flex-row sm:justify-between sm:text-left">
         <div className="flex items-center gap-2.5">
-          {tema.Logo && <tema.Logo tamano={40} />}
+          {tema.Logo && <tema.Logo tamano={40} src={logo} />}
           <div>
             <p className="font-serif text-lg font-semibold text-[var(--texto)]">{cliente.nombre}</p>
-            <p className="text-sm">{cliente.textos.pie}</p>
+            <p className="text-sm">{pie}</p>
           </div>
         </div>
 

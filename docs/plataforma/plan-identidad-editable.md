@@ -53,7 +53,25 @@ config + cambios (descarta lo que no valida) y `getIdentidad()` para el servidor
 pedido, con `cache` de React). `escalaDeColor(hex)`: los 10 tonos desde un color (pruebas de que
 el contraste de los botones sigue siendo legible).
 
-### Paso 2: la tienda y el admin leen la identidad efectiva
+### Paso 2: la tienda y el admin leen la identidad efectiva ✅ (2026-09-29)
+Hecho: como los componentes no pueden ser async (y las pruebas los renderizan con
+`renderToStaticMarkup`), la leen **los layouts y las páginas** (una vez por pedido) y se la pasan
+por props; cada componente la recibe como prop opcional y, sin ella, usa la config (como antes):
+- Layout raíz: la escala del color de la marca y el fondo (`data-fondo`), y la imagen para
+  compartir en `generateMetadata`. Con `dynamic = "force-dynamic"`: `/privacidad`,
+  `/admin/login` y la página 404 eran estáticas y se habrían quedado con la identidad del build.
+- Layouts público y del checkout → Header y pie (logo y texto del pie); la home → los dos heros y
+  "Quiénes somos"; las fichas → la aclaración junto al precio; `/consultas` → su descripción.
+- Admin: el layout le pasa el logo al menú; `/admin/login` pasó a ser una página del servidor que
+  le pasa el logo al formulario (`LoginFormulario`, del navegador).
+- El logo del tema (`TemaPublico.Logo`) recibe `src`; el neutro lo usa (un link externo va sin el
+  optimizador de imágenes) y el del panal de Melera lo ignora.
+- `getIdentidad` tolera también un error sincrónico (sin la tabla): usa la config.
+Melera: snapshots sin cambios y la comparación por píxel igual que antes. Pruebas con cambios
+guardados (`tests/identidad-paginas.test.ts`): colores, fondo, textos, logo e imagen para
+compartir.
+
+Plan original:
 El layout raíz (colores, fondo y la imagen para compartir en `generateMetadata`), el Header, el
 pie, los dos heros, "Quiénes somos", consultas, el precio, el logo del tema neutro y el del admin.
 Los componentes del navegador la reciben por props. Lo que no es editable sigue leyendo `cliente`

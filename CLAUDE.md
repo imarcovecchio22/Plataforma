@@ -112,6 +112,11 @@ Pendientes (del usuario y de la etapa de refinamiento): [`docs/plataforma/pendie
   `exigirFuncion` de `src/plataforma/cliente/catalogo.ts`, como los módulos. Apagada: su pantalla
   y su API dan 404, no aparece en el menú ni en los formularios, y la API de productos no toca sus
   campos (`datosDeProducto`).
+- **Identidad editable** (textos de la tienda, color de la marca, fondo, logo e imagen para
+  compartir): la config es lo de por defecto y `IdentidadCliente` guarda lo que cambió el dueño.
+  Se lee con `getIdentidad()` (`src/lib/identidad.ts`) **en layouts y páginas** y se pasa por props
+  (los componentes la reciben opcional y sin ella usan la config). Para esos campos, no leer
+  `cliente.textos`/`cliente.colores`/`cliente.imagenes.logo` directo en código nuevo.
 - **Variables de textos** (`$PRODUCTO`, `$PRECIO`, `$PROMOS`, `$CATALOGO`, `$ZONAS`):
   `src/lib/variables.ts` (reemplazo, sin servidor) y `datosParaTextos()` (valores de la base). El chat
   arma productos y envíos con la base; `ia.chat.datos` de la config no tiene que hablar de envíos.
