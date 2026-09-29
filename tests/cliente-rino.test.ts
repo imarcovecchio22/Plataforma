@@ -24,7 +24,7 @@ import seedRino from "../clientes/rino/seed";
 import { problemasDeConfig } from "@/plataforma/cliente/validar";
 import { imagenesFaltantes } from "@/plataforma/cliente/assets";
 import { aliasCliente } from "../scripts/alias-cliente";
-import { postIGSchema } from "@/lib/validation";
+import { autoRespuestaSchema, postIGSchema } from "@/lib/validation";
 import RootLayout, { metadata } from "@/app/layout";
 import PublicoLayout from "@/app/(publico)/layout";
 import HomePage from "@/app/(publico)/page";
@@ -84,6 +84,16 @@ describe("cliente Rino", () => {
     expect(home).toContain('href="/#productos"');
     expect(home).toContain('href="/productos"');
     expect(home).toContain('id="nosotros"');
+  });
+
+  it("sus respuestas automáticas de muestra son válidas, arrancan apagadas y siguen al catálogo", () => {
+    const reglas = seedRino.autorespuestas ?? [];
+    expect(reglas.length).toBeGreaterThan(0);
+    for (const r of reglas) {
+      expect(autoRespuestaSchema.safeParse(r).success, r.nombre).toBe(true);
+      expect(r.activa, r.nombre).toBe(false);
+    }
+    expect(reglas.map((r) => r.respuesta).join(" ")).toMatch(/\$CATALOGO[\s\S]*\$ZONAS/);
   });
 
   it("sus estilos de Instagram son los suyos", () => {

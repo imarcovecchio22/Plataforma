@@ -177,7 +177,17 @@ Config `catalogo.aPedido`. En el admin, un producto puede ser "a pedido" con su 
 límite de stock, la ficha, el carrito y el checkout muestran la demora, y el pago no descuenta su
 stock.
 
-### Paso 8: Instagram, respuestas automáticas y chat de Rino
+### Paso 8: Instagram, respuestas automáticas y chat de Rino ✅ (2026-09-29)
+Hecho: las 4 plantillas "simple" de Rino con diseño propio provisorio (Space Grotesk e Inter,
+naranja de su paleta, líneas de "capas de impresión" abajo y la marca al pie; las características
+del producto como etiquetas y las promos en filas con el precio a la derecha), renderizadas en
+Chrome a 1080 × 1350. Dos respuestas automáticas de muestra en su seed ("Precios y catálogo" con
+`$CATALOGO` y "Envíos" con `$ZONAS`), apagadas hasta conectar su Instagram, y cargadas en su base.
+El chat ya arma catálogo, categorías, demoras y envíos con la base (pasos 5 a 7); el tono y los
+datos para Gemini están en su config (provisorios). Los tres módulos quedan prendidos en su
+config; sin credenciales de Meta, Telegram ni Gemini en `.env.rino.local`, no hacen nada.
+
+Plan original:
 Plantillas de Instagram en `clientes/rino/instagram/` (arranca con la "simple" del ejemplo con los
 colores de Rino), tono y ejemplos provisorios para Gemini, reglas de respuestas automáticas de
 muestra y datos del chat. Qué módulos quedan prendidos se elige en su config.

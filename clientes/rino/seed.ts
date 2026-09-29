@@ -68,4 +68,32 @@ export default definirSeed({
       respuesta: "Pagás online con Mercado Pago, al finalizar la compra en la web.",
     },
   ],
+  // Desactivadas: se prenden desde el admin cuando se conecte el Instagram de Rino (y con los
+  // textos definitivos). Usan las variables, así siguen al catálogo y a las zonas.
+  autorespuestas: [
+    {
+      nombre: "Precios y catálogo",
+      palabrasClave: ["precio", "precios", "cuanto", "catalogo", "comprar"],
+      coincidencia: "contiene",
+      canal: "ambos",
+      respuesta: "¡Hola! Gracias por escribirle a 3DRinoMaker. Hoy tenemos $CATALOGO. Podés verlas y comprarlas en la web.",
+      botones: [
+        { titulo: "🛒 Ver piezas", url: "https://3drinomaker.com.ar/productos?origen=instagram" },
+        { titulo: "💬 Consultar", url: "https://3drinomaker.com.ar/consultas?origen=instagram" },
+      ],
+      respuestaPublicaComentario: "¡Te mandamos un DM!",
+      prioridad: 10,
+      activa: false,
+    },
+    {
+      nombre: "Envíos",
+      palabrasClave: ["envio", "envios", "envian", "retiro"],
+      coincidencia: "contiene",
+      canal: "dm",
+      respuesta: "¡Hola! Enviamos a: $ZONAS. Elegís la zona al finalizar la compra.",
+      botones: [{ titulo: "🛒 Ver piezas", url: "https://3drinomaker.com.ar/productos?origen=instagram" }],
+      prioridad: 5,
+      activa: false,
+    },
+  ],
 });
