@@ -26,6 +26,11 @@ export default function Header() {
         <Link href="/consultas" className="link-nav hidden sm:inline">
           Consultas
         </Link>
+        {cliente.enlaceCotizador && (
+          <a href={cliente.enlaceCotizador.url} target="_blank" rel="noopener noreferrer" className="link-nav hidden sm:inline">
+            {cliente.enlaceCotizador.texto}
+          </a>
+        )}
         <CarritoIcono />
         <span className="wrap-focus">
           <Link href={catalogo ? "/productos" : "/producto"} className="btn btn-sm" data-fondo-evita>

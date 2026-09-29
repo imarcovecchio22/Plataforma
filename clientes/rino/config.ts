@@ -46,6 +46,8 @@ export default definirCliente({
     compartir: "/compartir.svg",
     producto: { src: "/producto.svg", alt: "Pieza impresa en 3D", ancho: 400, alto: 480 },
   },
+  // PROVISORIO: link al cotizador de impresión 3D cuando se sepa dónde está (el menú y el pie lo
+  // muestran). Ej.: enlaceCotizador: { url: "https://…", texto: "Cotizá tu impresión" },
   // Home con la grilla de productos (tiene catálogo, no un producto estrella)
   inicio: "catalogo",
   catalogo: { categorias: true, opciones: true, aPedido: true },

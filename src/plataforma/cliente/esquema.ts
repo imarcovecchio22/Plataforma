@@ -165,6 +165,18 @@ export const esquemaCliente = z
       })
       .strict()
       .optional(),
+    /**
+     * Link a un cotizador que el cliente tiene en otro lado (ej. el de impresión 3D). Si está, el
+     * menú y el pie lo muestran. Cuando el cotizador se integre como módulo (modulos.cotizador),
+     * esto va a apuntar a su página propia.
+     */
+    enlaceCotizador: z
+      .object({
+        url: z.string().trim().url("El link del cotizador no es una URL válida").startsWith("https://", "El link del cotizador tiene que empezar con https://"),
+        texto: z.string().trim().min(1).max(40).default("Cotizá tu impresión"),
+      })
+      .strict()
+      .optional(),
     /** Funcionalidades opcionales (ver src/plataforma/cliente/modulos.ts). */
     modulos: z
       .object({

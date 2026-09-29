@@ -192,7 +192,25 @@ Plantillas de Instagram en `clientes/rino/instagram/` (arranca con la "simple" d
 colores de Rino), tono y ejemplos provisorios para Gemini, reglas de respuestas automáticas de
 muestra y datos del chat. Qué módulos quedan prendidos se elige en su config.
 
-### Paso 9: cotizador previsto
+### Paso 9: cotizador previsto ✅ (2026-09-29)
+Hecho: `enlaceCotizador` en la config (opcional: `url` https y `texto`, por defecto "Cotizá tu
+impresión"); si está, el menú y el pie muestran el link (se abre en otra pestaña). El módulo
+`cotizador` sigue apagado. Rino todavía no lo tiene: falta saber dónde está el cotizador (quedó
+marcado `PROVISORIO` en su config).
+
+Para integrarlo como módulo más adelante hace falta saber (y decidir):
+- **Qué es hoy**: dónde vive, con qué está hecho y qué datos pide (archivo STL/3MF, material,
+  color, relleno, cantidad…) y cómo calcula el precio (peso/tiempo de impresión, tabla, a mano).
+- **Rutas**: una página pública (`/cotizar`) y su API, en `RUTAS_DE_MODULOS.cotizador` y en el
+  `matcher` del proxy; una pantalla del admin con las cotizaciones (`exigirModulo("cotizador")`).
+- **Archivos**: si el cliente sube modelos 3D, dónde se guardan (depende del hosting, igual que
+  las fotos de producto).
+- **De cotización a pedido**: la cotización aceptada se vuelve un `OrderItem` con su precio fijo
+  (sin producto del catálogo, o con uno genérico "Impresión a medida") y sigue el checkout de
+  siempre (zonas, Mercado Pago, Telegram).
+- Con eso, `enlaceCotizador` pasa a apuntar a `/cotizar`.
+
+Plan original:
 El módulo `cotizador` sigue apagado. Config opcional con la URL de donde está hoy: si está, la
 tienda muestra un link ("Cotizá tu impresión"). Queda anotado qué hace falta para integrarlo
 (rutas, datos, cómo una cotización se convierte en pedido).

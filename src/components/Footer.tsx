@@ -18,6 +18,11 @@ export default function Footer() {
           <Link href="/consultas" className="btn-ghost">
             Consultas
           </Link>
+          {cliente.enlaceCotizador && (
+            <a href={cliente.enlaceCotizador.url} target="_blank" rel="noopener noreferrer" className="btn-ghost">
+              {cliente.enlaceCotizador.texto}
+            </a>
+          )}
           <a
             href={`https://www.instagram.com/${cliente.instagram}/`}
             target="_blank"
