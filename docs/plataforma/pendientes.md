@@ -13,7 +13,8 @@ Lo que queda abierto al cerrar la fase 3 (2026-09-29). Se tacha o se borra cuand
       e Instagram si los usa. Variables y pasos en [`rino-para-lanzar.md`](rino-para-lanzar.md).
 - [ ] **Campo "Barrio" del checkout**: viene del envío solo a CABA; para otras zonas quedaría mejor
       "Localidad". Cambia lo que ve Melera, así que es decisión tuya.
-- [ ] **Merge y push**: `fase-3` sin mergear a `main`; `main` adelante de GitHub (sin push).
+- [x] **Merge y push**: `fase-3` e `identidad-editable` mergeadas a `main` y subidas a GitHub
+      (2026-09-29).
 - [ ] **Credenciales de prueba de Mercado Pago** (opcional): para probar un pago completo de punta
       a punta.
 - [ ] **Rotar la clave de la base de desarrollo de Rino** en Neon si se comparte esta conversación
