@@ -77,7 +77,17 @@ pie, los dos heros, "Quiénes somos", consultas, el precio, el logo del tema neu
 Los componentes del navegador la reciben por props. Lo que no es editable sigue leyendo `cliente`
 como hoy.
 
-### Paso 3: pantalla `/admin/marca`
+### Paso 3: pantalla `/admin/marca` ✅ (2026-09-29)
+Hecho: "Marca" en el menú del admin. Tres secciones: textos (con los valores vigentes; los
+párrafos de "Quiénes somos" separados por una línea en blanco), color y fondo (selector de color,
+los 10 tonos que se arman, un botón de muestra con su contraste; el fondo solo con el tema neutro)
+e imágenes (links https con vista previa). Cada sección tiene "volver a los de la config". Al
+guardar se manda **solo lo que difiere de la config** (un campo vacío vuelve a la config) y la API
+(`PUT /api/admin/marca`) lo valida con el mismo esquema (400 con el campo que falla) y lo registra
+en los logs. `TemaPublico.neutro` distingue el tema neutro de uno propio: con el de Melera la
+pantalla avisa que el color cambia poco y no ofrece el fondo. Vista en Chrome con Rino y Melera.
+
+Plan original:
 Tres secciones (textos, colores y fondo, imágenes), con la vista previa de la escala de colores y
 "volver a lo de la config" en cada una. API con validación y registro en los logs.
 

@@ -26,4 +26,10 @@ export type TemaPublico = {
    * ignorarlo.
    */
   Logo?: ComponentType<{ tamano: number; src?: string }>;
+  /**
+   * Solo el tema neutro: sus colores salen de la config y del admin, y admite el fondo claro u
+   * oscuro. Un tema propio tiene su paleta en su CSS (en /admin/marca el color cambia poco y no se
+   * ofrece el fondo).
+   */
+  neutro?: boolean;
 };

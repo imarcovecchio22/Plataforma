@@ -14,6 +14,7 @@ const todos: { href: string; label: string; modulo?: Modulo; funcion?: FuncionCa
   { href: "/admin/envios", label: "Envíos" },
   { href: "/admin/consultas", label: "Consultas" },
   { href: "/admin/preguntas", label: "Preguntas frecuentes" },
+  { href: "/admin/marca", label: "Marca" },
   { href: "/admin/instagram", label: "Instagram", modulo: "instagram" },
   { href: "/admin/autorespuestas", label: "Autorespuestas", modulo: "autorespuestas" },
   { href: "/admin/logs", label: "Logs" },

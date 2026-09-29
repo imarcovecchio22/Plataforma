@@ -14,6 +14,7 @@ function LogoConfig({ tamano, src = cliente.imagenes.logo }: { tamano: number; s
  */
 const temaNeutro: TemaPublico = {
   Logo: LogoConfig,
+  neutro: true,
 };
 
 export default temaNeutro;
