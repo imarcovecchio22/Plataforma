@@ -52,7 +52,7 @@ de la plataforma".
 Inventario de lo específico de Melera: [`docs/plataforma/inventario-melera.md`](docs/plataforma/inventario-melera.md).
 Plan de la fase 1: [`docs/plataforma/plan-fase-1.md`](docs/plataforma/plan-fase-1.md).
 Plan de la fase 2 (con las decisiones tomadas): [`docs/plataforma/plan-fase-2.md`](docs/plataforma/plan-fase-2.md).
-Plan de la fase 3 (con las preguntas abiertas): [`docs/plataforma/plan-fase-3.md`](docs/plataforma/plan-fase-3.md).
+Plan de la fase 3 (opciones configurables por cliente): [`docs/plataforma/plan-fase-3.md`](docs/plataforma/plan-fase-3.md).
 
 ## Reglas de trabajo
 
