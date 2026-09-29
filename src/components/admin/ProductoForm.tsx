@@ -21,6 +21,8 @@ export type ProductoValores = {
   unidadPlural: string;
   unidadGenero: "masculino" | "femenino";
   aclaracionPrecio: string;
+  /** Id de la categoría ("" = sin categoría); solo si el cliente usa categorías */
+  categoriaId: string;
 };
 
 /** Formulario para crear (o editar, si recibe productoId) un producto. */
@@ -28,11 +30,14 @@ export default function ProductoForm({
   productoId,
   inicial,
   ordenSugerido = 10,
+  categorias,
   onListo,
 }: {
   productoId?: string;
   inicial?: ProductoValores;
   ordenSugerido?: number;
+  /** Las categorías para elegir (sin esto, el cliente no usa categorías y el campo no aparece) */
+  categorias?: { id: number; nombre: string }[];
   onListo?: () => void;
 }) {
   const vacio: ProductoValores = {
@@ -49,6 +54,7 @@ export default function ProductoForm({
     unidadPlural: "",
     unidadGenero: "masculino",
     aclaracionPrecio: "",
+    categoriaId: "",
   };
   const [valores, setValores] = useState<ProductoValores>(inicial ?? vacio);
   // Al crear, el slug sigue al nombre hasta que se lo edite a mano
@@ -126,6 +132,20 @@ export default function ProductoForm({
           />
         </div>
       </div>
+      {categorias && (
+        <div>
+          <label className="label-field" htmlFor={`${idBase}-categoria`}>Categoría</label>
+          <select id={`${idBase}-categoria`} className="input-field" value={valores.categoriaId} onChange={(e) => set("categoriaId", e.target.value)}>
+            <option value="">Sin categoría</option>
+            {categorias.map((c) => (
+              <option key={c.id} value={String(c.id)}>
+                {c.nombre}
+              </option>
+            ))}
+          </select>
+          {categorias.length === 0 && <p className="mt-1 text-xs text-stone-500">Todavía no hay categorías: se crean en Categorías.</p>}
+        </div>
+      )}
       <div>
         <label className="label-field" htmlFor={`${idBase}-descripcion`}>Descripción</label>
         <textarea id={`${idBase}-descripcion`} className="input-field min-h-24" value={valores.descripcion} onChange={(e) => set("descripcion", e.target.value)} maxLength={2000} />

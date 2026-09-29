@@ -37,6 +37,9 @@ model Product {
   escalones        Json     @default("[]")
   stock            Int      @default(0)
   imagenUrl        String?
+  // Categoría (solo si el cliente usa categorías: config.catalogo.categorias)
+  categoriaId      Int?
+  categoria        Categoria? @relation(fields: [categoriaId], references: [id], onDelete: Restrict)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
@@ -44,6 +47,18 @@ model Product {
   postsIG PostIG[]
 
   @@index([activo, orden])
+}
+
+// Categorías del catálogo (config.catalogo.categorias), se editan en /admin/categorias
+model Categoria {
+  id        Int       @id @default(autoincrement())
+  nombre    String
+  // Para el filtro de /productos?categoria=<slug>
+  slug      String    @unique
+  orden     Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  productos Product[]
 }
 
 model Order {

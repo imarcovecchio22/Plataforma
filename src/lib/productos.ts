@@ -3,6 +3,21 @@ import { logEvent } from "@/lib/logs";
 import { formatPrecio } from "@/lib/utils";
 import { leerEscalones, textoPromos } from "@/lib/precios";
 import { unidadDe } from "@/plataforma/cliente";
+import { funcionActiva } from "@/plataforma/cliente/catalogo";
+
+/**
+ * Lo que se guarda de un producto: los campos de las funciones del catálogo que el cliente no usa
+ * no se tocan (si apagó las categorías, sus productos conservan la que tenían).
+ */
+export function datosDeProducto<T extends object>(datos: T): T {
+  if (funcionActiva("categorias") || !("categoriaId" in datos)) return datos;
+  const resto = { ...datos };
+  delete (resto as { categoriaId?: unknown }).categoriaId;
+  return resto;
+}
+
+/** El error de Prisma cuando la categoría elegida no existe (se borró mientras se editaba). */
+export const CATEGORIA_INEXISTENTE = "Esa categoría ya no existe";
 
 /** Registra en /admin/logs lo que cambió de un producto (mismos textos que el viejo "Precio y stock"). */
 export async function registrarCambiosDeProducto(anterior: Product, producto: Product) {
@@ -18,7 +33,7 @@ export async function registrarCambiosDeProducto(anterior: Product, producto: Pr
   if (producto.activo !== anterior.activo) {
     await logEvent("admin", `Producto ${producto.nombre} ${producto.activo ? "activado" : "desactivado"}`);
   }
-  const otros = (["nombre", "slug", "descripcion", "imagenUrl", "orden", "unidadSingular", "unidadPlural", "unidadGenero", "aclaracionPrecio"] as const).filter((c) => producto[c] !== anterior[c]);
+  const otros = (["nombre", "slug", "descripcion", "imagenUrl", "orden", "unidadSingular", "unidadPlural", "unidadGenero", "aclaracionPrecio", "categoriaId"] as const).filter((c) => producto[c] !== anterior[c]);
   if (otros.length) {
     await logEvent("admin", `Producto ${producto.nombre} editado: ${otros.join(", ")}`);
   }

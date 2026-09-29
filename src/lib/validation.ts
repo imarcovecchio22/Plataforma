@@ -227,6 +227,20 @@ export const zonaEnvioSchema = z.object({
 
 export type ZonaEnvioInput = z.infer<typeof zonaEnvioSchema>;
 
+// ── Categorías (/admin/categorias, config.catalogo.categorias) ──
+
+export const categoriaSchema = z.object({
+  nombre: z.string().trim().min(2, "Escribí el nombre de la categoría (mínimo 2 caracteres)").max(50, "El nombre puede tener hasta 50 caracteres"),
+  slug: z
+    .string()
+    .trim()
+    .max(60, "El slug puede tener hasta 60 caracteres")
+    .regex(FORMATO_SLUG, "El slug solo puede tener minúsculas, números y guiones (ej. macetas)"),
+  orden: z.coerce.number().int("El orden tiene que ser un número entero").min(-1000).max(10000),
+});
+
+export type CategoriaInput = z.infer<typeof categoriaSchema>;
+
 // ── Productos (/admin/productos) ──
 
 export const productoSchema = z
@@ -260,6 +274,11 @@ export const productoSchema = z
     unidadPlural: z.string().trim().max(30, "La unidad puede tener hasta 30 caracteres").default(""),
     unidadGenero: z.enum(["masculino", "femenino"]).default("masculino"),
     aclaracionPrecio: z.string().trim().max(80, "La aclaración puede tener hasta 80 caracteres").default(""),
+    // Categoría (config.catalogo.categorias): id, o vacío = sin categoría
+    categoriaId: z
+      .union([z.literal(""), z.null(), z.coerce.number().int().positive()])
+      .optional()
+      .transform((v) => (typeof v === "number" ? v : null)),
   })
   .superRefine((p, ctx) => {
     if (Boolean(p.unidadSingular) !== Boolean(p.unidadPlural)) {

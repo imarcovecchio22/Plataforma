@@ -7,6 +7,7 @@ import { textosDelProducto } from "@/lib/precios";
 import { formatPrecio } from "@/lib/utils";
 import type { ZonaParaCheckout } from "@/lib/envios";
 import { cliente, hostCliente } from "@/plataforma/cliente";
+import { funcionActiva } from "@/plataforma/cliente/catalogo";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -20,7 +21,11 @@ const MAX_CHARS_TOTAL = 8000;
 const MAX_MENSAJES_POR_IP = 20;
 const VENTANA_MINUTOS = 10;
 
-type ProductoChat = NonNullable<Parameters<typeof textosDelProducto>[0]> & { slug: string; descripcion: string };
+type ProductoChat = NonNullable<Parameters<typeof textosDelProducto>[0]> & {
+  slug: string;
+  descripcion: string;
+  categoria?: { nombre: string } | null;
+};
 
 /**
  * Los productos: con uno (o ninguno), la descripción de la config con el precio y las promos de la
@@ -42,7 +47,9 @@ function lineasProductos(productos: ProductoChat[]) {
       const { precio, promos, unidad } = textosDelProducto(p);
       // Sin el punto final: la línea agrega el suyo
       const descripcion = p.descripcion.trim().slice(0, 300).replace(/[.\s]+$/, "");
-      return `  - ${p.nombre}: ${precio} cada ${unidad.singular}${promos ? `. Promos por cantidad: ${promos}` : ""}${descripcion ? `. ${descripcion}` : ""}. Ficha: ${hostCliente}/producto/${p.slug}`;
+      // Con categorías, cada producto dice la suya
+      const categoria = funcionActiva("categorias") && p.categoria ? ` (${p.categoria.nombre})` : "";
+      return `  - ${p.nombre}${categoria}: ${precio} cada ${unidad.singular}${promos ? `. Promos por cantidad: ${promos}` : ""}${descripcion ? `. ${descripcion}` : ""}. Ficha: ${hostCliente}/producto/${p.slug}`;
     }),
     "- Las promos por cantidad se aplican solas en la web al elegir la cantidad.",
   ];

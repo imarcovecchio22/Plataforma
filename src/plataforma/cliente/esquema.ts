@@ -150,6 +150,17 @@ export const esquemaCliente = z
      * los productos; el menú dice "Productos".
      */
     inicio: z.enum(["destacado", "catalogo"]).optional(),
+    /**
+     * Funciones del catálogo que usa la tienda (todas apagadas por defecto). Prendida, su parte del
+     * admin aparece y el dueño la carga ahí (ver src/plataforma/cliente/catalogo.ts).
+     */
+    catalogo: z
+      .object({
+        /** Categorías (ej. "Macetas", "Llaveros"): cada producto en una, filtro en /productos. */
+        categorias: z.boolean().optional(),
+      })
+      .strict()
+      .optional(),
     /** Funcionalidades opcionales (ver src/plataforma/cliente/modulos.ts). */
     modulos: z
       .object({

@@ -125,7 +125,18 @@ Plan original:
 `inicio: "destacado" | "catalogo"`. En `catalogo`: hero de la marca (sin el precio de un
 producto), grilla de productos y "Quiénes somos". Melera en `destacado`.
 
-### Paso 5: categorías
+### Paso 5: categorías ✅ (2026-09-28)
+Hecho: `config.catalogo.categorias` y `src/plataforma/cliente/catalogo.ts` (`funcionActiva`,
+`exigirFuncion`, igual que los módulos). Tabla `Categoria` (nombre, slug, orden) y
+`Product.categoriaId` (migración `*_categorias`; borrar una categoría con productos está
+bloqueado, también en la base). Admin `/admin/categorias` (crear con slug automático, editar,
+borrar) y selector "Categoría" en el producto, solo con la función prendida; apagada, la API
+responde 404 y los productos no tocan su categoría. `/productos` con filtro (Todas + cada
+categoría con productos, `?categoria=<slug>`, 404 si no existe) cuando hay dos o más.
+`$CATALOGO` agrupa ("Macetas: …; Llaveros: …; Otros: …") y el chat dice la categoría de cada
+producto. Seed: `categorias` y `categoria` por producto. Rino: Decoración y Accesorios.
+
+Plan original:
 Config `catalogo.categorias`. Tabla de categorías (admin: crear, renombrar, ordenar, borrar si no
 tiene productos), cada producto en una (opcional); `/productos` con filtro
 (`/productos?categoria=macetas`) cuando hay dos o más; `$CATALOGO` y el chat agrupan por categoría.

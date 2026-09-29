@@ -22,13 +22,29 @@ async function cargarSeedCliente(): Promise<SeedCliente> {
 async function main() {
   const seed = await cargarSeedCliente();
 
+  // Categorías: solo si no hay ninguna (en el orden del seed)
+  const categorias = await prisma.categoria.count();
+  if (categorias > 0) {
+    console.log(`Ya hay ${categorias} categorías, no se cargan las del seed.`);
+  } else if (seed.categorias?.length) {
+    const { count } = await prisma.categoria.createMany({
+      data: seed.categorias.map((c, i) => ({ ...c, orden: (i + 1) * 10 })),
+    });
+    console.log(`Categorías cargadas: ${count}`);
+  }
+  const idDeCategoria = new Map((await prisma.categoria.findMany()).map((c) => [c.slug, c.id]));
+
   // Productos: solo si no hay ninguno (en el orden del seed)
   const productos = await prisma.product.count();
   if (productos > 0) {
     console.log(`Ya hay ${productos} productos, no se cargan los del seed.`);
   } else if (seed.productos?.length) {
     const { count } = await prisma.product.createMany({
-      data: seed.productos.map((p, i) => ({ ...p, orden: (i + 1) * 10 })),
+      data: seed.productos.map(({ categoria, ...p }, i) => ({
+        ...p,
+        orden: (i + 1) * 10,
+        categoriaId: categoria ? (idDeCategoria.get(categoria) ?? null) : null,
+      })),
     });
     console.log(`Productos cargados: ${count}`);
   } else {

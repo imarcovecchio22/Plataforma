@@ -4,14 +4,19 @@ import { leerEscalones, textoPromos } from "@/lib/precios";
 import { unidadDe } from "@/plataforma/cliente";
 import ProductoForm from "@/components/admin/ProductoForm";
 import ProductoActions from "@/components/admin/ProductoActions";
+import { funcionActiva } from "@/plataforma/cliente/catalogo";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminProductosPage() {
-  const productos = await prisma.product.findMany({
-    orderBy: [{ orden: "asc" }, { createdAt: "asc" }],
-    include: { _count: { select: { items: true } } },
-  });
+  const conCategorias = funcionActiva("categorias");
+  const [productos, categorias] = await Promise.all([
+    prisma.product.findMany({
+      orderBy: [{ orden: "asc" }, { createdAt: "asc" }],
+      include: { _count: { select: { items: true } }, categoria: { select: { nombre: true } } },
+    }),
+    conCategorias ? prisma.categoria.findMany({ orderBy: [{ orden: "asc" }, { id: "asc" }], select: { id: true, nombre: true } }) : undefined,
+  ]);
   const destacado = productos.find((p) => p.activo);
   const ordenSugerido = productos.length ? Math.max(...productos.map((p) => p.orden)) + 10 : 10;
 
@@ -38,6 +43,7 @@ export default async function AdminProductosPage() {
                 {p.id === destacado?.id && <span className="rounded-full bg-marca-50 px-2 py-0.5 text-xs text-marca-800">Destacado</span>}
                 <span className="text-xs">/producto/{p.slug}</span>
                 <span className="text-xs">orden {p.orden}</span>
+                {conCategorias && <span className="text-xs">{p.categoria?.nombre ?? "sin categoría"}</span>}
               </div>
               <p className="mt-2 text-sm text-stone-700">
                 <strong>{formatPrecio(p.precio)}</strong> · {p.stock} en stock · {p._count.items} pedidos
@@ -60,7 +66,9 @@ export default async function AdminProductosPage() {
                     unidadPlural: p.unidadPlural ?? "",
                     unidadGenero: p.unidadGenero === "femenino" ? "femenino" : "masculino",
                     aclaracionPrecio: p.aclaracionPrecio ?? "",
+                    categoriaId: p.categoriaId ? String(p.categoriaId) : "",
                   }}
+                  categorias={categorias}
                 />
               </div>
             </article>
@@ -76,7 +84,7 @@ export default async function AdminProductosPage() {
       <section>
         <h2 className="font-serif text-lg font-semibold text-oscuro">Nuevo producto</h2>
         <div className="mt-3 rounded-xl border border-marca-100 bg-white p-5 shadow-soft">
-          <ProductoForm ordenSugerido={ordenSugerido} />
+          <ProductoForm ordenSugerido={ordenSugerido} categorias={categorias} />
         </div>
       </section>
     </div>

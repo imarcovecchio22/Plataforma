@@ -48,6 +48,7 @@ export default definirCliente({
   },
   // Home con la grilla de productos (tiene catálogo, no un producto estrella)
   inicio: "catalogo",
+  catalogo: { categorias: true },
   modulos: { instagram: true, autorespuestas: true, chatIA: true, cotizador: false },
   estilosInstagram: [{ id: "simple", nombre: "Simple", usaSemilla: false }],
   // PROVISORIO: tono y textos para Gemini

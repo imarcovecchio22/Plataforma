@@ -4,7 +4,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { productoSchema } from "@/lib/validation";
 import { logEvent } from "@/lib/logs";
-import { registrarCambiosDeProducto } from "@/lib/productos";
+import { CATEGORIA_INEXISTENTE, datosDeProducto, registrarCambiosDeProducto } from "@/lib/productos";
 
 type Contexto = { params: Promise<{ id: string }> };
 
@@ -25,12 +25,15 @@ export async function PATCH(req: NextRequest, { params }: Contexto) {
   if (!anterior) return NextResponse.json({ error: "Producto no encontrado" }, { status: 404 });
 
   try {
-    const producto = await prisma.product.update({ where: { id }, data: parsed.data });
+    const producto = await prisma.product.update({ where: { id }, data: datosDeProducto(parsed.data) });
     await registrarCambiosDeProducto(anterior, producto);
     return NextResponse.json(producto);
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
       return NextResponse.json({ error: "Ya hay un producto con ese slug" }, { status: 409 });
+    }
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2003") {
+      return NextResponse.json({ error: CATEGORIA_INEXISTENTE }, { status: 400 });
     }
     return NextResponse.json({ error: "Producto no encontrado" }, { status: 404 });
   }

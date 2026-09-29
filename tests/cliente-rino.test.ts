@@ -8,12 +8,13 @@ vi.mock("@cliente/config", async () => await import("../clientes/rino/config"));
 vi.mock("@cliente/tema", async () => await import("@/plataforma/tema/neutro"));
 vi.mock("next/font/google", () => ({}));
 vi.mock("next/navigation", () => ({ usePathname: () => "/", useRouter: () => ({ push: () => {}, refresh: () => {} }), useSearchParams: () => new URLSearchParams() }));
-const catalogo = vi.hoisted(() => ({ productos: [] as Record<string, unknown>[] }));
+const catalogo = vi.hoisted(() => ({ productos: [] as Record<string, unknown>[], categorias: [] as { nombre: string; slug: string }[] }));
 vi.mock("@/lib/product", () => ({
   getMainProduct: async () => catalogo.productos[0] ?? null,
   getProductosActivos: async () => catalogo.productos,
   getProductoPorSlug: async (slug: string) => catalogo.productos.find((p) => p.slug === slug) ?? null,
   contarProductosActivos: async () => catalogo.productos.length,
+  getCategoriasConProductos: async () => catalogo.categorias,
 }));
 vi.mock("@/lib/zonas", async () => (await import("./zonas-de-prueba")).mockZonas("rino"));
 vi.mock("@/lib/prisma", () => ({ prisma: { preguntaFrecuente: { findMany: async () => [] } } }));
@@ -37,9 +38,11 @@ const RAIZ = path.resolve(__dirname, "..");
 const RASTROS_DE_MELERA = /melera|miel|frasco|abeja|colmena|panal|apícola|jofré|🐝|🍯/i;
 const RASTROS_DEL_EJEMPLO = /tienda ejemplo|tienda-ejemplo|tienda\.ejemplo|producto de ejemplo/i;
 
-catalogo.productos = (seedRino.productos ?? []).map((p, i) => ({
+catalogo.categorias = seedRino.categorias ?? [];
+catalogo.productos = (seedRino.productos ?? []).map(({ categoria, ...p }, i) => ({
   id: `p${i}`, imagenUrl: null, activo: true, orden: (i + 1) * 10, escalones: [], unidadSingular: null,
   unidadPlural: null, unidadGenero: null, aclaracionPrecio: null, ...p,
+  categoria: catalogo.categorias.map((c, j) => ({ ...c, orden: j })).find((c) => c.slug === categoria) ?? null,
 }));
 
 describe("cliente Rino", () => {

@@ -2,6 +2,10 @@ import { definirSeed } from "../../src/plataforma/cliente/seed";
 
 // PROVISORIO: productos, precios, zonas y preguntas de muestra hasta tener los reales del dueño.
 export default definirSeed({
+  categorias: [
+    { nombre: "Decoración", slug: "decoracion" },
+    { nombre: "Accesorios", slug: "accesorios" },
+  ],
   productos: [
     {
       nombre: "Maceta geométrica",
@@ -9,6 +13,7 @@ export default definirSeed({
       descripcion: "Maceta facetada de 12 cm impresa en PLA, con plato. Ideal para suculentas.",
       precio: 8500,
       stock: 15,
+      categoria: "decoracion",
       escalones: [{ desde: 3, precio: 7800 }],
     },
     {
@@ -17,6 +22,7 @@ export default definirSeed({
       descripcion: "Llavero de 5 cm con el nombre o la inicial que quieras.",
       precio: 2500,
       stock: 60,
+      categoria: "accesorios",
       escalones: [
         { desde: 5, precio: 2200 },
         { desde: 10, precio: 1900 },
@@ -28,6 +34,7 @@ export default definirSeed({
       descripcion: "Soporte de escritorio con ángulo cómodo, para cualquier celular.",
       precio: 6000,
       stock: 20,
+      categoria: "accesorios",
     },
   ],
   zonas: [
