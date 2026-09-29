@@ -102,7 +102,8 @@ Plan de la fase 3 (opciones configurables por cliente): [`docs/plataforma/plan-f
   guarda su nombre y `Order.costoEnvio` su costo). Los precios y las promos siempre se recalculan en
   el servidor.
 - **Funciones del catálogo** (`config.catalogo`, apagadas por defecto): `funcionActiva("categorias")`
-  (o `"opciones"`; `opcionesDe(producto)` da las de un producto solo si están prendidas) y
+  (o `"opciones"`, `"aPedido"`; `opcionesDe`, `stockParaVender` y `demoraDe` ya tienen en cuenta si
+  la función está prendida: usarlos en lugar de `producto.stock` u `producto.opciones`) y
   `exigirFuncion` de `src/plataforma/cliente/catalogo.ts`, como los módulos. Apagada: su pantalla
   y su API dan 404, no aparece en el menú ni en los formularios, y la API de productos no toca sus
   campos (`datosDeProducto`).

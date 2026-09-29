@@ -4,7 +4,7 @@ import { leerEscalones, textoPromos } from "@/lib/precios";
 import { unidadDe } from "@/plataforma/cliente";
 import ProductoForm from "@/components/admin/ProductoForm";
 import ProductoActions from "@/components/admin/ProductoActions";
-import { funcionActiva } from "@/plataforma/cliente/catalogo";
+import { demoraDe, funcionActiva } from "@/plataforma/cliente/catalogo";
 import { leerOpciones } from "@/lib/opciones";
 
 export const dynamic = "force-dynamic";
@@ -12,6 +12,7 @@ export const dynamic = "force-dynamic";
 export default async function AdminProductosPage() {
   const conCategorias = funcionActiva("categorias");
   const conOpciones = funcionActiva("opciones");
+  const conAPedido = funcionActiva("aPedido");
   const [productos, categorias] = await Promise.all([
     prisma.product.findMany({
       orderBy: [{ orden: "asc" }, { createdAt: "asc" }],
@@ -48,7 +49,7 @@ export default async function AdminProductosPage() {
                 {conCategorias && <span className="text-xs">{p.categoria?.nombre ?? "sin categoría"}</span>}
               </div>
               <p className="mt-2 text-sm text-stone-700">
-                <strong>{formatPrecio(p.precio)}</strong> · {p.stock} en stock · {p._count.items} pedidos
+                <strong>{formatPrecio(p.precio)}</strong> · {demoraDe(p) ? `a pedido (${demoraDe(p)})` : `${p.stock} en stock`} · {p._count.items} pedidos
                 {promos && <> · Promos: {promos}</>}
                 {conOpciones &&
                   leerOpciones(p.opciones).map((o) => (
@@ -76,9 +77,12 @@ export default async function AdminProductosPage() {
                     aclaracionPrecio: p.aclaracionPrecio ?? "",
                     categoriaId: p.categoriaId ? String(p.categoriaId) : "",
                     opciones: leerOpciones(p.opciones).map((o) => ({ nombre: o.nombre, valores: o.valores.join(", ") })),
+                    aPedido: p.aPedido,
+                    demora: p.demora ?? "",
                   }}
                   categorias={categorias}
                   conOpciones={conOpciones}
+                  conAPedido={conAPedido}
                 />
               </div>
             </article>
@@ -94,7 +98,7 @@ export default async function AdminProductosPage() {
       <section>
         <h2 className="font-serif text-lg font-semibold text-oscuro">Nuevo producto</h2>
         <div className="mt-3 rounded-xl border border-marca-100 bg-white p-5 shadow-soft">
-          <ProductoForm ordenSugerido={ordenSugerido} categorias={categorias} conOpciones={conOpciones} />
+          <ProductoForm ordenSugerido={ordenSugerido} categorias={categorias} conOpciones={conOpciones} conAPedido={conAPedido} />
         </div>
       </section>
     </div>

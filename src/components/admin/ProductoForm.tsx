@@ -25,6 +25,9 @@ export type ProductoValores = {
   categoriaId: string;
   /** Opciones que elige el comprador (valores separados por comas); solo si el cliente las usa */
   opciones: { nombre: string; valores: string }[];
+  /** A pedido (sin límite de stock) y su demora; solo si el cliente usa productos a pedido */
+  aPedido: boolean;
+  demora: string;
 };
 
 /** Formulario para crear (o editar, si recibe productoId) un producto. */
@@ -34,6 +37,7 @@ export default function ProductoForm({
   ordenSugerido = 10,
   categorias,
   conOpciones = false,
+  conAPedido = false,
   onListo,
 }: {
   productoId?: string;
@@ -43,6 +47,8 @@ export default function ProductoForm({
   categorias?: { id: number; nombre: string }[];
   /** El cliente usa opciones de producto (config.catalogo.opciones) */
   conOpciones?: boolean;
+  /** El cliente usa productos a pedido (config.catalogo.aPedido) */
+  conAPedido?: boolean;
   onListo?: () => void;
 }) {
   const vacio: ProductoValores = {
@@ -61,6 +67,8 @@ export default function ProductoForm({
     aclaracionPrecio: "",
     categoriaId: "",
     opciones: [],
+    aPedido: false,
+    demora: "",
   };
   const [valores, setValores] = useState<ProductoValores>(inicial ?? vacio);
   // Al crear, el slug sigue al nombre hasta que se lo edite a mano
@@ -167,13 +175,43 @@ export default function ProductoForm({
         </div>
         <div>
           <label className="label-field" htmlFor={`${idBase}-stock`}>Stock (unidades)</label>
-          <input id={`${idBase}-stock`} type="number" min={0} step={1} className="input-field" value={valores.stock} onChange={(e) => set("stock", Number(e.target.value))} />
+          <input
+            id={`${idBase}-stock`}
+            type="number"
+            min={0}
+            step={1}
+            className={`input-field${conAPedido ? " disabled:opacity-50" : ""}`}
+            value={valores.stock}
+            onChange={(e) => set("stock", Number(e.target.value))}
+            disabled={conAPedido && valores.aPedido}
+          />
         </div>
         <div>
           <label className="label-field" htmlFor={`${idBase}-orden`}>Orden</label>
           <input id={`${idBase}-orden`} type="number" step={1} className="input-field" value={valores.orden} onChange={(e) => set("orden", Number(e.target.value))} />
         </div>
       </div>
+      {conAPedido && (
+        <div className="rounded-lg border border-marca-100 p-4">
+          <label className="flex items-center gap-2 text-sm font-medium text-stone-700">
+            <input type="checkbox" checked={valores.aPedido} onChange={(e) => set("aPedido", e.target.checked)} />
+            Se hace a pedido (sin límite de stock: el pago no descuenta nada)
+          </label>
+          {valores.aPedido && (
+            <div className="mt-3">
+              <label className="label-field" htmlFor={`${idBase}-demora`}>Demora (se muestra en la ficha, el carrito y el checkout)</label>
+              <input
+                id={`${idBase}-demora`}
+                className="input-field"
+                value={valores.demora}
+                onChange={(e) => set("demora", e.target.value)}
+                placeholder="Se hace a pedido"
+                maxLength={80}
+              />
+            </div>
+          )}
+        </div>
+      )}
       <div>
         <label className="label-field" htmlFor={`${idBase}-imagen`}>Foto (link https; vacío = la foto de la marca)</label>
         <input id={`${idBase}-imagen`} className="input-field" value={valores.imagenUrl} onChange={(e) => set("imagenUrl", e.target.value)} placeholder="https://…" maxLength={500} />

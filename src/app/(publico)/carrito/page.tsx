@@ -3,7 +3,7 @@ import CarritoVista from "@/components/CarritoVista";
 import { getProductosActivos } from "@/lib/product";
 import { leerEscalones } from "@/lib/precios";
 import { cliente, unidadDe } from "@/plataforma/cliente";
-import { opcionesDe } from "@/plataforma/cliente/catalogo";
+import { demoraDe, opcionesDe, stockParaVender } from "@/plataforma/cliente/catalogo";
 
 export const dynamic = "force-dynamic";
 
@@ -16,9 +16,10 @@ export default async function CarritoPage() {
     nombre: p.nombre,
     precio: p.precio,
     escalones: leerEscalones(p.escalones),
-    stock: p.stock,
+    stock: stockParaVender(p),
     unidad: unidadDe(p),
     opciones: opcionesDe(p),
+    demora: demoraDe(p),
   }));
 
   return (

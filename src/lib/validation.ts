@@ -302,6 +302,14 @@ export const productoSchema = z
       .max(3, "Hasta 3 opciones por producto")
       .refine((o) => new Set(o.map((x) => x.nombre.toLowerCase())).size === o.length, "Hay dos opciones con el mismo nombre")
       .default([]),
+    // A pedido (config.catalogo.aPedido): sin límite de stock, con su demora (vacía = texto general)
+    aPedido: z.boolean().default(false),
+    demora: z
+      .string()
+      .trim()
+      .max(80, "La demora puede tener hasta 80 caracteres")
+      .default("")
+      .transform((v) => v || null),
     // Categoría (config.catalogo.categorias): id, o vacío = sin categoría
     categoriaId: z
       .union([z.literal(""), z.null(), z.coerce.number().int().positive()])

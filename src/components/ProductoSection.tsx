@@ -3,10 +3,11 @@ import FotoProducto from "@/components/FotoProducto";
 import { formatPrecio } from "@/lib/utils";
 import { leerEscalones, textoPromos } from "@/lib/precios";
 import { unidadDe } from "@/plataforma/cliente";
+import { stockParaVender } from "@/plataforma/cliente/catalogo";
 import type { Product } from "@prisma/client";
 
 export default function ProductoSection({ product }: { product: Product }) {
-  const sinStock = product.stock <= 0;
+  const sinStock = stockParaVender(product) <= 0;
 
   return (
     <section id="producto" className="contenedor-publico scroll-mt-4 bg-[var(--fondo-seccion)] py-[clamp(56px,8vw,96px)]">

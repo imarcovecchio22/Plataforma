@@ -7,7 +7,7 @@ import { textosDelProducto } from "@/lib/precios";
 import { formatPrecio } from "@/lib/utils";
 import type { ZonaParaCheckout } from "@/lib/envios";
 import { cliente, hostCliente } from "@/plataforma/cliente";
-import { funcionActiva } from "@/plataforma/cliente/catalogo";
+import { demoraDe, funcionActiva } from "@/plataforma/cliente/catalogo";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -25,6 +25,9 @@ type ProductoChat = NonNullable<Parameters<typeof textosDelProducto>[0]> & {
   slug: string;
   descripcion: string;
   categoria?: { nombre: string } | null;
+  stock: number;
+  aPedido?: boolean;
+  demora?: string | null;
 };
 
 /**
@@ -49,7 +52,8 @@ function lineasProductos(productos: ProductoChat[]) {
       const descripcion = p.descripcion.trim().slice(0, 300).replace(/[.\s]+$/, "");
       // Con categorías, cada producto dice la suya
       const categoria = funcionActiva("categorias") && p.categoria ? ` (${p.categoria.nombre})` : "";
-      return `  - ${p.nombre}${categoria}: ${precio} cada ${unidad.singular}${promos ? `. Promos por cantidad: ${promos}` : ""}${descripcion ? `. ${descripcion}` : ""}. Ficha: ${hostCliente}/producto/${p.slug}`;
+      const demora = demoraDe(p);
+      return `  - ${p.nombre}${categoria}: ${precio} cada ${unidad.singular}${promos ? `. Promos por cantidad: ${promos}` : ""}${descripcion ? `. ${descripcion}` : ""}${demora ? `. ${demora}` : ""}. Ficha: ${hostCliente}/producto/${p.slug}`;
     }),
     "- Las promos por cantidad se aplican solas en la web al elegir la cantidad.",
   ];

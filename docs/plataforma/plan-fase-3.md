@@ -161,7 +161,18 @@ ficha las pide antes de agregar al carrito; el carrito distingue la misma pieza 
 opciones; el ítem del pedido guarda lo elegido (admin, Telegram, Mercado Pago). Migración sin tocar
 los pedidos existentes.
 
-### Paso 7: productos a pedido
+### Paso 7: productos a pedido ✅ (2026-09-29)
+Hecho: `config.catalogo.aPedido`; `Product.aPedido` y `Product.demora` (migración
+`*_productos_a_pedido`). `stockParaVender(producto)` (sin límite: hasta `LIMITE_A_PEDIDO` = 1000)
+y `demoraDe(producto)` en `src/plataforma/cliente/catalogo.ts`: las páginas se los pasan a los
+componentes y la API los usa, así el resto no cambia. La ficha muestra la demora en lugar de "N
+unidades disponibles" (y todas las promos, sin tope de stock), el listado, el carrito y el
+checkout también la muestran, y el chat la dice. Al pagar no se descuenta su stock y el aviso de
+Telegram dice "a pedido" (con la función apagada ni se consulta: Melera paga igual que antes). En
+el admin: "Se hace a pedido" con su demora (el stock queda deshabilitado) y la lista dice "a
+pedido". Rino: el llavero personalizado.
+
+Plan original:
 Config `catalogo.aPedido`. En el admin, un producto puede ser "a pedido" con su demora; no tiene
 límite de stock, la ficha, el carrito y el checkout muestran la demora, y el pago no descuenta su
 stock.

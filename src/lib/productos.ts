@@ -16,6 +16,10 @@ export function datosDeProducto<T extends object>(datos: T): T {
   const resto = { ...datos } as Record<string, unknown>;
   if (!funcionActiva("categorias")) delete resto.categoriaId;
   if (!funcionActiva("opciones")) delete resto.opciones;
+  if (!funcionActiva("aPedido")) {
+    delete resto.aPedido;
+    delete resto.demora;
+  }
   return resto as T;
 }
 
@@ -39,7 +43,10 @@ export async function registrarCambiosDeProducto(anterior: Product, producto: Pr
   if (JSON.stringify(anterior.opciones) !== JSON.stringify(producto.opciones)) {
     await logEvent("admin", `Opciones de ${producto.nombre}: ${textoDeOpciones(producto.opciones) || "sin opciones"}`);
   }
-  const otros = (["nombre", "slug", "descripcion", "imagenUrl", "orden", "unidadSingular", "unidadPlural", "unidadGenero", "aclaracionPrecio", "categoriaId"] as const).filter((c) => producto[c] !== anterior[c]);
+  if (producto.aPedido !== anterior.aPedido) {
+    await logEvent("admin", `Producto ${producto.nombre} ${producto.aPedido ? "pasa a hacerse a pedido" : "vuelve a venderse con stock"}`);
+  }
+  const otros = (["nombre", "slug", "descripcion", "imagenUrl", "orden", "unidadSingular", "unidadPlural", "unidadGenero", "aclaracionPrecio", "categoriaId", "demora"] as const).filter((c) => producto[c] !== anterior[c]);
   if (otros.length) {
     await logEvent("admin", `Producto ${producto.nombre} editado: ${otros.join(", ")}`);
   }

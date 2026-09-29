@@ -6,7 +6,7 @@ import { getMainProduct, getProductoPorSlug, getProductosActivos } from "@/lib/p
 import { getZonasActivas } from "@/lib/zonas";
 import { leerEscalones } from "@/lib/precios";
 import { unidadDe } from "@/plataforma/cliente";
-import { opcionesDe } from "@/plataforma/cliente/catalogo";
+import { demoraDe, opcionesDe, stockParaVender } from "@/plataforma/cliente/catalogo";
 import { limpiarEleccion, validarEleccion } from "@/lib/opciones";
 
 export const dynamic = "force-dynamic";
@@ -36,9 +36,10 @@ export default async function CheckoutPage({
               nombre: p.nombre,
               precio: p.precio,
               escalones: leerEscalones(p.escalones),
-              stock: p.stock,
+              stock: stockParaVender(p),
               unidad: unidadDe(p),
               opciones: opcionesDe(p),
+              demora: demoraDe(p),
             }))}
             zonas={zonas}
             origen={origenCarrito}
@@ -63,7 +64,7 @@ export default async function CheckoutPage({
   const validada = opciones.length ? validarEleccion(opciones, eleccion, product.nombre) : null;
   const cantidadInicial = Math.max(
     1,
-    Math.min(product.stock || 1, Number(searchParams.cantidad) || 1)
+    Math.min(stockParaVender(product) || 1, Number(searchParams.cantidad) || 1)
   );
 
   return (
@@ -79,6 +80,7 @@ export default async function CheckoutPage({
             precio: product.precio,
             escalones: leerEscalones(product.escalones),
             unidad: unidadDe(product),
+            demora: demoraDe(product),
             ...(validada ? { opciones: eleccion, elegidas: "elegidas" in validada ? validada.elegidas : [] } : {}),
           }}
           cantidadInicial={cantidadInicial}

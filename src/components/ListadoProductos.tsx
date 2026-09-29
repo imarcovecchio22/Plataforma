@@ -4,6 +4,7 @@ import FotoProducto from "@/components/FotoProducto";
 import { formatPrecio } from "@/lib/utils";
 import { leerEscalones, textoPromos } from "@/lib/precios";
 import { unidadDe } from "@/plataforma/cliente";
+import { demoraDe, stockParaVender } from "@/plataforma/cliente/catalogo";
 
 /** Tarjetas de productos con link a su ficha (/productos y la home cuando hay más de uno). */
 export default function ListadoProductos({ productos, origen }: { productos: Product[]; origen?: string }) {
@@ -20,7 +21,8 @@ export default function ListadoProductos({ productos, origen }: { productos: Pro
                 <h3 className="font-serif text-xl font-semibold text-[var(--texto)]">{p.nombre}</h3>
                 <p className="precio mt-1 text-2xl">{formatPrecio(p.precio)}</p>
                 {promos && <p className="mt-1 text-sm font-semibold text-[var(--destacado)]">Promo: {promos}</p>}
-                {p.stock <= 0 && <p className="mt-1 text-sm texto-suave">Sin stock por el momento</p>}
+                {demoraDe(p) && <p className="mt-1 text-sm texto-suave">{demoraDe(p)}</p>}
+                {stockParaVender(p) <= 0 && <p className="mt-1 text-sm texto-suave">Sin stock por el momento</p>}
               </div>
             </Link>
           </li>

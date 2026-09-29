@@ -42,6 +42,10 @@ model Product {
   categoria        Categoria? @relation(fields: [categoriaId], references: [id], onDelete: Restrict)
   // Opciones que elige el comprador (config.catalogo.opciones): [{ nombre: "Color", valores: ["Rojo", "Negro"] }]
   opciones         Json     @default("[]")
+  // A pedido (config.catalogo.aPedido): sin límite de stock (no se descuenta al pagar) y con demora
+  aPedido          Boolean  @default(false)
+  // Lo que se muestra de la demora (ej. "Se imprime en 3 a 5 días hábiles"); vacía = un texto general
+  demora           String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 

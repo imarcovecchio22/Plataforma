@@ -19,6 +19,8 @@ type Props = {
     precio: number;
     escalones: Escalon[];
     unidad: Unidad;
+    /** Si se hace a pedido, el aviso de demora */
+    demora?: string | null;
     /** Lo elegido en la ficha, si el producto tiene opciones */
     opciones?: Eleccion;
     elegidas?: OpcionElegida[];
@@ -251,6 +253,7 @@ function ResumenProducto({
       <span>
         {producto.nombre}
         {producto.elegidas?.length ? <span className="block text-xs text-[var(--texto)]">{textoOpciones(producto.elegidas)}</span> : null}
+        {producto.demora && <span className="block text-xs">{producto.demora}</span>}
       </span>
       <div className="flex items-center gap-2">
         <button
@@ -316,6 +319,7 @@ function ResumenCarrito({
             <span>
               {l.producto.nombre}
               {l.elegidas.length > 0 && <span className="block text-xs text-[var(--texto)]">{textoOpciones(l.elegidas)}</span>}
+              {l.producto.demora && <span className="block text-xs">{l.producto.demora}</span>}
               <span className="block text-xs">
                 {cantidadConUnidad(l.cantidad, l.producto.unidad)} × {formatPrecio(l.unitario)}
               </span>

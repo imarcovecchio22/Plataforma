@@ -20,6 +20,8 @@ export type ProductoCarrito = {
   unidad: Unidad;
   /** Las opciones a elegir (solo si el cliente usa opciones de producto). */
   opciones?: OpcionProducto[];
+  /** Si se hace a pedido, el aviso de demora. */
+  demora?: string | null;
 };
 
 /** El carrito: una línea por producto y opciones elegidas (con su promo), cantidades, total y "Finalizar compra". */
@@ -62,6 +64,7 @@ export default function CarritoVista({ productos }: { productos: ProductoCarrito
                 {producto.nombre}
               </Link>
               {elegidas.length > 0 && <p className="mt-1 text-sm text-[var(--texto)]">{textoOpciones(elegidas)}</p>}
+              {producto.demora && <p className="mt-1 text-xs texto-suave">{producto.demora}</p>}
               <p className="mt-1 text-sm texto-suave">
                 {cantidadConUnidad(cantidad, producto.unidad)} × {formatPrecio(unitario)}
                 {ahorro > 0 && <span className="text-[var(--destacado)]"> · ahorrás {formatPrecio(ahorro)}</span>}

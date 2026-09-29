@@ -160,6 +160,8 @@ export const esquemaCliente = z
         categorias: z.boolean().optional(),
         /** Opciones que elige el comprador (ej. "Color: Rojo, Negro"), sin precio ni stock propio. */
         opciones: z.boolean().optional(),
+        /** Productos a pedido: sin límite de stock y con un aviso de demora. */
+        aPedido: z.boolean().optional(),
       })
       .strict()
       .optional(),

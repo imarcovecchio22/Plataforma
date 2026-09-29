@@ -7,7 +7,7 @@ import { getZonasActivas } from "@/lib/zonas";
 import type { Product } from "@prisma/client";
 import { leerEscalones, precioUnitario } from "@/lib/precios";
 import { nombreConOpciones, validarEleccion, type OpcionElegida } from "@/lib/opciones";
-import { opcionesDe } from "@/plataforma/cliente/catalogo";
+import { opcionesDe, stockParaVender } from "@/plataforma/cliente/catalogo";
 import { errorMessage, logEvent } from "@/lib/logs";
 import { cliente } from "@/plataforma/cliente";
 
@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
     const actual = porProducto.get(l.product.id);
     porProducto.set(l.product.id, { product: l.product, cantidad: (actual?.cantidad ?? 0) + l.cantidad });
   }
-  const sinStock = [...porProducto.values()].find((l) => l.cantidad > l.product.stock);
+  const sinStock = [...porProducto.values()].find((l) => l.cantidad > stockParaVender(l.product));
   if (sinStock) {
     const { product, cantidad } = sinStock;
     const deQue = lineas.length > 1 ? ` de ${product.nombre}` : "";

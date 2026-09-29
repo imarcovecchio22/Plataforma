@@ -50,6 +50,7 @@ clientes/<slug>/
 - Catálogo: `/productos` (listado) y `/producto/<slug>` (ficha). Con un solo producto, `/producto` muestra su ficha y la tienda no usa carrito (como Melera); con varios, `/producto` manda al listado y se compra con un **carrito** guardado en el navegador (`/carrito`)
 - Categorías opcionales (`catalogo.categorias` en la config): se cargan en `/admin/categorias` y `/productos` muestra un filtro
 - Opciones de producto opcionales (`catalogo.opciones`, ej. el color): se cargan en cada producto, el comprador las elige en la ficha y quedan en el pedido; el stock y las promos por cantidad cuentan el total del producto
+- Productos a pedido opcionales (`catalogo.aPedido`): sin límite de stock, con un aviso de demora en la ficha, el carrito y el checkout; al pagar no descuentan stock
 - Checkout con selector de cantidad (un producto) o con los ítems del carrito, promos por cantidad de cada producto y **zona de envío**: las zonas se cargan en `/admin/envios`, con costo fijo (se suma al total y a Mercado Pago como ítem "Envío") o "a coordinar"; con una sola, se elige sola
 - Integración con MercadoPago (Checkout Pro) y webhook de confirmación de pago
 - `/consultas`: preguntas frecuentes (precio real desde la base) + formulario mobile-first para quien llega desde Instagram (botones de la respuesta automática; responder por Instagram o email, anti-spam con honeypot y tiempo mínimo). Cada consulta se guarda y se avisa por Telegram

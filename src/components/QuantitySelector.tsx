@@ -18,6 +18,7 @@ export default function QuantitySelector({
   unidad = cliente.unidad,
   conCarrito = false,
   opciones = [],
+  demora = null,
 }: {
   /** El producto que se compra (el checkout lo busca por slug). */
   slug: string;
@@ -31,6 +32,8 @@ export default function QuantitySelector({
   conCarrito?: boolean;
   /** Lo que el comprador elige antes de comprar (ej. el color), si el producto tiene opciones. */
   opciones?: OpcionProducto[];
+  /** Si se hace a pedido: el aviso de demora (y no se muestra el stock). */
+  demora?: string | null;
 }) {
   const [cantidad, setCantidad] = useState(1);
   const [agregado, setAgregado] = useState(false);
@@ -182,7 +185,7 @@ export default function QuantitySelector({
       )}
       <p className="texto-suave text-sm">
         {cantidad > 1 && <>{formatPrecio(unitario)} cada {unidad.singular}{ahorro > 0 && <> · ahorrás {formatPrecio(ahorro)}</>} · </>}
-        {stock} unidades disponibles
+        {demora ?? `${stock} unidades disponibles`}
       </p>
     </div>
   );

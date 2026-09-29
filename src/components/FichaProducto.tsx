@@ -5,7 +5,7 @@ import QuantitySelector from "@/components/QuantitySelector";
 import { formatPrecio } from "@/lib/utils";
 import { leerEscalones, textoPromos } from "@/lib/precios";
 import { cliente, unidadDe } from "@/plataforma/cliente";
-import { opcionesDe } from "@/plataforma/cliente/catalogo";
+import { demoraDe, opcionesDe, stockParaVender } from "@/plataforma/cliente/catalogo";
 
 /** La ficha de un producto: /producto/<slug> (y /producto cuando hay uno solo). */
 export default function FichaProducto({
@@ -45,7 +45,8 @@ export default function FichaProducto({
             <div className="mt-8">
               <QuantitySelector
                 slug={product.slug}
-                stock={product.stock}
+                stock={stockParaVender(product)}
+                demora={demoraDe(product)}
                 opciones={opcionesDe(product)}
                 origen={origen}
                 precio={product.precio}

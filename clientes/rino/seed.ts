@@ -22,6 +22,8 @@ export default definirSeed({
       slug: "llavero-personalizado",
       descripcion: "Llavero de 5 cm con el nombre o la inicial que quieras.",
       precio: 2500,
+      aPedido: true,
+      demora: "Se imprime a pedido en 2 a 3 días hábiles",
       stock: 60,
       categoria: "accesorios",
       opciones: [{ nombre: "Color", valores: ["Rojo", "Azul", "Negro", "Blanco"] }],

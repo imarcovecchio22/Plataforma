@@ -153,7 +153,7 @@ describe("en la tienda", () => {
 
   const PRODUCTO = {
     id: "p", nombre: "Miel", slug: "miel", descripcion: "", precio: 6500, stock: 5, escalones: [], imagenUrl: null,
-    activo: true, orden: 10, unidadSingular: null, unidadPlural: null, unidadGenero: null, aclaracionPrecio: null, categoriaId: null, opciones: [],
+    activo: true, orden: 10, unidadSingular: null, unidadPlural: null, unidadGenero: null, aclaracionPrecio: null, categoriaId: null, opciones: [], aPedido: false, demora: null,
     createdAt: new Date(0), updatedAt: new Date(0),
   };
 

@@ -21,6 +21,9 @@ export type SeedCliente = {
     categoria?: string;
     /** Opciones que elige el comprador (si la config usa opciones de producto). */
     opciones?: { nombre: string; valores: string[] }[];
+    /** Se hace a pedido (si la config usa productos a pedido), con su demora. */
+    aPedido?: boolean;
+    demora?: string;
   }[];
   /**
    * Zonas de envío del checkout, en el orden en que se muestran. Sin costo = a coordinar después de
