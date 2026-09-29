@@ -6,6 +6,7 @@ vi.mock("@/lib/prisma", () => ({ prisma: { product: db } }));
 import { getMainProduct } from "@/lib/product";
 import seedMelera from "../clientes/melera/seed";
 import seedEjemplo from "../clientes/ejemplo/seed";
+import seedRino from "../clientes/rino/seed";
 import { zonaEnvioSchema } from "@/lib/validation";
 
 describe("producto destacado", () => {
@@ -22,6 +23,7 @@ describe("productos de los seeds", () => {
   it.each([
     ["melera", seedMelera],
     ["ejemplo", seedEjemplo],
+    ["rino", seedRino],
   ])("%s: slugs válidos y sin repetir", (_cliente, seed) => {
     const slugs = (seed.productos ?? []).map((p) => p.slug);
     expect(slugs.length).toBeGreaterThan(0);
@@ -38,6 +40,7 @@ describe("zonas de envío de los seeds", () => {
   it.each([
     ["melera", seedMelera],
     ["ejemplo", seedEjemplo],
+    ["rino", seedRino],
   ])("%s: trae zonas válidas para el admin", (_cliente, seed) => {
     expect(seed.zonas?.length).toBeGreaterThan(0);
     for (const z of seed.zonas ?? []) {

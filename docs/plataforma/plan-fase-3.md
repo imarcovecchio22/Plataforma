@@ -64,13 +64,28 @@ necesita precio o stock por variante, se planifica aparte.
 
 ## Pasos
 
-### Paso 1: dos clientes en la misma máquina
+### Paso 1: dos clientes en la misma máquina ✅ (2026-09-28)
+Hecho: `scripts/con-cliente.js` (`npm run cliente -- <slug> <comando>`), `.env.rino.local` con la
+base de desarrollo de Rino (secretos propios; MP, Telegram, Gemini e Instagram vacíos), y
+`npm run db:migrate`. Todas las migraciones aplicadas en la base de Rino.
+
+Plan original:
 Cada cliente con su archivo de entorno de desarrollo (`.env.local` para Melera,
 `.env.rino.local` para Rino) y scripts con el cliente elegido (`dev`, `build`, migrar, `db:seed`)
 que muestran a qué base se conectan y se niegan si el cliente y el archivo no coinciden.
 Migraciones y seed de Rino en su base de desarrollo.
 
-### Paso 2: `clientes/rino/` provisorio
+### Paso 2: `clientes/rino/` provisorio ✅ (2026-09-28)
+Hecho: `clientes/rino/` (config con todo lo provisorio marcado `PROVISORIO`, paleta naranja de
+relleno, logo de texto "3DR", foto por defecto, `app/icon.svg`, plantillas "simple" del ejemplo
+con sus colores) y seed de muestra (maceta, llavero y soporte; retiro, CABA con costo y resto del
+país a coordinar; preguntas con `$CATALOGO` y `$ZONAS`), cargado en su base. El cliente de ejemplo
+también suma `app/icon.svg` (antes pedía `/favicon.ico` y daba 404). `tests/cliente-rino.test.ts`.
+Build con `CLIENTE=rino` y capturas en Chrome (escritorio y celular) sin errores.
+Para más adelante: el campo "Barrio" del checkout viene del envío solo a CABA de Melera; para
+otras zonas quedaría mejor "Localidad" (cambia el checkout de Melera, se decide aparte).
+
+Plan original:
 A partir de `clientes/ejemplo/`: config con identidad provisoria (nombre "3DRinoMaker", colores y
 textos de relleno claramente marcados), logo de texto, imágenes por defecto, y seed con unos
 productos, zonas y preguntas de muestra. Tests: la config valida y sus páginas no tienen rastros de
