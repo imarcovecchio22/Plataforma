@@ -215,7 +215,21 @@ El módulo `cotizador` sigue apagado. Config opcional con la URL de donde está 
 tienda muestra un link ("Cotizá tu impresión"). Queda anotado qué hace falta para integrarlo
 (rutas, datos, cómo una cotización se convierte en pedido).
 
-### Paso 10: cierre
+### Paso 10: cierre ✅ (2026-09-29)
+- **Melera sin cambios**: build con `CLIENTE=melera` y comparación por píxel con las capturas del
+  final de la fase 2: todas las páginas públicas y del admin idénticas, salvo `/admin/logs` (tiene
+  más registros) y la fecha de hoy en el formulario de `/admin/instagram`. Los snapshots de
+  `tests/salida-melera/` solo cambiaron en el paso 3 (nombres de clase, mismo resultado visual).
+- **Rino de punta a punta** (build con `CLIENTE=rino`, Chrome contra su base): home de catálogo,
+  filtro por categoría, llavero a pedido en azul con la promo, maceta blanca, soporte, zona con
+  costo, checkout hasta Mercado Pago (502 porque Rino no tiene credenciales todavía), el pedido con
+  cada opción y el envío, y el detalle en el admin. Datos de prueba borrados.
+- **Cliente de ejemplo**: su config sigue siendo válida (sin las opciones nuevas, como Melera).
+- **Docs**: la guía "Crear un cliente nuevo" del README con todas las opciones, CLAUDE.md y
+  [`rino-para-lanzar.md`](rino-para-lanzar.md) (lo provisorio y las cuentas y variables para
+  desplegarlo).
+
+Plan original:
 Compra de punta a punta con `CLIENTE=rino` y todas las opciones prendidas (categorías, opciones,
 a pedido, zona con costo), Melera sin cambios (snapshots y comparación visual con `main`), guía
 "cómo crear un cliente" con todas las opciones, y la lista de lo que Rino necesita para

@@ -27,7 +27,11 @@ clientes/<slug>/
 ### Crear un cliente nuevo
 
 1. Copiar `clientes/ejemplo/` a `clientes/<slug>/` y cambiar `slug` en `config.ts` (tiene que ser igual al nombre de la carpeta).
-2. Completar la config: marca, colores, imágenes (en `public/`), textos, módulos y estilos de Instagram (con sus plantillas en `instagram/`).
+2. Completar la config: marca, colores, imágenes (en `public/`), textos, módulos y estilos de Instagram (con sus plantillas en `instagram/`), y elegir las opciones de la tienda (todas opcionales; sin definir, se comporta como Melera):
+   - `inicio`: `"destacado"` (hero del primer producto, como Melera) o `"catalogo"` (la marca y la grilla de productos).
+   - `catalogo`: `categorias`, `opciones` (ej. el color) y `aPedido` (sin límite de stock, con demora). Prendidas, el dueño las carga desde el admin.
+   - `apariencia` (tema neutro): `fondo` claro u oscuro y `fuentes` de Google Fonts.
+   - `enlaceCotizador`: link a un cotizador externo en el menú y el pie.
 3. Opcional: tema propio (`tema.css` y `tema/index.tsx`); si no, se usa el neutro con los colores de la config y su `apariencia` (fondo claro u oscuro y fuentes de Google Fonts, que se bajan al preparar el cliente y se sirven desde el sitio).
 4. Base de desarrollo propia (cada cliente tiene la suya): crear `.env.<slug>.local` con `CLIENTE="<slug>"`, su `DATABASE_URL` y el resto de las variables (las que no tenga quedan vacías, nunca se toman las de otro cliente). Después `npm run cliente -- <slug> db:migrate` y `npm run cliente -- <slug> db:seed` (con los datos de `seed.ts`).
 5. `npm run cliente -- <slug> dev` y revisar; `npm test` tiene que seguir pasando.

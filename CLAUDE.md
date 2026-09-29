@@ -48,6 +48,10 @@ de la plataforma".
 3. **Crear `clientes/rino/` y levantar 3DRinoMaker** (impresiones 3D, catálogo de productos fijos:
    listado, ficha por slug, pedido con ítems, checkout de MP con varios ítems, stock por producto,
    zonas de envío, identidad propia; el cotizador queda previsto como módulo).
+   **✅ Terminada el 2026-09-29 (rama `fase-3`)**, con la identidad de Rino provisoria (marcada
+   `PROVISORIO`) hasta hablar con el dueño: lo que varía entre clientes quedó como opciones de la
+   config (`inicio`, `catalogo`, `apariencia`, `enlaceCotizador`). Qué falta para lanzarlo:
+   [`docs/plataforma/rino-para-lanzar.md`](docs/plataforma/rino-para-lanzar.md).
 
 Inventario de lo específico de Melera: [`docs/plataforma/inventario-melera.md`](docs/plataforma/inventario-melera.md).
 Plan de la fase 1: [`docs/plataforma/plan-fase-1.md`](docs/plataforma/plan-fase-1.md).
