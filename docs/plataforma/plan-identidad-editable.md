@@ -36,7 +36,17 @@ Sin cambios guardados, cada cliente se ve exactamente como hoy (los snapshots de
 
 ## Pasos
 
-### Paso 1: modelo y lectura
+### Paso 1: modelo y lectura ✅ (2026-09-29)
+Hecho: tabla `IdentidadCliente` (migración `*_identidad_editable`, aplicada en las bases de
+desarrollo de Melera y de Rino). `src/plataforma/cliente/identidad.ts`: `esquemaIdentidad`,
+`limpiarValores` (descarta lo que no valida campo por campo, así el resto de los cambios se queda)
+e `identidadEfectiva` (sin cambios da exactamente la config). `src/lib/identidad.ts`:
+`getIdentidad()` (con `cache` de React; si la base falla, la config).
+`src/plataforma/cliente/escala.ts`: `escalaDeColor(hex)` (el elegido es el 500; los claros se
+mezclan con blanco y los oscuros con negro, oscureciendo el 600–900 hasta que el texto blanco se
+lea: 700 con 4,5:1, 600 con 3:1; probado con amarillo, lima, blanco y negro).
+
+Plan original:
 Tabla `IdentidadCliente` (una fila: `valores` Json y `updatedAt`), con migración.
 `src/plataforma/cliente/identidad.ts`: el esquema de lo editable (zod, todo opcional), la mezcla
 config + cambios (descarta lo que no valida) y `getIdentidad()` para el servidor (una consulta por
